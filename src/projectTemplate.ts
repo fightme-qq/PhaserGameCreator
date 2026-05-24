@@ -2652,8 +2652,8 @@ export class GameScene extends Phaser.Scene {
       })
       .setOrigin(0, 0.5);
 
-    this.drawWorkflowPanel(72, 276, 540, 184);
-    this.drawSkillMatrix(72, 498);
+    this.drawWorkflowPanel(72, 276, 540, 204);
+    this.drawSkillMatrix(72, 512);
     const promptPanel = { x: 680, y: 92, width: 528, height: 520 };
     this.drawPromptConsole(promptPanel.x, promptPanel.y, promptPanel.width, promptPanel.height);
 
@@ -2769,31 +2769,31 @@ export class GameScene extends Phaser.Scene {
     });
 
     const steps = [
-      ['01', 'AUDIT', 'agent:audit maps the repo'],
-      ['02', 'INTAKE', 'idea becomes 3 playable loops'],
-      ['03', 'BUILD', 'skills + templates shape code'],
-      ['04', 'VERIFY', 'quality gates before done'],
+      ['01', 'AUDIT', 'repo snapshot'],
+      ['02', 'INTAKE', '3 loop options'],
+      ['03', 'BUILD', 'skills + templates'],
+      ['04', 'VERIFY', 'quality gates'],
     ];
 
     steps.forEach((step, index) => {
       const itemX = x + 24 + index * 126;
-      const itemY = y + 92;
-      this.add.rectangle(itemX + 50, itemY, 100, 72, 0x172235, 0.96).setStrokeStyle(1, 0x415779, 0.9);
-      this.add.text(itemX + 14, itemY - 20, step[0], {
+      const itemY = y + 102;
+      this.add.rectangle(itemX + 50, itemY, 100, 92, 0x172235, 0.96).setStrokeStyle(1, 0x415779, 0.9);
+      this.add.text(itemX + 14, itemY - 30, step[0], {
         fontFamily: 'Consolas, monospace',
         fontSize: '14px',
         color: '#ffc857',
       });
-      this.add.text(itemX + 14, itemY + 1, step[1], {
+      this.add.text(itemX + 14, itemY - 5, step[1], {
         fontFamily: 'Trebuchet MS, Arial, sans-serif',
         fontSize: '16px',
         color: '#ffffff',
       });
-      this.add.text(itemX + 14, itemY + 24, step[2], {
+      this.add.text(itemX + 14, itemY + 22, step[2], {
         fontFamily: 'Consolas, monospace',
-        fontSize: '10px',
+        fontSize: '11px',
         color: '#8d9bb7',
-        wordWrap: { width: 82 },
+        wordWrap: { width: 76 },
       });
 
       if (index < steps.length - 1) {
