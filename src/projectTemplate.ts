@@ -9,6 +9,11 @@ const coreSkillNames = [
   'phaser-game-systems',
   'phaser-ui-hud',
   'phaser-gamefeel',
+  'phaser-sprite-animation',
+  'phaser-tilemaps-tiled',
+  'phaser-audio-sfx',
+  'phaser-debug-performance',
+  'phaser-programmatic-art',
   'phaser-testing',
   'phaser-skill-pack-maintainer',
 ];
@@ -31,19 +36,92 @@ export function getProjectFiles(options: ProjectOptions): GeneratedFile[] {
 function creatorGuideDocs(options: ProjectOptions): GeneratedFile[] {
   return [
     {
+      path: 'AGENT_WORKFLOW.md',
+      content: `# Agent Operating Workflow
+
+This is the main operating loop for any AI agent working in this repository.
+
+Do not start by coding. Start by turning the user's idea into the smallest verified Phaser game loop.
+
+## Required Loop
+
+1. Read \`AGENTS.md\`, this file, \`skills/README.md\`, and \`skills/_meta/task-map.md\`.
+2. Use \`docs/game-design-intake.md\` to extract or infer the game idea.
+3. Use \`docs/first-playable-contract.md\` to define the first playable.
+4. Choose the relevant skills from \`skills/_meta/task-map.md\`.
+5. Inspect the current scenes, systems, input, assets, and tests.
+6. Implement the smallest coherent change.
+7. Validate against \`docs/validation-matrix.md\`.
+8. Update docs, recipes, or decisions if the project shape changed.
+9. Report what changed, which skills were used, and what was verified.
+
+## If The User Gives Only A Vague Idea
+
+Do not block. Propose three tiny first playable loops and recommend the smallest one.
+
+Each proposal must include:
+
+- core action;
+- goal;
+- failure or pressure;
+- feedback moment;
+- primary input;
+- scenes/modules touched;
+- validation path.
+
+## If The User Asks For A Feature
+
+1. Find the closest recipe in \`docs/feature-recipes/\`.
+2. Pick the matching skill.
+3. Add only the minimum architecture needed.
+4. Keep the feature playable and testable before polishing it.
+
+## If The User Asks For A Genre
+
+1. Find the closest blueprint in \`docs/genre-blueprints/\`.
+2. Build the first playable loop from that blueprint.
+3. Do not build the full game design document before the loop works.
+
+## Decisions
+
+When a change affects architecture, scene flow, input strategy, scale mode, asset pipeline, publishing, or core gameplay rules, add a short note under \`docs/decisions/\`.
+
+Use this format:
+
+\`\`\`md
+# Decision: short title
+
+Date: YYYY-MM-DD
+
+## Context
+
+What problem was being solved.
+
+## Decision
+
+What was chosen.
+
+## Consequences
+
+What this makes easier or harder.
+\`\`\`
+`,
+    },
+    {
       path: 'docs/game-creator-guide.md',
       content: `# Game Creator Guide
 
 This repository is a foundation for a Phaser game, not a finished game.
 
-The first screen is a template guide. Replace it after the first playable loop is designed.
+The first screen is an idea sandbox. Replace it after the first playable loop is designed.
 
 ## What To Do First
 
-1. Describe the game idea in plain language.
-2. Ask the agent to use \`phaser-project-architect\`.
-3. Ask for a first playable loop.
-4. Let the agent replace \`TemplateGuideScene\` with real menu/gameplay scenes.
+1. Read \`AGENT_WORKFLOW.md\`.
+2. Extract the idea with \`docs/game-design-intake.md\`.
+3. Define the loop with \`docs/first-playable-contract.md\`.
+4. Use \`phaser-project-architect\` to map scenes and modules.
+5. Replace the sandbox with real gameplay only after the loop is clear.
 
 ## Useful First Prompts
 
@@ -69,6 +147,63 @@ Use phaser-input-mobile-desktop and phaser-responsive-layout. Design controls fo
 - Many scenes.
 
 Start with one action, one goal, one feedback moment, and one way to restart or continue.
+`,
+    },
+    {
+      path: 'docs/game-design-intake.md',
+      content: `# Game Design Intake
+
+Use this file to turn a human's rough idea into a buildable Phaser task.
+
+## Extract These Facts
+
+- Game fantasy: what the player imagines doing.
+- Core action: the main verb, such as move, jump, dodge, swap, shoot, collect, choose.
+- Camera: fixed, top-down, side-view, board, card/table, scrolling.
+- Primary target: ${options.target === 'mobile' ? 'mobile-first' : 'desktop-first'}.
+- Input: pointer, touch, keyboard, mouse, gamepad.
+- Goal: what success means in the first loop.
+- Pressure: timer, enemy, obstacle, limited moves, risk, puzzle constraint.
+- Feedback: what should feel good immediately.
+- Restart: how the player tries again.
+
+## If Details Are Missing
+
+Infer a small version and continue.
+
+Default assumptions:
+
+- Use Phaser 3 with TypeScript and Vite.
+- Keep runtime code under \`src/game/\`.
+- Use pointer input as a shared baseline.
+- Add keyboard support for desktop actions.
+- Use touch-safe controls for mobile actions.
+- Start with generated/code-drawn placeholder art.
+- Add real assets only when sources and licenses are known.
+
+## Output Format For The Agent
+
+\`\`\`md
+## Parsed Idea
+
+- Fantasy:
+- Core action:
+- Camera:
+- Target:
+- Input:
+- Goal:
+- Pressure:
+- Feedback:
+- Restart:
+
+## Recommended First Playable
+
+One paragraph.
+
+## Skills To Use
+
+- skill-name: reason
+\`\`\`
 `,
     },
     {
@@ -115,6 +250,112 @@ Platformer:
 - Goal: reach one marker.
 - Feedback: landing/jump effects.
 - State: checkpoint/restart.
+`,
+    },
+    {
+      path: 'docs/first-playable-contract.md',
+      content: `# First Playable Contract
+
+The first playable is done only when the player can understand, act, receive feedback, and try again.
+
+## Required
+
+- Player can perform the core action.
+- There is one clear goal.
+- There is one obstacle, risk, timer, enemy, puzzle constraint, or failure pressure.
+- The game responds with visible feedback.
+- The loop has win, lose, restart, or continue behavior.
+- The scene works on ${options.target === 'mobile' ? 'mobile-first and desktop fallback' : 'desktop-first and mobile fallback'} viewports.
+- The code builds with \`npm run build\`.
+- Smoke tests or manual validation confirm canvas visibility and interaction.
+
+## Not Required Yet
+
+- full menu flow;
+- many levels;
+- final art;
+- full economy;
+- backend;
+- multiplayer;
+- deep progression;
+- complex editor tooling.
+
+## Replacement Rule
+
+The generated sandbox should be replaced only when the first playable loop exists. Do not replace it with a prettier static screen.
+
+## Definition Of Done
+
+\`\`\`text
+I can start the game, perform the main action, see feedback, hit success/failure pressure, and restart or continue.
+\`\`\`
+`,
+    },
+    {
+      path: 'docs/validation-matrix.md',
+      content: `# Validation Matrix
+
+Use this before calling a gameplay task done.
+
+| Area | Check | Command Or Method |
+| --- | --- | --- |
+| TypeScript/Vite | Project builds | \`npm run build\` |
+| Local run | Dev server starts | \`npm run dev\` |
+| Canvas | Canvas exists and is visible | browser or Playwright |
+| Scene | Correct scene reaches interactive state | browser or Playwright |
+| Desktop input | Keyboard/mouse path works | manual or Playwright |
+| Mobile input | Pointer/touch path works | mobile viewport/manual |
+| Layout | Text/HUD does not clip | desktop + phone viewport |
+| Feedback | Core action has readable feedback | manual play |
+| Restart | Player can retry or continue | manual/playwright |
+| Console | No runtime console errors | browser or Playwright |
+${options.includeYandexGames ? '| Yandex | SDK path, no CDN, packaging rules | `npm run validate:yandex` |\n' : ''}
+
+## Reporting Format
+
+\`\`\`md
+## Verification
+
+- npm run build: pass/fail
+- npm run test:smoke: pass/fail/not available
+- Desktop viewport: pass/fail/not checked
+- Mobile viewport: pass/fail/not checked
+- Notes:
+\`\`\`
+`,
+    },
+    {
+      path: 'docs/agent-self-audit.md',
+      content: `# Agent Self Audit
+
+Run this mentally at the start of a new session.
+
+## Repository Facts
+
+- Engine: Phaser
+- Language: TypeScript
+- Build: Vite
+- Target: ${options.target === 'mobile' ? 'mobile-first' : 'desktop-first'}
+- Local skills: \`skills/\`
+- Main workflow: \`AGENT_WORKFLOW.md\`
+
+## Check Before Editing
+
+- What scene currently starts the game?
+- Is the sandbox still present?
+- Which skill matches the task?
+- Are assets real, generated, or missing?
+- Is Yandex publishing enabled? ${options.includeYandexGames ? 'Yes.' : 'No.'}
+- Are Playwright smoke tests enabled? ${options.includePlaywright ? 'Yes.' : 'No.'}
+- What command validates this change?
+
+## Output
+
+Before editing, state:
+
+\`\`\`text
+Using [skill] because [reason]. I checked [files]. I will validate with [command/check].
+\`\`\`
 `,
     },
     {
@@ -171,6 +412,276 @@ Use this guide to translate a game idea into modules. These are not hard presets
 ## When Unsure
 
 Ask the agent to propose three possible first playable loops, then choose the smallest one.
+`,
+    },
+    {
+      path: 'docs/feature-recipes/README.md',
+      content: `# Feature Recipes
+
+Recipes are short implementation paths for common Phaser features.
+
+Use them with skills:
+
+- architecture first when a feature changes structure;
+- scene/input/layout skills for runtime behavior;
+- asset/gamefeel/testing skills for finish and validation.
+
+Do not treat recipes as mandatory abstractions. They are rails for agents.
+`,
+    },
+    {
+      path: 'docs/feature-recipes/add-player.md',
+      content: `# Recipe: Add Player
+
+Use skills:
+
+- \`phaser-scene-workflow\`
+- \`phaser-input-mobile-desktop\`
+- \`phaser-sprite-animation\` if animated
+- \`phaser-debug-performance\` if tuning physics
+
+Steps:
+
+1. Define the core player action.
+2. Add or update an entity/factory under \`src/game/entities/\` when setup repeats.
+3. Route raw input through \`src/game/input/\`.
+4. Keep movement/update logic small and readable.
+5. Add visible feedback for action, hit, pickup, or failure.
+6. Validate desktop and mobile input paths.
+`,
+    },
+    {
+      path: 'docs/feature-recipes/add-enemy.md',
+      content: `# Recipe: Add Enemy
+
+Use skills:
+
+- \`phaser-game-systems\`
+- \`phaser-scene-workflow\`
+- \`phaser-gamefeel\`
+
+Steps:
+
+1. Pick one behavior: patrol, chase, flee, orbit, shoot, block, or wander.
+2. Add the enemy as an entity or factory.
+3. Put behavior rules in a system if more than one enemy uses them.
+4. Add one consequence: damage, pushback, lose condition, score change, or timer pressure.
+5. Add readable feedback for contact or defeat.
+6. Validate restart/cleanup so enemies do not duplicate across scene restarts.
+`,
+    },
+    {
+      path: 'docs/feature-recipes/add-collectible.md',
+      content: `# Recipe: Add Collectible
+
+Use skills:
+
+- \`phaser-assets-pipeline\`
+- \`phaser-game-systems\`
+- \`phaser-gamefeel\`
+
+Steps:
+
+1. Define what the collectible changes: score, timer, health, unlock, inventory, progress.
+2. Add an asset key or generated placeholder.
+3. Spawn it from a scene, system, or tilemap object layer.
+4. On collect, update state and hide/destroy/recycle it.
+5. Add feedback: tween, sound, particle, score popup, or camera nudge.
+6. Validate collection cannot trigger twice accidentally.
+`,
+    },
+    {
+      path: 'docs/feature-recipes/add-timer-score.md',
+      content: `# Recipe: Add Timer Or Score
+
+Use skills:
+
+- \`phaser-game-systems\`
+- \`phaser-ui-hud\`
+- \`phaser-testing\`
+
+Steps:
+
+1. Keep score/time in state or a small gameplay system.
+2. Display it through HUD/UI, not buried in world objects.
+3. Decide what happens at zero, target score, or best score.
+4. Persist best score only after the loop works.
+5. Validate text fits on phone and desktop.
+`,
+    },
+    {
+      path: 'docs/feature-recipes/add-touch-controls.md',
+      content: `# Recipe: Add Touch Controls
+
+Use skills:
+
+- \`phaser-input-mobile-desktop\`
+- \`phaser-responsive-layout\`
+- \`phaser-ui-hud\`
+
+Steps:
+
+1. Map touch to actions, not scene-specific flags.
+2. Use pointer/tap for simple actions.
+3. Use virtual buttons or joystick only for repeated/continuous actions.
+4. Keep controls away from safe-area edges.
+5. Make desktop keyboard/mouse still work.
+6. Validate with mobile viewport and real touch if available.
+`,
+    },
+    {
+      path: 'docs/feature-recipes/add-pause-restart.md',
+      content: `# Recipe: Add Pause And Restart
+
+Use skills:
+
+- \`phaser-scene-workflow\`
+- \`phaser-ui-hud\`
+- \`phaser-audio-sfx\`
+
+Steps:
+
+1. Decide whether pause is a scene overlay or state inside gameplay.
+2. Freeze gameplay timers, physics, input, and spawns.
+3. Keep restart cleanup deterministic.
+4. Stop duplicated event listeners on shutdown.
+5. Pause/resume audio and platform gameplay APIs when publishing requires it.
+6. Validate restart several times in one browser session.
+`,
+    },
+    {
+      path: 'docs/genre-blueprints/README.md',
+      content: `# Genre Blueprints
+
+Blueprints help agents choose a first playable shape from a vague idea.
+
+Use a blueprint only as a starting point. The first playable still must follow \`docs/first-playable-contract.md\`.
+`,
+    },
+    {
+      path: 'docs/genre-blueprints/top-down-arena.md',
+      content: `# Blueprint: Top-Down Arena
+
+Best for: survival, dodging, simple shooters, collection arenas.
+
+First playable:
+
+- Player moves in 2D.
+- One enemy or hazard creates pressure.
+- One collectible or timer creates goal.
+- HUD shows time, score, health, or objective.
+- Restart after hit, timeout, or success.
+
+Skills:
+
+- \`phaser-input-mobile-desktop\`
+- \`phaser-game-systems\`
+- \`phaser-gamefeel\`
+- \`phaser-debug-performance\`
+`,
+    },
+    {
+      path: 'docs/genre-blueprints/platformer.md',
+      content: `# Blueprint: Platformer
+
+Best for: jumping, obstacle courses, side-view action.
+
+First playable:
+
+- Player moves and jumps.
+- One platform/collision shape exists.
+- One hazard or gap creates failure.
+- One marker, coin, or door creates success.
+- Camera and body tuning feel stable.
+
+Skills:
+
+- \`phaser-input-mobile-desktop\`
+- \`phaser-responsive-layout\`
+- \`phaser-sprite-animation\`
+- \`phaser-tilemaps-tiled\` if using tile levels
+`,
+    },
+    {
+      path: 'docs/genre-blueprints/puzzle-grid.md',
+      content: `# Blueprint: Puzzle Grid
+
+Best for: match, swap, path, sliding, logic, board puzzles.
+
+First playable:
+
+- Board initializes deterministically.
+- Player can select, drag, swap, rotate, or place.
+- One rule resolves the move.
+- Win/fail/move-limit state exists.
+- Feedback makes valid/invalid actions obvious.
+
+Skills:
+
+- \`phaser-game-systems\`
+- \`phaser-input-mobile-desktop\`
+- \`phaser-ui-hud\`
+- \`phaser-testing\`
+`,
+    },
+    {
+      path: 'docs/genre-blueprints/runner.md',
+      content: `# Blueprint: Endless Runner
+
+Best for: one-button action, lane switching, jump/dodge games.
+
+First playable:
+
+- World or obstacles move consistently.
+- Player has one or two actions.
+- Obstacles spawn with readable timing.
+- Score or distance increases.
+- Collision ends the run and allows restart.
+
+Skills:
+
+- \`phaser-game-systems\`
+- \`phaser-input-mobile-desktop\`
+- \`phaser-debug-performance\`
+- \`phaser-gamefeel\`
+`,
+    },
+    {
+      path: 'docs/genre-blueprints/card-collection.md',
+      content: `# Blueprint: Card Or Collection Game
+
+Best for: packs, deck choices, turn prototypes, collection reveals.
+
+First playable:
+
+- Player makes one choice: open, draw, play, select, or resolve.
+- A small data set drives cards/items.
+- UI communicates rarity/state/result.
+- Save stores collection or best outcome only after the loop works.
+- Reveal feedback is the main feel moment.
+
+Skills:
+
+- \`phaser-ui-hud\`
+- \`phaser-game-systems\`
+- \`phaser-gamefeel\`
+- \`phaser-programmatic-art\`
+`,
+    },
+    {
+      path: 'docs/decisions/README.md',
+      content: `# Decisions
+
+Add short decision notes here when the project direction changes.
+
+Create files like:
+
+\`\`\`text
+docs/decisions/2026-05-24-scale-mode.md
+docs/decisions/2026-05-24-first-playable-loop.md
+\`\`\`
+
+Keep each note short: context, decision, consequences.
 `,
     },
     {
@@ -238,11 +749,12 @@ npm run dev
 If you are an AI coding agent:
 
 1. Read \`AGENTS.md\` first.
-2. Read \`docs/game-creator-guide.md\` and \`docs/first-playable-loop.md\`.
-3. Read \`skills/README.md\`.
-4. Pick the right skill from \`skills/_meta/task-map.md\`.
-5. Before changing code, explain which skill you are using and why.
-6. Keep this repo Phaser-focused. Do not convert it into a generic web app.
+2. Read \`AGENT_WORKFLOW.md\`.
+3. Read \`docs/game-design-intake.md\`, \`docs/first-playable-contract.md\`, and \`docs/validation-matrix.md\`.
+4. Read \`skills/README.md\`.
+5. Pick the right skill from \`skills/_meta/task-map.md\`.
+6. Before changing code, explain which skill you are using and why.
+7. Keep this repo Phaser-focused. Do not convert it into a generic web app.
 
 ## What This Project Is
 
@@ -310,6 +822,7 @@ skills/       Project-local AI skills
 ## Agent Entry Points
 
 - \`AGENTS.md\`: operating instructions for AI agents.
+- \`AGENT_WORKFLOW.md\`: required agent operating loop.
 - \`CLAUDE.md\`: Claude Code entry instructions.
 - \`GEMINI.md\`: Gemini CLI entry instructions.
 - \`.github/copilot-instructions.md\`: GitHub Copilot instructions.
@@ -319,6 +832,12 @@ skills/       Project-local AI skills
 - \`skills/README.md\`: what skills exist and when to use them.
 - \`skills/_meta/task-map.md\`: task-to-skill routing table.
 - \`skills/_meta/update-skills.md\`: how to keep skills current.
+- \`docs/game-design-intake.md\`: how to parse vague game ideas.
+- \`docs/first-playable-contract.md\`: what must be true before the first loop is done.
+- \`docs/validation-matrix.md\`: checks before finishing work.
+- \`docs/feature-recipes/\`: common implementation recipes.
+- \`docs/genre-blueprints/\`: first playable blueprints by genre.
+- \`docs/decisions/\`: short architecture and product decisions.
 - \`docs/game-creator-guide.md\`: how to turn an idea into the first playable.
 - \`docs/first-playable-loop.md\`: what "first playable" means.
 - \`docs/idea-to-architecture.md\`: idea-to-module hints.
@@ -339,16 +858,19 @@ This repository is a Phaser mobile/desktop game project. Treat Phaser game devel
 ## First Read Order
 
 1. \`START_HERE.md\`
-2. \`docs/game-creator-guide.md\`
-3. \`docs/first-playable-loop.md\`
-4. \`skills/README.md\`
-5. \`skills/_meta/task-map.md\`
-6. The specific \`skills/<skill-name>/SKILL.md\` for the task
-7. Relevant source files under \`src/game/\`
+2. \`AGENT_WORKFLOW.md\`
+3. \`docs/game-design-intake.md\`
+4. \`docs/first-playable-contract.md\`
+5. \`docs/validation-matrix.md\`
+6. \`docs/game-creator-guide.md\`
+7. \`skills/README.md\`
+8. \`skills/_meta/task-map.md\`
+9. The specific \`skills/<skill-name>/SKILL.md\` for the task
+10. Relevant source files under \`src/game/\`
 
 ## Core Rule
 
-Use the project-local skills before making architecture, scene, input, layout, UI, asset, gamefeel, or testing changes.
+Follow \`AGENT_WORKFLOW.md\` before coding. Use the project-local skills before making architecture, scene, input, layout, UI, asset, gamefeel, or testing changes.
 
 When starting a task, say which skill you are using:
 
@@ -366,10 +888,20 @@ Using phaser-scene-workflow because this changes scene lifecycle and transitions
 - Systems/entities/state/events/save: \`phaser-game-systems\`
 - HUD, menu, dialogs, overlays: \`phaser-ui-hud\`
 - Tweens, camera, particles, juice, audio feedback: \`phaser-gamefeel\`
-  - Vite, Playwright, canvas smoke tests, Vitest: \`phaser-testing\`
-  - Updating or adding skills: \`phaser-skill-pack-maintainer\`
+- Spritesheets, texture atlases, frame animation, animation states: \`phaser-sprite-animation\`
+- Tiled maps, tile layers, object layers, tile collisions: \`phaser-tilemaps-tiled\`
+- Music, SFX, mute, mobile audio unlock, volume settings: \`phaser-audio-sfx\`
+- Debug overlays, FPS, pools, low-end mobile performance: \`phaser-debug-performance\`
+- Placeholder sprites, coded UI visuals, SVG/canvas art direction: \`phaser-programmatic-art\`
+- Vite, Playwright, canvas smoke tests, Vitest: \`phaser-testing\`
+- Updating or adding skills: \`phaser-skill-pack-maintainer\`
 ${options.includeYandexGames ? '- Yandex Games SDK, moderation, ads, localization, build ZIP: `yandex-publish`' : ''}
 - Turning a new idea into the first playable: start with \`docs/game-creator-guide.md\`, then \`phaser-project-architect\`
+- Vague idea intake: \`docs/game-design-intake.md\`
+- First playable definition of done: \`docs/first-playable-contract.md\`
+- Common feature implementation: \`docs/feature-recipes/\`
+- Genre starting point: \`docs/genre-blueprints/\`
+- Verification before final answer: \`docs/validation-matrix.md\`
 
 ## Project Boundaries
 
@@ -384,15 +916,17 @@ ${options.includeYandexGames ? '- Keep Yandex Games requirements in mind before 
 
 ## Change Workflow
 
-1. Identify the task category.
-2. Read the matching skill.
-3. Inspect existing files before editing.
-4. Make the smallest coherent change.
-5. Run the most relevant verification:
+1. Follow \`AGENT_WORKFLOW.md\`.
+2. Identify the task category.
+3. Read the matching skill.
+4. Inspect existing files before editing.
+5. Make the smallest coherent change.
+6. Run the most relevant verification:
    - \`npm run build\`
    - \`npm run dev\`
    - \`npm run test:smoke\` if Playwright is enabled
-6. Report what changed and what was verified.
+7. Update \`docs/decisions/\` if architecture, scene flow, input strategy, scale mode, assets, publishing, or core rules changed.
+8. Report what changed and what was verified.
 
 ## Skill Maintenance
 
@@ -437,12 +971,23 @@ ${sharedAgentEntry('Cursor', options, skillNames)}
           yandexGames: options.includeYandexGames,
           firstRead: [
             'AGENTS.md',
+            'AGENT_WORKFLOW.md',
+            'docs/game-design-intake.md',
+            'docs/first-playable-contract.md',
+            'docs/validation-matrix.md',
             'docs/game-creator-guide.md',
             'docs/first-playable-loop.md',
             'skills/README.md',
             'skills/_meta/task-map.md',
             'skills/_meta/source-registry.md',
           ],
+          agentOperatingLoop: 'AGENT_WORKFLOW.md',
+          designIntake: 'docs/game-design-intake.md',
+          firstPlayableContract: 'docs/first-playable-contract.md',
+          validationMatrix: 'docs/validation-matrix.md',
+          featureRecipes: 'docs/feature-recipes/',
+          genreBlueprints: 'docs/genre-blueprints/',
+          decisions: 'docs/decisions/',
           skills: skillNames.map((name) => ({
             name,
             path: `skills/${name}/SKILL.md`,
@@ -456,6 +1001,11 @@ ${sharedAgentEntry('Cursor', options, skillNames)}
             systems: 'phaser-game-systems',
             ui: 'phaser-ui-hud',
             gamefeel: 'phaser-gamefeel',
+            spriteAnimation: 'phaser-sprite-animation',
+            tilemaps: 'phaser-tilemaps-tiled',
+            audio: 'phaser-audio-sfx',
+            debugPerformance: 'phaser-debug-performance',
+            programmaticArt: 'phaser-programmatic-art',
             testing: 'phaser-testing',
             skillMaintenance: 'phaser-skill-pack-maintainer',
             ...(options.includeYandexGames ? { yandexPublishing: 'yandex-publish' } : {}),
@@ -509,6 +1059,11 @@ Use this map to choose the correct skill.
 | Add gameplay systems, entities, state, save, events | \`phaser-game-systems\` |
 | Build HUD, menus, dialogs, overlays | \`phaser-ui-hud\` |
 | Improve feel with tweens, camera, particles, audio feedback | \`phaser-gamefeel\` |
+| Load, slice, animate, or debug spritesheets and texture atlases | \`phaser-sprite-animation\` |
+| Build tile-based worlds, Tiled maps, collision layers, object spawns | \`phaser-tilemaps-tiled\` |
+| Add music, SFX, mute/volume, mobile audio unlock | \`phaser-audio-sfx\` |
+| Add debug overlays, FPS checks, object pools, mobile performance fixes | \`phaser-debug-performance\` |
+| Create placeholder art, coded UI visuals, SVG/canvas effects without stock assets | \`phaser-programmatic-art\` |
 | Add tests, smoke checks, build validation | \`phaser-testing\` |
 | Update, add, or validate skills | \`phaser-skill-pack-maintainer\` |
 ${options.includeYandexGames ? '| Publish to Yandex Games, SDK, moderation, submission ZIP | `yandex-publish` |\n' : ''}
@@ -583,13 +1138,25 @@ Use these prompts when opening this repo in Codex, Claude, Gemini, or another co
 ## First Session
 
 \`\`\`text
-Read START_HERE.md, AGENTS.md, skills/README.md, and skills/_meta/task-map.md. Then explain how this Phaser project is organized and which skills you will use for future work.
+Read START_HERE.md, AGENTS.md, AGENT_WORKFLOW.md, docs/game-design-intake.md, docs/first-playable-contract.md, docs/validation-matrix.md, skills/README.md, and skills/_meta/task-map.md. Then explain how this Phaser project is organized and which workflow you will follow.
 \`\`\`
 
 ## Build First Playable
 
 \`\`\`text
-Use phaser-project-architect, phaser-scene-workflow, phaser-input-mobile-desktop, and phaser-responsive-layout. Propose and implement the smallest playable loop for this game.
+Use AGENT_WORKFLOW.md, docs/game-design-intake.md, docs/first-playable-contract.md, phaser-project-architect, phaser-scene-workflow, phaser-input-mobile-desktop, and phaser-responsive-layout. Propose and implement the smallest playable loop for this game.
+\`\`\`
+
+## From One Sentence
+
+\`\`\`text
+Use AGENT_WORKFLOW.md. My game idea is: [one sentence]. Infer missing details, propose 3 tiny first playable loops, recommend the smallest, then implement it.
+\`\`\`
+
+## Use A Genre Blueprint
+
+\`\`\`text
+Use docs/genre-blueprints/ and the matching Phaser skills. Turn this genre into the smallest first playable: [genre or reference].
 \`\`\`
 
 ## Improve Mobile/Desktop Feel
@@ -624,9 +1191,13 @@ This repository is a generated Phaser mobile/desktop game project. It includes a
 When opening this repository, assume these files are relevant even if the user did not mention them:
 
 1. \`AGENTS.md\`
-2. \`skills/README.md\`
-3. \`skills/_meta/task-map.md\`
-4. \`.ai/skill-manifest.json\`
+2. \`AGENT_WORKFLOW.md\`
+3. \`docs/game-design-intake.md\`
+4. \`docs/first-playable-contract.md\`
+5. \`docs/validation-matrix.md\`
+6. \`skills/README.md\`
+7. \`skills/_meta/task-map.md\`
+8. \`.ai/skill-manifest.json\`
 
 ## Project Facts
 
@@ -640,10 +1211,11 @@ When opening this repository, assume these files are relevant even if the user d
 
 Before architecture, scene, input, layout, assets, UI, gamefeel, testing, publishing, or skill-maintenance work:
 
-1. Choose the matching skill from \`skills/_meta/task-map.md\`.
-2. Read \`skills/<skill-name>/SKILL.md\`.
-3. State which skill you are using.
-4. Follow that skill's workflow.
+1. Follow \`AGENT_WORKFLOW.md\`.
+2. Choose the matching skill from \`skills/_meta/task-map.md\`.
+3. Read \`skills/<skill-name>/SKILL.md\`.
+4. State which skill you are using.
+5. Follow that skill's workflow.
 
 ## Available Skills
 
@@ -659,6 +1231,11 @@ ${skillNames.map((name) => `- \`${name}\` at \`skills/${name}/SKILL.md\``).join(
 - Systems/state/save/events: \`phaser-game-systems\`
 - HUD/menus/overlays: \`phaser-ui-hud\`
 - Game feel: \`phaser-gamefeel\`
+- Spritesheets/atlases/animation states: \`phaser-sprite-animation\`
+- Tilemaps/Tiled worlds: \`phaser-tilemaps-tiled\`
+- Audio/music/SFX: \`phaser-audio-sfx\`
+- Debug overlays/performance: \`phaser-debug-performance\`
+- Programmatic placeholder art and coded visuals: \`phaser-programmatic-art\`
 - Tests/build validation: \`phaser-testing\`
 - Skills/docs updates: \`phaser-skill-pack-maintainer\`
 ${options.includeYandexGames ? '- Yandex Games publishing: `yandex-publish`' : ''}
@@ -1300,7 +1877,7 @@ export class GameScene extends Phaser.Scene {
     createTitleText(this, 72, height * 0.24, '${options.title}').setOrigin(0, 0.5);
 
     this.add
-      .text(74, height * 0.34, 'Agent-ready Phaser template for turning any idea into a first playable loop.', {
+      .text(74, height * 0.34, 'Agent workflow baked in: idea intake, first playable contract, skills, recipes, blueprints, validation.', {
         fontFamily: 'Arial, sans-serif',
         fontSize: '24px',
         color: '#b8c6e6',
@@ -1309,9 +1886,9 @@ export class GameScene extends Phaser.Scene {
       .setOrigin(0, 0.5);
 
     const steps = [
-      'Pick a prompt or write your own idea',
-      'Ask the agent for the first playable loop',
-      'The agent replaces this sandbox with real gameplay',
+      'Idea -> intake -> 3 loop options',
+      'Contract -> build the smallest playable',
+      'Validate -> replace sandbox with gameplay',
     ];
 
     const stepY = height * 0.48;
@@ -1365,7 +1942,7 @@ export class GameScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(74, height - 62, 'Included: AGENTS.md  /  skills  /  docs  /  Playwright smoke test', {
+      .text(74, height - 62, 'Agent brain: AGENT_WORKFLOW.md  /  skills  /  recipes  /  blueprints  /  validation matrix', {
         fontFamily: 'Arial, sans-serif',
         fontSize: '17px',
         color: '#7d8aa5',
@@ -2401,6 +2978,491 @@ Major reward:
 - short pause before reward reveal.
 
 Do not apply all effects everywhere. Pick a consistent feedback language.
+`),
+  );
+
+  files.push(
+    skill('phaser-sprite-animation', 'Use when adding, slicing, animating, or debugging spritesheets, texture atlases, frame names, animation state machines, player/enemy animation transitions, or sprite-vs-physics body alignment.', `# Phaser Sprite Animation
+
+## Workflow
+
+1. Read \`references/spritesheet-vs-atlas.md\` before choosing an asset format.
+2. Read \`references/load-and-create-animations.md\` before writing loader or animation code.
+3. Read \`references/animation-state-machine.md\` before putting animation decisions in \`update()\`.
+4. Read \`references/body-vs-visual.md\` before changing physics sizes, origins, or hitboxes.
+5. Keep animation keys centralized when animations are reused.
+6. Prefer placeholder/generated sprites only until real art exists, then record asset sources.
+
+## Rules
+
+- Use spritesheets for fixed-size frame grids.
+- Use texture atlases for packed frames, UI pieces, and production sprite sets.
+- Do not scatter magic frame numbers across scenes.
+- Animation state changes should be driven by intent and physics state, not random per-frame calls.
+`),
+    reference('phaser-sprite-animation', 'spritesheet-vs-atlas.md', `# Spritesheet vs Texture Atlas
+
+Spritesheet:
+
+- equal-size frames in a grid;
+- simple exports from Aseprite, Piskel, or custom scripts;
+- good for early characters and effects.
+
+Texture atlas:
+
+- frames may have different sizes and names;
+- better packing and fewer texture swaps;
+- good for production sprites, UI, and many small effects.
+
+Asset folders:
+
+\`\`\`text
+public/assets/spritesheets/
+public/assets/atlases/
+public/assets/sprites/
+\`\`\`
+
+Common mistakes:
+
+- wrong \`frameWidth\` or \`frameHeight\`;
+- forgotten \`margin\` or \`spacing\`;
+- frame names that differ from atlas JSON;
+- visual sprite larger than the physics body;
+- transparent padding that makes collisions feel wrong.
+`),
+    reference('phaser-sprite-animation', 'load-and-create-animations.md', `# Load And Create Animations
+
+Load fixed-grid frames:
+
+\`\`\`ts
+this.load.spritesheet('player', '/assets/spritesheets/player.png', {
+  frameWidth: 32,
+  frameHeight: 32,
+});
+\`\`\`
+
+Load an atlas:
+
+\`\`\`ts
+this.load.atlas('player-atlas', '/assets/atlases/player.png', '/assets/atlases/player.json');
+\`\`\`
+
+Create animations once, usually after preload:
+
+\`\`\`ts
+this.anims.create({
+  key: 'player-run',
+  frames: this.anims.generateFrameNumbers('player', { start: 4, end: 9 }),
+  frameRate: 12,
+  repeat: -1,
+});
+\`\`\`
+
+Rules:
+
+- Check \`this.anims.exists(key)\` before recreating shared animations.
+- Name keys by owner/action: \`player-idle\`, \`enemy-hurt\`, \`coin-spin\`.
+- Keep one-shot animations, like attack or hurt, from being interrupted accidentally.
+`),
+    reference('phaser-sprite-animation', 'animation-state-machine.md', `# Animation State Machine
+
+Use a small state machine when a character has more than idle/run.
+
+Common states:
+
+- \`idle\`
+- \`run\`
+- \`jump\`
+- \`fall\`
+- \`attack\`
+- \`hurt\`
+- \`dead\`
+
+Rules:
+
+- Give one-shot states priority over looping states.
+- Use \`animationcomplete\` for attack/hurt/death transitions.
+- Derive movement states from velocity and grounded state.
+- Do not call \`sprite.play(...)\` every frame unless the key actually changed.
+- Keep animation decisions near the entity/input system, not buried in a giant scene.
+`),
+    reference('phaser-sprite-animation', 'body-vs-visual.md', `# Physics Body vs Visual Sprite
+
+The sprite art and the collision body rarely need to be identical.
+
+Check:
+
+- body size matches what the player expects to collide with;
+- body offset accounts for transparent sprite padding;
+- origin makes movement and animation feel stable;
+- attack/hurt effects do not resize the physics body unexpectedly;
+- debug overlay can show bodies while tuning.
+
+For platformers, keep body stable during walk/jump frames. For top-down games, use a smaller foot/body area when character art is tall.
+`),
+  );
+
+  files.push(
+    skill('phaser-tilemaps-tiled', 'Use when adding tile-based levels, Tiled JSON maps, tilesets, collision layers, object layers, spawn points, camera/world bounds, or tilemap debug overlays in a Phaser game.', `# Phaser Tilemaps And Tiled
+
+## Workflow
+
+1. Read \`references/tiled-export-workflow.md\` before adding map assets.
+2. Read \`references/load-map-and-layers.md\` before changing preload or scene setup.
+3. Read \`references/collision-and-objects.md\` before adding collisions or spawns.
+4. Read \`references/camera-world-bounds.md\` before changing camera behavior.
+5. Keep layer and object names stable because game code depends on them.
+
+## Rules
+
+- Use Tiled JSON for authored maps.
+- Keep tilesets under \`public/assets/tilesets/\`.
+- Keep maps under \`public/assets/tilemaps/\`.
+- Use object layers for spawns, pickups, doors, checkpoints, triggers.
+- Add a debug mode before tuning collision-heavy maps.
+`),
+    reference('phaser-tilemaps-tiled', 'tiled-export-workflow.md', `# Tiled Export Workflow
+
+Recommended Tiled names:
+
+- Layers: \`ground\`, \`decor\`, \`collision\`, \`objects\`.
+- Objects: \`player-spawn\`, \`enemy-spawn\`, \`coin\`, \`door\`, \`checkpoint\`, \`trigger\`.
+- Custom properties: keep names lowercase and predictable.
+
+Export:
+
+- JSON map format.
+- Tileset images stored in \`public/assets/tilesets/\`.
+- Map JSON stored in \`public/assets/tilemaps/\`.
+
+Avoid absolute local image paths in exported JSON. They break after build or on another machine.
+`),
+    reference('phaser-tilemaps-tiled', 'load-map-and-layers.md', `# Load Map And Layers
+
+Preload:
+
+\`\`\`ts
+this.load.image('tiles-dungeon', '/assets/tilesets/dungeon.png');
+this.load.tilemapTiledJSON('level-1', '/assets/tilemaps/level-1.json');
+\`\`\`
+
+Create:
+
+\`\`\`ts
+const map = this.make.tilemap({ key: 'level-1' });
+const tiles = map.addTilesetImage('dungeon', 'tiles-dungeon');
+const ground = map.createLayer('ground', tiles, 0, 0);
+const collision = map.createLayer('collision', tiles, 0, 0);
+\`\`\`
+
+Rules:
+
+- Match the Tiled tileset name in \`addTilesetImage\`.
+- Fail loudly if a required layer is missing.
+- Keep all tilemap keys in the asset manifest once the game grows.
+`),
+    reference('phaser-tilemaps-tiled', 'collision-and-objects.md', `# Collision And Object Layers
+
+Collision:
+
+\`\`\`ts
+collision?.setCollisionByProperty({ collides: true });
+this.physics.add.collider(player, collision);
+\`\`\`
+
+Object layers:
+
+- Read spawn points from \`map.getObjectLayer('objects')\`.
+- Convert object coordinates into entity factories.
+- Keep object type/name conventions documented.
+- Validate important objects, such as \`player-spawn\`, at scene start.
+
+Debug:
+
+- Draw collision tiles during development.
+- Hide debug overlays in production builds.
+`),
+    reference('phaser-tilemaps-tiled', 'camera-world-bounds.md', `# Camera And World Bounds
+
+When the map is larger than the viewport:
+
+- set physics world bounds from map dimensions;
+- set camera bounds from map dimensions;
+- follow the player with a deadzone if needed;
+- keep HUD in a UI scene so it does not shake or scroll with the world.
+
+When the map is smaller than the viewport:
+
+- center it intentionally;
+- avoid camera follow jitter;
+- do not stretch pixel art to fill empty space unless the style supports it.
+`),
+  );
+
+  files.push(
+    skill('phaser-audio-sfx', 'Use when adding browser-safe audio to a Phaser game: music, SFX, procedural sounds, mute and volume settings, mobile audio unlock, pause/resume behavior, or platform ad audio handling.', `# Phaser Audio And SFX
+
+## Workflow
+
+1. Read \`references/browser-audio-unlock.md\` before adding sound that plays on startup.
+2. Read \`references/audio-manager.md\` before scattering sound calls across scenes.
+3. Read \`references/volume-settings.md\` before adding mute, music, or SFX controls.
+4. Read \`references/sfx-pooling.md\` before adding repeated sounds like shots, pickups, or hits.
+5. Verify audio on mobile and desktop after the first user gesture.
+
+## Rules
+
+- Browser audio usually needs a user gesture before playback.
+- Keep music and SFX volumes separate.
+- Persist mute/volume settings through the save/settings system.
+- Pause or mute audio during ads/platform pause.
+- Prefer short, readable cues over constant noise.
+`),
+    reference('phaser-audio-sfx', 'browser-audio-unlock.md', `# Browser Audio Unlock
+
+Do not assume audio can autoplay.
+
+Pattern:
+
+- Wait for first pointer/key interaction.
+- Start or unlock the audio context.
+- Then play menu music or first SFX.
+
+UX:
+
+- If audio is optional, do not block gameplay.
+- Add a visible mute/settings path once audio matters.
+- On mobile, test in a real browser when possible.
+`),
+    reference('phaser-audio-sfx', 'audio-manager.md', `# Audio Manager
+
+Use a small audio manager when sounds appear in multiple scenes.
+
+Responsibilities:
+
+- load key names from the asset manifest;
+- play SFX by semantic name;
+- start/stop music by scene or game state;
+- apply mute and volume settings;
+- handle pause/resume hooks.
+
+Avoid:
+
+- hardcoded sound keys in many files;
+- overlapping long sounds;
+- scene transitions that leave old music playing.
+`),
+    reference('phaser-audio-sfx', 'volume-settings.md', `# Volume Settings
+
+Recommended settings:
+
+- master mute;
+- music volume;
+- SFX volume;
+- reduced motion/impact toggle if heavy effects are tied to audio.
+
+Save:
+
+- persist settings in localStorage through the save/settings module;
+- handle malformed settings gracefully;
+- apply settings at startup before playing any sound.
+`),
+    reference('phaser-audio-sfx', 'sfx-pooling.md', `# SFX Pooling
+
+For repeated SFX:
+
+- avoid creating new sound instances every frame;
+- throttle very frequent cues;
+- randomize pitch/volume slightly only when it improves feel;
+- cap simultaneous copies of the same sound.
+
+Good candidates:
+
+- projectiles;
+- pickups;
+- UI clicks;
+- damage ticks;
+- footsteps.
+`),
+  );
+
+  files.push(
+    skill('phaser-debug-performance', 'Use when adding or fixing developer debug overlays, FPS counters, input/state readouts, physics debug views, object pools, no-allocation update loops, low-end mobile performance, or production debug stripping.', `# Phaser Debug And Performance
+
+## Workflow
+
+1. Read \`references/debug-overlay.md\` before adding visible diagnostics.
+2. Read \`references/mobile-performance-budget.md\` before optimizing or adding expensive effects.
+3. Read \`references/object-pooling.md\` before spawning many projectiles, enemies, particles, or pickups.
+4. Read \`references/no-frame-allocations.md\` before changing hot update loops.
+5. Keep debug tools easy to disable for production.
+
+## Rules
+
+- Debug overlays are for development, not public release UI.
+- Measure before making large performance rewrites.
+- Mobile performance is usually hurt by excessive canvas size, particles, allocations, and too many active bodies.
+- Prefer simple pools for repeated short-lived objects.
+`),
+    reference('phaser-debug-performance', 'debug-overlay.md', `# Debug Overlay
+
+Useful overlay fields:
+
+- FPS;
+- active scene;
+- player coordinates;
+- input actions;
+- entity counts;
+- camera scroll/zoom;
+- physics/body debug toggle;
+- collision layer visibility.
+
+Rules:
+
+- Toggle with a desktop key and/or development flag.
+- Keep overlay anchored to the screen, not world coordinates.
+- Do not ship debug text in production unless the user asks for a debug build.
+`),
+    reference('phaser-debug-performance', 'mobile-performance-budget.md', `# Mobile Performance Budget
+
+Before shipping a mobile-first Phaser game:
+
+- keep texture sizes reasonable;
+- prefer atlases over many tiny images;
+- cap particles and active physics bodies;
+- avoid per-frame object creation;
+- reduce expensive debug drawing;
+- test low-end Android-like viewport in Playwright and a real browser if possible;
+- keep canvas scale from becoming larger than needed.
+`),
+    reference('phaser-debug-performance', 'object-pooling.md', `# Object Pooling
+
+Use pooling when objects spawn/despawn often:
+
+- projectiles;
+- enemies;
+- collectibles;
+- particles;
+- floating damage numbers.
+
+Pool lifecycle:
+
+1. Create a limited group.
+2. Spawn by activating and positioning an inactive object.
+3. Deactivate when offscreen, collected, or destroyed.
+4. Reset velocity, alpha, tint, timers, and state before reuse.
+
+Do not pool everything. Pool the objects that are proven to churn.
+`),
+    reference('phaser-debug-performance', 'no-frame-allocations.md', `# No Frame Allocations
+
+In hot loops:
+
+- avoid creating arrays, vectors, closures, and config objects every frame;
+- reuse temp vectors/rectangles;
+- avoid filtering large arrays every update;
+- keep collision callbacks small;
+- avoid logging every frame.
+
+If clarity and performance conflict, keep the first playable clear, then optimize only the bottlenecks.
+`),
+  );
+
+  files.push(
+    skill('phaser-programmatic-art', 'Use when creating placeholder game art, coded UI visuals, icons, sprite concepts, procedural backgrounds, SVG/canvas effects, or a stronger visual direction without stock images or copyrighted assets.', `# Phaser Programmatic Art
+
+## Workflow
+
+1. Read \`references/art-direction.md\` before making visual decisions.
+2. Read \`references/coded-placeholders.md\` before adding placeholder assets.
+3. Read \`references/svg-canvas-css.md\` before choosing SVG, Canvas, CSS, or Phaser Graphics.
+4. Read \`references/asset-licensing.md\` before using third-party art.
+5. Replace coded placeholders with real assets only when sources and licenses are recorded.
+
+## Rules
+
+- Do not use copyrighted game art without explicit permission.
+- Do not leave empty "insert art here" placeholders.
+- Make temporary visuals useful: readable shapes, clear hitboxes, distinct colors, and consistent style.
+- Use code-drawn visuals for prototypes when they help the agent move faster.
+- Keep generated visuals simple enough for Phaser runtime performance.
+`),
+    reference('phaser-programmatic-art', 'art-direction.md', `# Art Direction
+
+Before drawing, choose a clear direction:
+
+- arcade neon;
+- clean tactical board;
+- cozy toy-like;
+- industrial debug prototype;
+- pixel-art-inspired;
+- paper/card table;
+- science lab;
+- retro operating system.
+
+Rules:
+
+- Use one dominant visual idea.
+- Keep gameplay readability above decoration.
+- Match UI, sprites, particles, and background to the same language.
+- Avoid generic gradients and random decoration.
+`),
+    reference('phaser-programmatic-art', 'coded-placeholders.md', `# Coded Placeholders
+
+Good placeholders:
+
+- show the gameplay role clearly;
+- expose collision size;
+- animate enough to communicate state;
+- are easy to replace with real assets later.
+
+Options:
+
+- Phaser \`Graphics\` generated textures;
+- simple SVG files under \`public/assets/\`;
+- canvas-generated spritesheets;
+- CSS/SVG for website-only UI, not Phaser runtime UI unless intentional.
+
+Record generated placeholder ownership in \`public/assets/credits.md\`.
+`),
+    reference('phaser-programmatic-art', 'svg-canvas-css.md', `# SVG, Canvas, CSS, Phaser Graphics
+
+Use SVG for:
+
+- icons;
+- UI ornaments;
+- clean vector placeholders;
+- cards/badges.
+
+Use Canvas for:
+
+- generated textures;
+- particle-like spritesheets;
+- noise/terrain experiments.
+
+Use Phaser Graphics for:
+
+- runtime debug shapes;
+- quick generated textures;
+- simple geometric sprites.
+
+Use CSS for:
+
+- the outer web page around the canvas;
+- loading screens;
+- non-game shell visuals.
+`),
+    reference('phaser-programmatic-art', 'asset-licensing.md', `# Asset Licensing
+
+Asset rules:
+
+- Track source URL, author, license, and usage notes in \`public/assets/credits.md\`.
+- Prefer original generated placeholders until real assets are chosen.
+- Do not copy art from commercial games, anime, movies, or brands.
+- Check whether a license allows commercial use and redistribution.
+- Keep fonts self-hosted and licensed for web use.
+
+When unsure, use generated/code-drawn placeholders and ask the human before importing external art.
 `),
   );
 
