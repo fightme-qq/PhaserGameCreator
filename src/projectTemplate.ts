@@ -46,14 +46,15 @@ Do not start by coding. Start by turning the user's idea into the smallest verif
 ## Required Loop
 
 1. Read \`AGENTS.md\`, this file, \`skills/README.md\`, and \`skills/_meta/task-map.md\`.
-2. Use \`docs/game-design-intake.md\` to extract or infer the game idea.
-3. Use \`docs/first-playable-contract.md\` to define the first playable.
-4. Choose the relevant skills from \`skills/_meta/task-map.md\`.
-5. Inspect the current scenes, systems, input, assets, and tests.
-6. Implement the smallest coherent change.
-7. Validate against \`docs/validation-matrix.md\`.
-8. Update docs, recipes, or decisions if the project shape changed.
-9. Report what changed, which skills were used, and what was verified.
+2. Run \`npm run agent:audit\` when dependencies are available.
+3. Use \`docs/game-design-intake.md\` to extract or infer the game idea.
+4. Use \`docs/first-playable-contract.md\` to define the first playable.
+5. Choose the relevant skills from \`skills/_meta/task-map.md\`.
+6. Inspect the current scenes, systems, input, assets, templates, and tests.
+7. Implement the smallest coherent change.
+8. Validate against \`docs/validation-matrix.md\` and \`docs/quality-gates.md\`.
+9. Update docs, recipes, templates, or decisions if the project shape changed.
+10. Report what changed, which skills were used, and what was verified.
 
 ## If The User Gives Only A Vague Idea
 
@@ -73,8 +74,9 @@ Each proposal must include:
 
 1. Find the closest recipe in \`docs/feature-recipes/\`.
 2. Pick the matching skill.
-3. Add only the minimum architecture needed.
-4. Keep the feature playable and testable before polishing it.
+3. Check \`templates/modules/\` for a reusable starting point.
+4. Add only the minimum architecture needed.
+5. Keep the feature playable and testable before polishing it.
 
 ## If The User Asks For A Genre
 
@@ -325,6 +327,137 @@ ${options.includeYandexGames ? '| Yandex | SDK path, no CDN, packaging rules | `
 `,
     },
     {
+      path: 'docs/quality-gates.md',
+      content: `# Quality Gates
+
+Use these gates before calling the project ready for a user, test build, or release.
+
+## First Playable Gate
+
+- Core action works.
+- One goal exists.
+- One pressure/failure condition exists.
+- Feedback is visible and readable.
+- Restart or continue path exists.
+- Sandbox has been replaced only by real gameplay, not a static page.
+
+## Architecture Gate
+
+- Game code stays under \`src/game/\`.
+- Scene lifecycle code stays in scenes.
+- Reusable rules move to \`systems/\`, \`entities/\`, \`input/\`, \`state/\`, \`save/\`, or \`ui/\`.
+- No "everything in one Scene" implementation.
+- New architecture decisions are recorded in \`docs/decisions/\`.
+
+## Mobile/Desktop Gate
+
+- Pointer/touch path works.
+- Keyboard/mouse path works when relevant.
+- Text and HUD fit phone and desktop viewports.
+- No accidental page scroll, text selection, or context menu on the game canvas.
+- Touch controls do not cover critical gameplay.
+
+## Asset Gate
+
+- Assets are loaded through manifest/helper patterns.
+- No copyrighted assets are added without explicit permission.
+- Third-party assets are recorded in \`public/assets/credits.md\`.
+- Runtime assets are self-hosted, not loaded from CDN.
+
+## Runtime Gate
+
+- \`npm run build\` passes.
+- No console errors during startup.
+- Restart does not duplicate listeners, timers, enemies, audio, or UI.
+- Debug overlays are disabled or clearly development-only.
+${options.includeYandexGames ? '\n## Yandex Gate\n\n- `npm run validate:yandex` passes.\n- `/sdk.js` remains in `index.html`.\n- No external CDN references are introduced.\n- Gameplay pause/resume and audio behavior account for platform events.\n' : ''}
+`,
+    },
+    {
+      path: 'docs/release-checklist.md',
+      content: `# Release Checklist
+
+This is not required for a first playable, but use it before sharing a public build.
+
+## Build
+
+- \`npm run build\` passes.
+- Production preview has no blank canvas.
+- Asset paths work after build.
+- No development-only logs or debug overlays are visible.
+
+## Gameplay
+
+- Start, play, win/lose, and restart work.
+- Player can understand the goal without chat history.
+- Main action has feedback.
+- Controls work on the selected target and a fallback target.
+
+## Content And Legal
+
+- \`public/assets/credits.md\` lists external assets.
+- Placeholder assets are clearly original/generated.
+- No brand/copyrighted game art was copied.
+- Fonts and sounds are licensed for the intended use.
+
+## Agent Handoff
+
+- README commands are current.
+- New systems are documented.
+- Decisions are recorded when architecture changed.
+- Validation notes are included in the final agent response.
+`,
+    },
+    {
+      path: 'docs/mobile-checklist.md',
+      content: `# Mobile Checklist
+
+Use this for mobile-first work and for desktop games that should still run on phones.
+
+- Canvas is visible and centered.
+- Touch input can perform the core action.
+- Controls are reachable and not on unsafe edges.
+- HUD text is readable.
+- No browser scrollbars.
+- No long-tap selection.
+- No right-click/context menu surprises.
+- Audio starts only after a user gesture.
+- Resize/orientation changes do not leave stale UI positions.
+- Effects and particles do not overwhelm low-end devices.
+`,
+    },
+    {
+      path: 'docs/asset-credits-policy.md',
+      content: `# Asset Credits Policy
+
+Agents must not import questionable assets just to make the prototype look finished.
+
+## Allowed By Default
+
+- Code-drawn placeholders.
+- User-provided assets.
+- Assets with a clear license allowing the intended use.
+- Self-authored SVG/Canvas/Phaser Graphics placeholders.
+
+## Not Allowed Without Explicit Permission
+
+- Commercial game sprites.
+- Movie/anime/brand art.
+- Random images from search results.
+- Fonts or sounds without usage rights.
+
+## Credits Format
+
+Record assets in \`public/assets/credits.md\`:
+
+\`\`\`md
+| Asset | Source | Author | License | Notes |
+| --- | --- | --- | --- | --- |
+| player-placeholder.svg | generated in repo | project | original | replace before final art |
+\`\`\`
+`,
+    },
+    {
       path: 'docs/agent-self-audit.md',
       content: `# Agent Self Audit
 
@@ -550,6 +683,164 @@ Steps:
 `,
     },
     {
+      path: 'docs/feature-recipes/add-health-damage.md',
+      content: `# Recipe: Add Health And Damage
+
+Use skills:
+
+- \`phaser-game-systems\`
+- \`phaser-gamefeel\`
+- \`phaser-ui-hud\`
+
+Steps:
+
+1. Store health in state or a small system, not directly on random sprites.
+2. Define damage sources and invulnerability timing.
+3. Add hit feedback: flash, knockback, sound, or brief camera effect.
+4. Update HUD through events or explicit state reads.
+5. Define zero-health behavior: fail, respawn, restart, or game over.
+6. Validate damage cannot trigger every frame unless intended.
+`,
+    },
+    {
+      path: 'docs/feature-recipes/add-win-lose-state.md',
+      content: `# Recipe: Add Win And Lose State
+
+Use skills:
+
+- \`phaser-game-systems\`
+- \`phaser-scene-workflow\`
+- \`phaser-ui-hud\`
+
+Steps:
+
+1. Define one win condition and one lose condition.
+2. Keep state transitions explicit: playing, won, lost, restarting.
+3. Stop timers, spawns, and input side effects when the run ends.
+4. Show a simple result message or overlay.
+5. Provide restart/continue input.
+6. Validate that win/lose cannot fire repeatedly.
+`,
+    },
+    {
+      path: 'docs/feature-recipes/add-camera-follow.md',
+      content: `# Recipe: Add Camera Follow
+
+Use skills:
+
+- \`phaser-responsive-layout\`
+- \`phaser-scene-workflow\`
+- \`phaser-debug-performance\`
+
+Steps:
+
+1. Confirm the world is larger than the viewport.
+2. Set world and camera bounds.
+3. Follow the player or target with sensible lerp/deadzone.
+4. Keep HUD in a UI scene or screen-space layer.
+5. Test resize and mobile viewport.
+6. Add camera shake/fade only after follow feels stable.
+`,
+    },
+    {
+      path: 'docs/feature-recipes/add-projectiles.md',
+      content: `# Recipe: Add Projectiles
+
+Use skills:
+
+- \`phaser-game-systems\`
+- \`phaser-debug-performance\`
+- \`phaser-gamefeel\`
+
+Steps:
+
+1. Define projectile owner, speed, lifetime, damage, and collision targets.
+2. Use a group or object pool for repeated shots.
+3. Reset velocity, active state, visibility, tint, and timers on reuse.
+4. Disable projectiles when offscreen or after collision.
+5. Add readable firing/hit feedback.
+6. Validate no unbounded projectile growth occurs.
+`,
+    },
+    {
+      path: 'docs/feature-recipes/add-save-progress.md',
+      content: `# Recipe: Add Save Progress
+
+Use skills:
+
+- \`phaser-game-systems\`
+- \`phaser-testing\`
+
+Steps:
+
+1. Save only meaningful data: settings, best score, unlocks, level progress.
+2. Include a schema version once the save has more than one field.
+3. Handle missing, malformed, or old saves gracefully.
+4. Never store Phaser objects.
+5. Add a reset path for development.
+6. Validate reload behavior in the browser.
+`,
+    },
+    {
+      path: 'docs/feature-recipes/add-main-menu.md',
+      content: `# Recipe: Add Main Menu
+
+Use skills:
+
+- \`phaser-scene-workflow\`
+- \`phaser-ui-hud\`
+- \`phaser-audio-sfx\`
+
+Steps:
+
+1. Add a MenuScene only when the first playable needs entry choices.
+2. Keep buttons large enough for touch and readable on desktop.
+3. Start gameplay through explicit scene transition.
+4. Avoid complex settings/progression before the loop works.
+5. Validate menu -> game -> restart/menu flow.
+`,
+    },
+    {
+      path: 'docs/feature-recipes/add-audio.md',
+      content: `# Recipe: Add Audio
+
+Use skills:
+
+- \`phaser-audio-sfx\`
+- \`phaser-assets-pipeline\`
+- \`phaser-gamefeel\`
+
+Steps:
+
+1. Add audio files under \`public/assets/audio/\`.
+2. Register keys through the asset manifest.
+3. Unlock audio after user gesture.
+4. Separate music and SFX volume.
+5. Add mute if audio becomes persistent.
+6. Validate mobile browser behavior.
+`,
+    },
+    {
+      path: 'docs/feature-recipes/add-tilemap-level.md',
+      content: `# Recipe: Add Tilemap Level
+
+Use skills:
+
+- \`phaser-tilemaps-tiled\`
+- \`phaser-assets-pipeline\`
+- \`phaser-responsive-layout\`
+
+Steps:
+
+1. Put Tiled JSON in \`public/assets/tilemaps/\`.
+2. Put tilesets in \`public/assets/tilesets/\`.
+3. Load map and tileset keys from preload/manifest.
+4. Create stable layers: ground, decor, collision, objects.
+5. Spawn player/items from object layer names.
+6. Set world/camera bounds and validate collision debug.
+`,
+    },
+    {
       path: 'docs/genre-blueprints/README.md',
       content: `# Genre Blueprints
 
@@ -685,6 +976,360 @@ Keep each note short: context, decision, consequences.
 `,
     },
     {
+      path: 'templates/modules/README.md',
+      content: `# Module Templates
+
+These files are reusable starting points for agents.
+
+They are intentionally outside \`src/\` so they do not compile until copied or adapted.
+
+Use them when a feature needs a common system shape:
+
+- \`InputActions.ts\`: action-based input snapshot.
+- \`GameState.ts\`: small runtime state container.
+- \`TimerSystem.ts\`: countdown/count-up loop.
+- \`HealthSystem.ts\`: health, damage, invulnerability.
+- \`ObjectPool.ts\`: reusable object lifecycle.
+- \`DebugOverlay.ts\`: development-only text overlay.
+- \`AudioManager.ts\`: music/SFX volume and unlock shape.
+- \`AnimationStateMachine.ts\`: animation state transitions.
+
+Before copying a template:
+
+1. Pick the matching skill.
+2. Rename types and events to match the game.
+3. Keep only the code needed for the first playable.
+4. Add validation notes after testing.
+`,
+    },
+    {
+      path: 'templates/modules/InputActions.ts',
+      content: `export type InputActions = {
+  moveX: number;
+  moveY: number;
+  primary: boolean;
+  secondary: boolean;
+  confirm: boolean;
+  cancel: boolean;
+};
+
+export const emptyInputActions: InputActions = {
+  moveX: 0,
+  moveY: 0,
+  primary: false,
+  secondary: false,
+  confirm: false,
+  cancel: false,
+};
+
+export function normalizeAxis(value: number): number {
+  if (Math.abs(value) < 0.15) {
+    return 0;
+  }
+
+  return Math.max(-1, Math.min(1, value));
+}
+`,
+    },
+    {
+      path: 'templates/modules/GameState.ts',
+      content: `export type RunPhase = 'ready' | 'playing' | 'won' | 'lost';
+
+export type GameStateSnapshot = {
+  phase: RunPhase;
+  score: number;
+  bestScore: number;
+  elapsedMs: number;
+};
+
+export class GameState {
+  private snapshot: GameStateSnapshot = {
+    phase: 'ready',
+    score: 0,
+    bestScore: 0,
+    elapsedMs: 0,
+  };
+
+  get value(): GameStateSnapshot {
+    return { ...this.snapshot };
+  }
+
+  start(): void {
+    this.snapshot.phase = 'playing';
+    this.snapshot.score = 0;
+    this.snapshot.elapsedMs = 0;
+  }
+
+  addScore(amount: number): void {
+    this.snapshot.score += amount;
+    this.snapshot.bestScore = Math.max(this.snapshot.bestScore, this.snapshot.score);
+  }
+
+  update(deltaMs: number): void {
+    if (this.snapshot.phase === 'playing') {
+      this.snapshot.elapsedMs += deltaMs;
+    }
+  }
+
+  finish(phase: Extract<RunPhase, 'won' | 'lost'>): void {
+    this.snapshot.phase = phase;
+  }
+}
+`,
+    },
+    {
+      path: 'templates/modules/TimerSystem.ts',
+      content: `export class TimerSystem {
+  private remainingMs: number;
+  private finished = false;
+
+  constructor(durationMs: number) {
+    this.remainingMs = durationMs;
+  }
+
+  get remaining(): number {
+    return Math.max(0, this.remainingMs);
+  }
+
+  get isFinished(): boolean {
+    return this.finished;
+  }
+
+  reset(durationMs: number): void {
+    this.remainingMs = durationMs;
+    this.finished = false;
+  }
+
+  update(deltaMs: number): boolean {
+    if (this.finished) {
+      return false;
+    }
+
+    this.remainingMs -= deltaMs;
+
+    if (this.remainingMs <= 0) {
+      this.remainingMs = 0;
+      this.finished = true;
+      return true;
+    }
+
+    return false;
+  }
+}
+`,
+    },
+    {
+      path: 'templates/modules/HealthSystem.ts',
+      content: `export class HealthSystem {
+  private current: number;
+  private invulnerableMs = 0;
+
+  constructor(private readonly maxHealth: number) {
+    this.current = maxHealth;
+  }
+
+  get health(): number {
+    return this.current;
+  }
+
+  get isDead(): boolean {
+    return this.current <= 0;
+  }
+
+  reset(): void {
+    this.current = this.maxHealth;
+    this.invulnerableMs = 0;
+  }
+
+  update(deltaMs: number): void {
+    this.invulnerableMs = Math.max(0, this.invulnerableMs - deltaMs);
+  }
+
+  damage(amount: number, invulnerabilityMs = 500): boolean {
+    if (this.invulnerableMs > 0 || this.isDead) {
+      return false;
+    }
+
+    this.current = Math.max(0, this.current - amount);
+    this.invulnerableMs = invulnerabilityMs;
+    return true;
+  }
+
+  heal(amount: number): void {
+    this.current = Math.min(this.maxHealth, this.current + amount);
+  }
+}
+`,
+    },
+    {
+      path: 'templates/modules/ObjectPool.ts',
+      content: `export type Poolable = {
+  active: boolean;
+  reset(): void;
+};
+
+export class ObjectPool<T extends Poolable> {
+  private readonly items: T[] = [];
+
+  constructor(
+    private readonly createItem: () => T,
+    private readonly maxSize: number,
+  ) {}
+
+  acquire(): T | undefined {
+    const inactive = this.items.find((item) => !item.active);
+
+    if (inactive) {
+      inactive.reset();
+      inactive.active = true;
+      return inactive;
+    }
+
+    if (this.items.length >= this.maxSize) {
+      return undefined;
+    }
+
+    const item = this.createItem();
+    item.active = true;
+    this.items.push(item);
+    return item;
+  }
+
+  release(item: T): void {
+    item.active = false;
+  }
+
+  get activeCount(): number {
+    return this.items.filter((item) => item.active).length;
+  }
+}
+`,
+    },
+    {
+      path: 'templates/modules/DebugOverlay.ts',
+      content: `import Phaser from 'phaser';
+
+export class DebugOverlay {
+  private text: Phaser.GameObjects.Text;
+  private visible = false;
+
+  constructor(scene: Phaser.Scene) {
+    this.text = scene.add
+      .text(12, 12, '', {
+        fontFamily: 'monospace',
+        fontSize: '14px',
+        color: '#7ee7c8',
+        backgroundColor: 'rgba(0,0,0,0.55)',
+        padding: { x: 8, y: 6 },
+      })
+      .setScrollFactor(0)
+      .setDepth(10000)
+      .setVisible(false);
+  }
+
+  toggle(): void {
+    this.visible = !this.visible;
+    this.text.setVisible(this.visible);
+  }
+
+  update(lines: string[]): void {
+    if (!this.visible) {
+      return;
+    }
+
+    this.text.setText(lines.join('\\n'));
+  }
+
+  destroy(): void {
+    this.text.destroy();
+  }
+}
+`,
+    },
+    {
+      path: 'templates/modules/AudioManager.ts',
+      content: `import Phaser from 'phaser';
+
+export class AudioManager {
+  private unlocked = false;
+  private music?: Phaser.Sound.BaseSound;
+  private musicVolume = 0.6;
+  private sfxVolume = 0.8;
+  private muted = false;
+
+  constructor(private readonly scene: Phaser.Scene) {}
+
+  unlockOnFirstGesture(): void {
+    if (this.unlocked) {
+      return;
+    }
+
+    this.scene.input.once('pointerdown', () => {
+      this.unlocked = true;
+    });
+  }
+
+  setMuted(muted: boolean): void {
+    this.muted = muted;
+    this.scene.sound.mute = muted;
+  }
+
+  playMusic(key: string): void {
+    if (this.music?.isPlaying) {
+      this.music.stop();
+    }
+
+    this.music = this.scene.sound.add(key, { loop: true, volume: this.musicVolume });
+    this.music.play();
+  }
+
+  playSfx(key: string): void {
+    if (this.muted) {
+      return;
+    }
+
+    this.scene.sound.play(key, { volume: this.sfxVolume });
+  }
+}
+`,
+    },
+    {
+      path: 'templates/modules/AnimationStateMachine.ts',
+      content: `import Phaser from 'phaser';
+
+export type AnimationState = {
+  key: string;
+  priority: number;
+  interruptible: boolean;
+};
+
+export class AnimationStateMachine {
+  private current?: AnimationState;
+
+  constructor(private readonly sprite: Phaser.GameObjects.Sprite) {}
+
+  play(next: AnimationState): void {
+    if (this.current?.key === next.key) {
+      return;
+    }
+
+    if (this.current && !this.current.interruptible && next.priority < this.current.priority) {
+      return;
+    }
+
+    this.current = next;
+    this.sprite.play(next.key, true);
+  }
+
+  clearIf(key: string): void {
+    if (this.current?.key === key) {
+      this.current = undefined;
+    }
+  }
+}
+`,
+    },
+    {
       path: 'docs/agent-start-prompts.md',
       content: `# Agent Start Prompts
 
@@ -741,6 +1386,7 @@ If you are a human:
 
 \`\`\`bash
 npm install
+npm run agent:audit
 npm run dev
 \`\`\`
 
@@ -750,11 +1396,13 @@ If you are an AI coding agent:
 
 1. Read \`AGENTS.md\` first.
 2. Read \`AGENT_WORKFLOW.md\`.
-3. Read \`docs/game-design-intake.md\`, \`docs/first-playable-contract.md\`, and \`docs/validation-matrix.md\`.
-4. Read \`skills/README.md\`.
-5. Pick the right skill from \`skills/_meta/task-map.md\`.
-6. Before changing code, explain which skill you are using and why.
-7. Keep this repo Phaser-focused. Do not convert it into a generic web app.
+3. Run \`npm run agent:audit\` if dependencies are installed.
+4. Read \`docs/game-design-intake.md\`, \`docs/first-playable-contract.md\`, \`docs/validation-matrix.md\`, and \`docs/quality-gates.md\`.
+5. Read \`skills/README.md\`.
+6. Pick the right skill from \`skills/_meta/task-map.md\`.
+7. Check \`templates/modules/\` before inventing common systems from scratch.
+8. Before changing code, explain which skill you are using and why.
+9. Keep this repo Phaser-focused. Do not convert it into a generic web app.
 
 ## What This Project Is
 
@@ -793,6 +1441,7 @@ This repo is built to be opened by a coding agent. The agent should read \`AGENT
 
 \`\`\`bash
 npm install
+npm run agent:audit
 npm run dev
 \`\`\`
 
@@ -835,9 +1484,15 @@ skills/       Project-local AI skills
 - \`docs/game-design-intake.md\`: how to parse vague game ideas.
 - \`docs/first-playable-contract.md\`: what must be true before the first loop is done.
 - \`docs/validation-matrix.md\`: checks before finishing work.
+- \`docs/quality-gates.md\`: first playable, architecture, asset, mobile, and runtime gates.
+- \`docs/release-checklist.md\`: public build readiness checklist.
+- \`docs/mobile-checklist.md\`: phone and touch validation checklist.
+- \`docs/asset-credits-policy.md\`: asset sourcing and copyright rules.
 - \`docs/feature-recipes/\`: common implementation recipes.
 - \`docs/genre-blueprints/\`: first playable blueprints by genre.
 - \`docs/decisions/\`: short architecture and product decisions.
+- \`templates/modules/\`: reusable TypeScript starting points for common game systems.
+- \`scripts/agent-audit.mjs\`: prints a machine-friendly project snapshot for agents.
 - \`docs/game-creator-guide.md\`: how to turn an idea into the first playable.
 - \`docs/first-playable-loop.md\`: what "first playable" means.
 - \`docs/idea-to-architecture.md\`: idea-to-module hints.
@@ -859,14 +1514,16 @@ This repository is a Phaser mobile/desktop game project. Treat Phaser game devel
 
 1. \`START_HERE.md\`
 2. \`AGENT_WORKFLOW.md\`
-3. \`docs/game-design-intake.md\`
-4. \`docs/first-playable-contract.md\`
-5. \`docs/validation-matrix.md\`
-6. \`docs/game-creator-guide.md\`
-7. \`skills/README.md\`
-8. \`skills/_meta/task-map.md\`
-9. The specific \`skills/<skill-name>/SKILL.md\` for the task
-10. Relevant source files under \`src/game/\`
+3. \`npm run agent:audit\` if dependencies are installed
+4. \`docs/game-design-intake.md\`
+5. \`docs/first-playable-contract.md\`
+6. \`docs/validation-matrix.md\`
+7. \`docs/quality-gates.md\`
+8. \`docs/game-creator-guide.md\`
+9. \`skills/README.md\`
+10. \`skills/_meta/task-map.md\`
+11. The specific \`skills/<skill-name>/SKILL.md\` for the task
+12. Relevant source files under \`src/game/\`
 
 ## Core Rule
 
@@ -902,6 +1559,8 @@ ${options.includeYandexGames ? '- Yandex Games SDK, moderation, ads, localizatio
 - Common feature implementation: \`docs/feature-recipes/\`
 - Genre starting point: \`docs/genre-blueprints/\`
 - Verification before final answer: \`docs/validation-matrix.md\`
+- Quality gates before calling work done: \`docs/quality-gates.md\`
+- Reusable module starting points: \`templates/modules/\`
 
 ## Project Boundaries
 
@@ -919,14 +1578,16 @@ ${options.includeYandexGames ? '- Keep Yandex Games requirements in mind before 
 1. Follow \`AGENT_WORKFLOW.md\`.
 2. Identify the task category.
 3. Read the matching skill.
-4. Inspect existing files before editing.
-5. Make the smallest coherent change.
-6. Run the most relevant verification:
+4. Check \`templates/modules/\` if the task needs a common system.
+5. Inspect existing files before editing.
+6. Make the smallest coherent change.
+7. Run the most relevant verification:
    - \`npm run build\`
    - \`npm run dev\`
+   - \`npm run agent:audit\`
    - \`npm run test:smoke\` if Playwright is enabled
-7. Update \`docs/decisions/\` if architecture, scene flow, input strategy, scale mode, assets, publishing, or core rules changed.
-8. Report what changed and what was verified.
+8. Update \`docs/decisions/\` if architecture, scene flow, input strategy, scale mode, assets, publishing, or core rules changed.
+9. Report what changed and what was verified.
 
 ## Skill Maintenance
 
@@ -972,9 +1633,11 @@ ${sharedAgentEntry('Cursor', options, skillNames)}
           firstRead: [
             'AGENTS.md',
             'AGENT_WORKFLOW.md',
+            'scripts/agent-audit.mjs',
             'docs/game-design-intake.md',
             'docs/first-playable-contract.md',
             'docs/validation-matrix.md',
+            'docs/quality-gates.md',
             'docs/game-creator-guide.md',
             'docs/first-playable-loop.md',
             'skills/README.md',
@@ -985,8 +1648,10 @@ ${sharedAgentEntry('Cursor', options, skillNames)}
           designIntake: 'docs/game-design-intake.md',
           firstPlayableContract: 'docs/first-playable-contract.md',
           validationMatrix: 'docs/validation-matrix.md',
+          qualityGates: 'docs/quality-gates.md',
           featureRecipes: 'docs/feature-recipes/',
           genreBlueprints: 'docs/genre-blueprints/',
+          moduleTemplates: 'templates/modules/',
           decisions: 'docs/decisions/',
           skills: skillNames.map((name) => ({
             name,
@@ -1141,6 +1806,12 @@ Use these prompts when opening this repo in Codex, Claude, Gemini, or another co
 Read START_HERE.md, AGENTS.md, AGENT_WORKFLOW.md, docs/game-design-intake.md, docs/first-playable-contract.md, docs/validation-matrix.md, skills/README.md, and skills/_meta/task-map.md. Then explain how this Phaser project is organized and which workflow you will follow.
 \`\`\`
 
+## Audit This Repo
+
+\`\`\`text
+Run npm run agent:audit, then summarize the available skills, scenes, recipes, blueprints, module templates, and validation commands.
+\`\`\`
+
 ## Build First Playable
 
 \`\`\`text
@@ -1192,12 +1863,15 @@ When opening this repository, assume these files are relevant even if the user d
 
 1. \`AGENTS.md\`
 2. \`AGENT_WORKFLOW.md\`
-3. \`docs/game-design-intake.md\`
-4. \`docs/first-playable-contract.md\`
-5. \`docs/validation-matrix.md\`
-6. \`skills/README.md\`
-7. \`skills/_meta/task-map.md\`
-8. \`.ai/skill-manifest.json\`
+3. \`scripts/agent-audit.mjs\`
+4. \`docs/game-design-intake.md\`
+5. \`docs/first-playable-contract.md\`
+6. \`docs/validation-matrix.md\`
+7. \`docs/quality-gates.md\`
+8. \`skills/README.md\`
+9. \`skills/_meta/task-map.md\`
+10. \`templates/modules/\`
+11. \`.ai/skill-manifest.json\`
 
 ## Project Facts
 
@@ -1212,10 +1886,12 @@ When opening this repository, assume these files are relevant even if the user d
 Before architecture, scene, input, layout, assets, UI, gamefeel, testing, publishing, or skill-maintenance work:
 
 1. Follow \`AGENT_WORKFLOW.md\`.
-2. Choose the matching skill from \`skills/_meta/task-map.md\`.
-3. Read \`skills/<skill-name>/SKILL.md\`.
-4. State which skill you are using.
-5. Follow that skill's workflow.
+2. Run \`npm run agent:audit\` when available.
+3. Choose the matching skill from \`skills/_meta/task-map.md\`.
+4. Read \`skills/<skill-name>/SKILL.md\`.
+5. Check \`templates/modules/\` before writing common systems from scratch.
+6. State which skill you are using.
+7. Follow that skill's workflow.
 
 ## Available Skills
 
@@ -1246,6 +1922,7 @@ Keep the project Phaser-focused. Do not add unrelated frameworks, backend servic
 
 function projectConfig(options: ProjectOptions): GeneratedFile[] {
   const scripts: Record<string, string> = {
+    'agent:audit': 'node scripts/agent-audit.mjs',
     dev: 'vite --host 0.0.0.0',
     build: 'tsc && vite build',
     preview: 'vite preview --host 0.0.0.0',
@@ -1414,6 +2091,94 @@ test('game canvas renders', async ({ page }) => {
           },
         ]
       : []),
+    {
+      path: 'scripts/agent-audit.mjs',
+      content: `import fs from 'node:fs';
+import path from 'node:path';
+
+const root = process.cwd();
+
+function exists(relativePath) {
+  return fs.existsSync(path.join(root, relativePath));
+}
+
+function listDirs(relativePath) {
+  const absolutePath = path.join(root, relativePath);
+
+  if (!fs.existsSync(absolutePath)) {
+    return [];
+  }
+
+  return fs
+    .readdirSync(absolutePath, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+    .sort();
+}
+
+function listFiles(relativePath, extension) {
+  const absolutePath = path.join(root, relativePath);
+
+  if (!fs.existsSync(absolutePath)) {
+    return [];
+  }
+
+  return fs
+    .readdirSync(absolutePath, { withFileTypes: true })
+    .filter((entry) => entry.isFile() && (!extension || entry.name.endsWith(extension)))
+    .map((entry) => entry.name)
+    .sort();
+}
+
+function readJson(relativePath) {
+  return JSON.parse(fs.readFileSync(path.join(root, relativePath), 'utf8'));
+}
+
+const packageJson = readJson('package.json');
+const manifest = exists('.ai/skill-manifest.json') ? readJson('.ai/skill-manifest.json') : undefined;
+const skills = listDirs('skills').filter((name) => !name.startsWith('_'));
+const scenes = listFiles('src/game/scenes', '.ts');
+const templates = listFiles('templates/modules', '.ts');
+const recipes = listFiles('docs/feature-recipes', '.md').filter((name) => name !== 'README.md');
+const blueprints = listFiles('docs/genre-blueprints', '.md').filter((name) => name !== 'README.md');
+
+const report = [
+  '# Agent Audit',
+  '',
+  'Project: ' + (packageJson.name ?? 'unknown'),
+  'Engine: Phaser',
+  'Primary target: ' + (manifest?.primaryTarget ?? '${options.target}'),
+  'Yandex Games: ' + (manifest?.yandexGames ? 'enabled' : 'disabled'),
+  'Playwright smoke tests: ' + (packageJson.scripts?.['test:smoke'] ? 'enabled' : 'not enabled'),
+  '',
+  '## Required Startup',
+  '- AGENTS.md: ' + (exists('AGENTS.md') ? 'present' : 'missing'),
+  '- AGENT_WORKFLOW.md: ' + (exists('AGENT_WORKFLOW.md') ? 'present' : 'missing'),
+  '- skills/_meta/task-map.md: ' + (exists('skills/_meta/task-map.md') ? 'present' : 'missing'),
+  '- docs/first-playable-contract.md: ' + (exists('docs/first-playable-contract.md') ? 'present' : 'missing'),
+  '- docs/validation-matrix.md: ' + (exists('docs/validation-matrix.md') ? 'present' : 'missing'),
+  '- docs/quality-gates.md: ' + (exists('docs/quality-gates.md') ? 'present' : 'missing'),
+  '',
+  '## Current Structure',
+  '- Skills: ' + skills.length + (skills.length ? ' (' + skills.join(', ') + ')' : ''),
+  '- Scenes: ' + scenes.length + (scenes.length ? ' (' + scenes.join(', ') + ')' : ''),
+  '- Module templates: ' + templates.length + (templates.length ? ' (' + templates.join(', ') + ')' : ''),
+  '- Feature recipes: ' + recipes.length + (recipes.length ? ' (' + recipes.join(', ') + ')' : ''),
+  '- Genre blueprints: ' + blueprints.length + (blueprints.length ? ' (' + blueprints.join(', ') + ')' : ''),
+  '',
+  '## Available Commands',
+  ...Object.keys(packageJson.scripts ?? {}).sort().map((script) => '- npm run ' + script),
+  '',
+  '## Agent Reminder',
+  '1. Follow AGENT_WORKFLOW.md.',
+  '2. Pick skills from skills/_meta/task-map.md.',
+  '3. Use templates/modules only as starting points.',
+  '4. Validate with docs/validation-matrix.md and docs/quality-gates.md.',
+].join('\\n');
+
+console.log(report);
+`,
+    },
     ...(options.includeYandexGames
       ? [
           {
@@ -1877,7 +2642,7 @@ export class GameScene extends Phaser.Scene {
     createTitleText(this, 72, height * 0.24, '${options.title}').setOrigin(0, 0.5);
 
     this.add
-      .text(74, height * 0.34, 'Agent workflow baked in: idea intake, first playable contract, skills, recipes, blueprints, validation.', {
+      .text(74, height * 0.34, 'Agent workflow baked in: audit, idea intake, contract, skills, recipes, templates, validation.', {
         fontFamily: 'Arial, sans-serif',
         fontSize: '24px',
         color: '#b8c6e6',
@@ -1886,9 +2651,9 @@ export class GameScene extends Phaser.Scene {
       .setOrigin(0, 0.5);
 
     const steps = [
-      'Idea -> intake -> 3 loop options',
-      'Contract -> build the smallest playable',
-      'Validate -> replace sandbox with gameplay',
+      'Audit -> intake -> 3 loop options',
+      'Contract -> build with module templates',
+      'Validate -> pass quality gates',
     ];
 
     const stepY = height * 0.48;
@@ -1942,7 +2707,7 @@ export class GameScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(74, height - 62, 'Agent brain: AGENT_WORKFLOW.md  /  skills  /  recipes  /  blueprints  /  validation matrix', {
+      .text(74, height - 62, 'Agent brain: agent:audit  /  skills  /  recipes  /  blueprints  /  module templates  /  quality gates', {
         fontFamily: 'Arial, sans-serif',
         fontSize: '17px',
         color: '#7d8aa5',
