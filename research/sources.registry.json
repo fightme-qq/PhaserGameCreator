@@ -1,0 +1,444 @@
+{
+  "schemaVersion": 1,
+  "updated": "2026-05-24",
+  "scope": "Phaser mobile/desktop game projects only.",
+  "purpose": "Source registry for a Phaser-first project architecture and Agent Skill generator.",
+  "sourceRoles": [
+    "mirror-skill",
+    "derive-skill",
+    "reference",
+    "template",
+    "optional-module"
+  ],
+  "sources": [
+    {
+      "id": "phaser-skills",
+      "name": "Phaser Official Skills",
+      "url": "https://github.com/phaserjs/phaser/tree/master/skills",
+      "tier": 0,
+      "roles": ["mirror-skill", "derive-skill", "reference"],
+      "feeds": ["core-skills", "phaser-project-architect", "phaser-versioning"],
+      "priority": "required",
+      "notes": "Primary Phaser knowledge source. System-oriented skills: scenes, input, scale, assets, physics, cameras, tweens, audio, tilemaps, v3/v4 migration."
+    },
+    {
+      "id": "anthropic-skill-creator",
+      "name": "Anthropic skill-creator",
+      "url": "https://github.com/anthropics/skills/tree/main/skills/skill-creator",
+      "tier": 0,
+      "roles": ["derive-skill", "reference"],
+      "feeds": ["skill-factory", "skill-validation"],
+      "priority": "required",
+      "notes": "Rulebook for generated skill layout and progressive disclosure."
+    },
+    {
+      "id": "anthropic-frontend-testing",
+      "name": "Anthropic frontend-design and webapp-testing",
+      "url": "https://github.com/anthropics/skills/tree/main/skills",
+      "tier": 0,
+      "roles": ["reference"],
+      "feeds": ["hud-ui", "browser-validation"],
+      "priority": "medium",
+      "notes": "Use only for game UI and browser validation patterns."
+    },
+    {
+      "id": "agent-skills-spec",
+      "name": "Agent Skills Specification",
+      "url": "https://agentskills.io/specification.md",
+      "tier": 0,
+      "roles": ["reference"],
+      "feeds": ["skill-validation"],
+      "priority": "required",
+      "notes": "Compatibility spec for generated Agent Skills."
+    },
+    {
+      "id": "create-phaser-game",
+      "name": "Create Phaser Game App",
+      "url": "https://phaser.io/tutorials/create-game-app",
+      "tier": 1,
+      "roles": ["template", "reference"],
+      "feeds": ["project-scaffold"],
+      "priority": "high",
+      "notes": "Official interactive project creator. Phaser recommends Web Bundler + Vite for new users."
+    },
+    {
+      "id": "phaser-vite-ts-template",
+      "name": "Phaser Vite TypeScript Template",
+      "url": "https://github.com/phaserjs/template-vite-ts",
+      "tier": 1,
+      "roles": ["template"],
+      "feeds": ["project-scaffold", "vite-build"],
+      "priority": "required",
+      "notes": "Default scaffold candidate: Phaser + Vite + TypeScript."
+    },
+    {
+      "id": "phaser-vite-template",
+      "name": "Phaser Vite JavaScript Template",
+      "url": "https://github.com/phaserjs/template-vite",
+      "tier": 1,
+      "roles": ["template"],
+      "feeds": ["project-scaffold-js"],
+      "priority": "low",
+      "notes": "Fallback for JavaScript projects only."
+    },
+    {
+      "id": "phaser-examples",
+      "name": "Phaser Examples",
+      "url": "https://github.com/phaserjs/examples",
+      "tier": 1,
+      "roles": ["reference"],
+      "feeds": ["example-index", "system-demos"],
+      "priority": "high",
+      "notes": "Practical example corpus indexed by Phaser system."
+    },
+    {
+      "id": "phaser-docs",
+      "name": "Phaser Docs",
+      "url": "https://docs.phaser.io/",
+      "tier": 1,
+      "roles": ["reference"],
+      "feeds": ["api-correctness", "phaser-versioning"],
+      "priority": "high",
+      "notes": "Official docs for API correctness."
+    },
+    {
+      "id": "phaser-npm-skills",
+      "name": "Phaser Skills From NPM Package",
+      "url": "https://app.unpkg.com/phaser@4.1.0/files/skills/game-setup-and-config/SKILL.md",
+      "tier": 1,
+      "roles": ["mirror-skill", "reference"],
+      "feeds": ["phaser-versioning", "skill-sync"],
+      "priority": "high",
+      "notes": "Pinned Phaser package versions expose skills through unpkg, useful for deterministic skill sync."
+    },
+    {
+      "id": "phaser-editor-v5",
+      "name": "Phaser Editor v5 Docs",
+      "url": "https://docs.phaser.io/phaser-editor",
+      "tier": 3,
+      "roles": ["optional-module", "reference"],
+      "feeds": ["editor-pipeline", "scene-editor", "asset-pack-editor"],
+      "priority": "medium",
+      "notes": "Optional editor-compatible workflow with scene editor, asset pack editor, prefabs, animations, tilemaps, and VS Code integration."
+    },
+    {
+      "id": "phaser-input-docs",
+      "name": "Phaser Input Docs",
+      "url": "https://docs.phaser.io/phaser/concepts/input",
+      "tier": 2,
+      "roles": ["reference"],
+      "feeds": ["mobile-desktop-input"],
+      "priority": "required",
+      "notes": "Unified pointer/mouse/touch/keyboard/gamepad input guidance."
+    },
+    {
+      "id": "phaser-scale-manager",
+      "name": "Phaser Scale Manager Docs",
+      "url": "https://docs.phaser.io/phaser/concepts/scale-manager",
+      "tier": 2,
+      "roles": ["reference"],
+      "feeds": ["responsive-layout", "mobile-desktop-viewports"],
+      "priority": "required",
+      "notes": "Responsive canvas and viewport behavior."
+    },
+    {
+      "id": "mdn-pwa-manifest",
+      "name": "MDN PWA Manifest",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Manifest",
+      "tier": 2,
+      "roles": ["reference", "optional-module"],
+      "feeds": ["pwa"],
+      "priority": "medium",
+      "notes": "Installable mobile/desktop web app metadata."
+    },
+    {
+      "id": "vite-plugin-pwa",
+      "name": "Vite PWA Plugin",
+      "url": "https://github.com/vite-pwa/vite-plugin-pwa",
+      "tier": 2,
+      "roles": ["optional-module"],
+      "feeds": ["pwa-vite"],
+      "priority": "medium",
+      "notes": "Optional PWA generation for Vite projects."
+    },
+    {
+      "id": "capacitor",
+      "name": "Capacitor",
+      "url": "https://github.com/ionic-team/capacitor",
+      "tier": 2,
+      "roles": ["optional-module"],
+      "feeds": ["mobile-wrapper"],
+      "priority": "low",
+      "notes": "Optional iOS/Android wrapper after web build is healthy."
+    },
+    {
+      "id": "electron",
+      "name": "Electron",
+      "url": "https://github.com/electron/electron",
+      "tier": 2,
+      "roles": ["optional-module"],
+      "feeds": ["desktop-wrapper"],
+      "priority": "low",
+      "notes": "Optional desktop wrapper, not part of core MVP."
+    },
+    {
+      "id": "tauri",
+      "name": "Tauri",
+      "url": "https://github.com/tauri-apps/tauri",
+      "tier": 2,
+      "roles": ["optional-module"],
+      "feeds": ["desktop-wrapper"],
+      "priority": "low",
+      "notes": "Optional lighter desktop wrapper, not part of core MVP."
+    },
+    {
+      "id": "rexrainbow-phaser3-rex-notes",
+      "name": "rexrainbow Phaser Plugins",
+      "url": "https://github.com/rexrainbow/phaser3-rex-notes",
+      "tier": 3,
+      "roles": ["optional-module", "reference"],
+      "feeds": ["rex-ui", "phaser-plugins"],
+      "priority": "medium",
+      "notes": "Useful for UI widgets and plugins; verify Phaser 3/4 compatibility."
+    },
+    {
+      "id": "rex-ui-docs",
+      "name": "rexUI Docs",
+      "url": "https://rexrainbow.github.io/phaser3-rex-notes/docs/site/ui-overview/",
+      "tier": 3,
+      "roles": ["optional-module", "reference"],
+      "feeds": ["rex-ui", "hud-ui", "menus"],
+      "priority": "medium",
+      "notes": "Rich in-canvas UI widgets: dialogs, tabs, menus, sliders, labels, sizers, and grid tables."
+    },
+    {
+      "id": "phaser-virtual-joystick",
+      "name": "Phaser Virtual Joystick",
+      "url": "https://toolkit.cassino.dev/phaser-virtual-joystick/",
+      "tier": 3,
+      "roles": ["optional-module", "reference"],
+      "feeds": ["virtual-controls", "mobile-input"],
+      "priority": "medium",
+      "notes": "Optional mobile virtual joystick/control module for continuous movement games."
+    },
+    {
+      "id": "phaser-editor-2d",
+      "name": "Phaser Editor 2D",
+      "url": "https://github.com/PhaserEditor2D",
+      "tier": 3,
+      "roles": ["optional-module", "reference"],
+      "feeds": ["editor-pipeline"],
+      "priority": "medium",
+      "notes": "Optional visual editor compatibility."
+    },
+    {
+      "id": "tiled",
+      "name": "Tiled Map Editor",
+      "url": "https://github.com/mapeditor/tiled",
+      "tier": 3,
+      "roles": ["optional-module", "reference"],
+      "feeds": ["tilemap-pipeline"],
+      "priority": "medium",
+      "notes": "Tilemap workflow for map-based games."
+    },
+    {
+      "id": "grid-engine",
+      "name": "Grid Engine",
+      "url": "https://github.com/Annoraaq/grid-engine",
+      "tier": 3,
+      "roles": ["optional-module", "reference"],
+      "feeds": ["grid-movement"],
+      "priority": "low",
+      "notes": "Optional grid movement for RPG-like tile games."
+    },
+    {
+      "id": "aseprite",
+      "name": "Aseprite",
+      "url": "https://github.com/aseprite/aseprite",
+      "tier": 3,
+      "roles": ["optional-module", "reference"],
+      "feeds": ["pixel-art-pipeline"],
+      "priority": "medium",
+      "notes": "Pixel art animation export workflow."
+    },
+    {
+      "id": "texturepacker-phaser",
+      "name": "TexturePacker Phaser Guide",
+      "url": "https://www.codeandweb.com/texturepacker/tutorials/how-to-create-sprite-sheets-for-phaser3",
+      "tier": 3,
+      "roles": ["optional-module", "reference"],
+      "feeds": ["texture-atlas-pipeline"],
+      "priority": "medium",
+      "notes": "Texture atlas and spritesheet workflow."
+    },
+    {
+      "id": "bitecs",
+      "name": "bitECS",
+      "url": "https://github.com/NateTheGreatt/bitECS",
+      "tier": 4,
+      "roles": ["optional-module", "reference"],
+      "feeds": ["ecs"],
+      "priority": "low",
+      "notes": "Optional ECS for entity-heavy games."
+    },
+    {
+      "id": "miniplex",
+      "name": "Miniplex",
+      "url": "https://github.com/hmans/miniplex",
+      "tier": 4,
+      "roles": ["optional-module", "reference"],
+      "feeds": ["ecs-light"],
+      "priority": "low",
+      "notes": "Optional lightweight TypeScript ECS."
+    },
+    {
+      "id": "eventemitter3",
+      "name": "EventEmitter3",
+      "url": "https://github.com/primus/eventemitter3",
+      "tier": 4,
+      "roles": ["optional-module"],
+      "feeds": ["event-bus"],
+      "priority": "low",
+      "notes": "Only if project-wide events need to live outside Phaser scene events."
+    },
+    {
+      "id": "playwright",
+      "name": "Playwright",
+      "url": "https://github.com/microsoft/playwright",
+      "tier": 5,
+      "roles": ["optional-module", "reference"],
+      "feeds": ["browser-validation", "canvas-smoke-tests"],
+      "priority": "high",
+      "notes": "Dev server, canvas, screenshot, phone/desktop viewport validation."
+    },
+    {
+      "id": "youtube-playables",
+      "name": "YouTube Playables With Phaser",
+      "url": "https://phaser.io/tutorials/creating-youtube-playables-with-phaser",
+      "tier": 5,
+      "roles": ["optional-module", "reference"],
+      "feeds": ["publish-youtube-playables"],
+      "priority": "low",
+      "notes": "Future publishing pack candidate for YouTube Playables."
+    },
+    {
+      "id": "crazygames-sdk",
+      "name": "CrazyGames SDK Docs",
+      "url": "https://docs.crazygames.com/sdk/intro/",
+      "tier": 5,
+      "roles": ["optional-module", "reference"],
+      "feeds": ["publish-crazygames"],
+      "priority": "low",
+      "notes": "Future publishing pack candidate for CrazyGames."
+    },
+    {
+      "id": "poki-sdk-phaser",
+      "name": "Poki SDK Phaser Docs",
+      "url": "https://sdk.poki.com/phaser.html",
+      "tier": 5,
+      "roles": ["optional-module", "reference"],
+      "feeds": ["publish-poki"],
+      "priority": "low",
+      "notes": "Future publishing pack candidate for Poki."
+    },
+    {
+      "id": "vitest",
+      "name": "Vitest",
+      "url": "https://github.com/vitest-dev/vitest",
+      "tier": 5,
+      "roles": ["optional-module"],
+      "feeds": ["unit-testing"],
+      "priority": "medium",
+      "notes": "Pure game logic and content validation tests."
+    },
+    {
+      "id": "vite",
+      "name": "Vite",
+      "url": "https://github.com/vitejs/vite",
+      "tier": 5,
+      "roles": ["reference"],
+      "feeds": ["build", "dev-server"],
+      "priority": "high",
+      "notes": "Default dev/build tool through the official Phaser template."
+    },
+    {
+      "id": "game-programming-patterns",
+      "name": "Game Programming Patterns",
+      "url": "https://gameprogrammingpatterns.com/",
+      "tier": 6,
+      "roles": ["reference"],
+      "feeds": ["architecture-principles"],
+      "priority": "low",
+      "notes": "Conceptual background only, translated into Phaser-specific rules."
+    },
+    {
+      "id": "red-blob-games",
+      "name": "Red Blob Games",
+      "url": "https://www.redblobgames.com/",
+      "tier": 6,
+      "roles": ["reference"],
+      "feeds": ["grid-pathfinding"],
+      "priority": "medium",
+      "notes": "Grid, pathfinding, maps, hexes."
+    },
+    {
+      "id": "nature-of-code",
+      "name": "The Nature of Code",
+      "url": "https://natureofcode.com/",
+      "tier": 6,
+      "roles": ["reference"],
+      "feeds": ["procedural-motion", "particles", "steering"],
+      "priority": "low",
+      "notes": "Motion and procedural behavior reference."
+    },
+    {
+      "id": "easings-net",
+      "name": "easings.net",
+      "url": "https://easings.net/",
+      "tier": 6,
+      "roles": ["reference"],
+      "feeds": ["gamefeel", "tweens"],
+      "priority": "low",
+      "notes": "Tween/easing vocabulary."
+    }
+  ],
+  "recommendedCoreSkills": [
+    "phaser-project-architect",
+    "phaser-scene-workflow",
+    "phaser-assets-pipeline",
+    "phaser-input-mobile-desktop",
+    "phaser-responsive-layout",
+    "phaser-game-systems",
+    "phaser-ui-hud",
+    "phaser-gamefeel",
+    "phaser-testing",
+    "phaser-skill-pack-maintainer"
+  ],
+  "recommendedOptionalModules": [
+    "phaser-arcade-physics",
+    "phaser-matter-physics",
+    "phaser-tilemap-pipeline",
+    "phaser-grid-movement",
+    "phaser-ecs",
+    "phaser-pwa",
+    "phaser-mobile-wrapper",
+    "phaser-desktop-wrapper",
+    "phaser-editor-pipeline",
+    "phaser-card-collection",
+    "phaser-version-strategy",
+    "phaser-rex-ui",
+    "phaser-virtual-controls",
+    "yandex-publish",
+    "youtube-playables-publish",
+    "crazygames-publish",
+    "poki-publish"
+  ],
+  "excludedFromCoreMvp": [
+    "generic-react-app-templates",
+    "backend-first-game-stacks",
+    "multiplayer-servers",
+    "mcp-builders",
+    "office-document-skills",
+    "non-phaser-game-engines"
+  ]
+}
