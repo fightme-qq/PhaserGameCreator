@@ -2618,7 +2618,8 @@ const ideaPrompts = [
 export class GameScene extends Phaser.Scene {
   private currentPrompt = 0;
   private promptText!: Phaser.GameObjects.Text;
-  private promptCard!: Phaser.GameObjects.Rectangle;
+  private promptIndexText!: Phaser.GameObjects.Text;
+  private promptAccent!: Phaser.GameObjects.Arc;
 
   constructor() {
     super(SceneKeys.Game);
@@ -2630,87 +2631,63 @@ export class GameScene extends Phaser.Scene {
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.shutdown());
 
     this.drawBackground(width, height);
+    this.drawAgentMap(width, height);
 
     this.add
-      .text(72, 64, 'Phaser Game Creator', {
-        fontFamily: 'Arial, sans-serif',
-        fontSize: '18px',
-        color: '#7ee7c8',
-      })
-      .setOrigin(0, 0.5);
-
-    createTitleText(this, 72, height * 0.24, '${options.title}').setOrigin(0, 0.5);
-
-    this.add
-      .text(74, height * 0.34, 'Agent workflow baked in: audit, idea intake, contract, skills, recipes, templates, validation.', {
-        fontFamily: 'Arial, sans-serif',
-        fontSize: '24px',
-        color: '#b8c6e6',
-        wordWrap: { width: width * 0.42 },
-      })
-      .setOrigin(0, 0.5);
-
-    const steps = [
-      'Audit -> intake -> 3 loop options',
-      'Contract -> build with module templates',
-      'Validate -> pass quality gates',
-    ];
-
-    const stepY = height * 0.48;
-    steps.forEach((step, index) => {
-      const y = stepY + index * 52;
-      this.add.circle(84, y, 15, 0x26334a);
-      this.add.text(84, y, String(index + 1), {
-        fontFamily: 'Arial, sans-serif',
+      .text(70, 54, 'PHASER GAME CREATOR', {
+        fontFamily: 'Trebuchet MS, Arial, sans-serif',
         fontSize: '15px',
-        color: '#ffffff',
-      }).setOrigin(0.5);
-
-      this.add.text(116, y, step, {
-        fontFamily: 'Arial, sans-serif',
-        fontSize: '20px',
-        color: '#e4ebf8',
-      }).setOrigin(0, 0.5);
-    });
-
-    const cardX = width * 0.69;
-    const cardY = height * 0.43;
-    const cardW = width * 0.42;
-    const cardH = height * 0.48;
-    this.promptCard = this.add.rectangle(cardX, cardY, cardW, cardH, 0x151b26, 0.97);
-    this.promptCard.setStrokeStyle(2, 0x33435f);
-
-    this.add
-      .text(cardX - cardW / 2 + 34, cardY - cardH / 2 + 34, 'Prompt wheel', {
-        fontFamily: 'Arial, sans-serif',
-        fontSize: '18px',
         color: '#7ee7c8',
+        letterSpacing: 2,
       })
       .setOrigin(0, 0.5);
+
+    createTitleText(this, 68, 142, '${options.title}').setOrigin(0, 0.5).setDepth(4);
+
+    this.add
+      .text(72, 214, 'A ready-made agent operating system for building the first playable Phaser loop.', {
+        fontFamily: 'Trebuchet MS, Arial, sans-serif',
+        fontSize: '24px',
+        color: '#d8e2f8',
+        wordWrap: { width: 520 },
+      })
+      .setOrigin(0, 0.5);
+
+    this.drawWorkflow(78, 292);
+    this.drawSkillMatrix(70, 486);
+    this.drawPromptConsole(width - 560, 126, 490, 432);
 
     this.promptText = this.add
-      .text(cardX, cardY - 6, ideaPrompts[this.currentPrompt], {
-        fontFamily: 'Arial, sans-serif',
-        fontSize: '30px',
+      .text(width - 316, 318, ideaPrompts[this.currentPrompt], {
+        fontFamily: 'Trebuchet MS, Arial, sans-serif',
+        fontSize: '31px',
         color: '#ffffff',
         align: 'left',
-        wordWrap: { width: cardW - 72 },
+        wordWrap: { width: 370 },
       })
       .setOrigin(0.5);
 
+    this.promptIndexText = this.add
+      .text(width - 525, 166, 'PROMPT 01 / 06', {
+        fontFamily: 'Consolas, monospace',
+        fontSize: '14px',
+        color: '#7ee7c8',
+      })
+      .setOrigin(0, 0.5);
+
     const spinHint = this.add
-      .text(cardX, cardY + cardH / 2 - 46, 'Click / tap / Space to spin prompt ideas', {
-        fontFamily: 'Arial, sans-serif',
-        fontSize: '20px',
+      .text(width - 316, 512, 'CLICK / TAP / SPACE  ->  SPIN GAME IDEAS', {
+        fontFamily: 'Consolas, monospace',
+        fontSize: '16px',
         color: '#7ee7c8',
       })
       .setOrigin(0.5);
 
     this.add
-      .text(74, height - 62, 'Agent brain: agent:audit  /  skills  /  recipes  /  blueprints  /  module templates  /  quality gates', {
-        fontFamily: 'Arial, sans-serif',
-        fontSize: '17px',
-        color: '#7d8aa5',
+      .text(72, height - 58, 'AGENT BRAIN  //  agent:audit  /  skills  /  recipes  /  blueprints  /  module templates  /  quality gates', {
+        fontFamily: 'Consolas, monospace',
+        fontSize: '15px',
+        color: '#8c98b4',
       })
       .setOrigin(0, 0.5);
 
@@ -2720,6 +2697,16 @@ export class GameScene extends Phaser.Scene {
       yoyo: true,
       repeat: -1,
       duration: 850,
+    });
+
+    this.tweens.add({
+      targets: this.promptAccent,
+      scale: 1.08,
+      alpha: 0.55,
+      yoyo: true,
+      repeat: -1,
+      duration: 1180,
+      ease: 'Sine.easeInOut',
     });
 
     this.input.on('pointerdown', () => this.spinPrompt());
@@ -2735,32 +2722,171 @@ export class GameScene extends Phaser.Scene {
   update(): void {}
 
   private drawBackground(width: number, height: number): void {
-    this.add.rectangle(width / 2, height / 2, width, height, 0x10131a);
+    this.add.rectangle(width / 2, height / 2, width, height, 0x0c1017);
 
     const graphics = this.add.graphics();
-    graphics.lineStyle(1, 0x1a2231, 0.55);
+    graphics.fillStyle(0x111824, 0.9);
+    graphics.fillRect(0, 0, width, height);
 
-    for (let x = 0; x <= width; x += 64) {
+    graphics.lineStyle(1, 0x1b2637, 0.46);
+
+    for (let x = 0; x <= width; x += 56) {
       graphics.lineBetween(x, 0, x, height);
     }
 
-    for (let y = 0; y <= height; y += 64) {
+    for (let y = 0; y <= height; y += 56) {
       graphics.lineBetween(0, y, width, y);
     }
 
-    graphics.lineStyle(2, 0x26334a, 0.8);
-    graphics.lineBetween(width * 0.53, 72, width * 0.53, height - 72);
+    graphics.fillStyle(0x7ee7c8, 0.045);
+    graphics.fillCircle(width * 0.2, height * 0.15, 270);
+    graphics.fillStyle(0xffc857, 0.04);
+    graphics.fillCircle(width * 0.82, height * 0.72, 310);
+  }
+
+  private drawPanel(x: number, y: number, width: number, height: number, accent = 0x33435f): void {
+    const graphics = this.add.graphics();
+    graphics.fillStyle(0x121925, 0.96);
+    graphics.fillRoundedRect(x, y, width, height, 10);
+    graphics.lineStyle(2, accent, 0.95);
+    graphics.strokeRoundedRect(x, y, width, height, 10);
+    graphics.lineStyle(1, 0x7ee7c8, 0.26);
+    graphics.lineBetween(x + 20, y + 20, x + width - 20, y + 20);
+  }
+
+  private drawAgentMap(width: number, height: number): void {
+    const graphics = this.add.graphics();
+    const cx = width * 0.52;
+    const cy = height * 0.52;
+
+    graphics.lineStyle(2, 0x263a55, 0.55);
+    graphics.strokeCircle(cx, cy, 155);
+    graphics.strokeCircle(cx, cy, 94);
+    graphics.lineStyle(1, 0x7ee7c8, 0.25);
+    graphics.lineBetween(cx - 220, cy, cx + 220, cy);
+    graphics.lineBetween(cx, cy - 205, cx, cy + 205);
+
+    const labels = [
+      ['AUDIT', cx, cy - 154],
+      ['SKILLS', cx + 146, cy - 18],
+      ['BUILD', cx + 54, cy + 132],
+      ['VERIFY', cx - 126, cy + 72],
+      ['INTAKE', cx - 136, cy - 84],
+    ];
+
+    labels.forEach(([label, lx, ly]) => {
+      graphics.fillStyle(0x172235, 0.96);
+      graphics.fillCircle(Number(lx), Number(ly), 34);
+      graphics.lineStyle(2, 0x7ee7c8, 0.38);
+      graphics.strokeCircle(Number(lx), Number(ly), 34);
+      this.add
+        .text(Number(lx), Number(ly), String(label), {
+          fontFamily: 'Consolas, monospace',
+          fontSize: '11px',
+          color: '#b9fff0',
+        })
+        .setOrigin(0.5);
+    });
+  }
+
+  private drawWorkflow(x: number, y: number): void {
+    const steps = [
+      ['01', 'AUDIT', 'agent:audit maps the repo'],
+      ['02', 'INTAKE', 'idea becomes 3 playable loops'],
+      ['03', 'BUILD', 'skills + templates shape code'],
+      ['04', 'VERIFY', 'quality gates before done'],
+    ];
+
+    steps.forEach((step, index) => {
+      const itemX = x + index * 144;
+      this.add.rectangle(itemX + 54, y, 108, 74, 0x121925, 0.92).setStrokeStyle(1, 0x33435f, 0.9);
+      this.add.text(itemX + 16, y - 20, step[0], {
+        fontFamily: 'Consolas, monospace',
+        fontSize: '14px',
+        color: '#ffc857',
+      });
+      this.add.text(itemX + 16, y + 1, step[1], {
+        fontFamily: 'Trebuchet MS, Arial, sans-serif',
+        fontSize: '17px',
+        color: '#ffffff',
+      });
+      this.add.text(itemX + 16, y + 25, step[2], {
+        fontFamily: 'Consolas, monospace',
+        fontSize: '10px',
+        color: '#8d9bb7',
+        wordWrap: { width: 86 },
+      });
+
+      if (index < steps.length - 1) {
+        this.add.line(0, 0, itemX + 111, y, itemX + 141, y, 0x7ee7c8, 0.45).setOrigin(0);
+      }
+    });
+  }
+
+  private drawSkillMatrix(x: number, y: number): void {
+    this.drawPanel(x, y, 560, 142, 0x263a55);
+    this.add.text(x + 22, y + 32, 'LOADED AGENT PACK', {
+      fontFamily: 'Consolas, monospace',
+      fontSize: '13px',
+      color: '#7ee7c8',
+    });
+
+    const chips = ['15 skills', '14 recipes', '8 templates', '5 blueprints', 'quality gates', 'Yandex-ready option'];
+    chips.forEach((chip, index) => {
+      const col = index % 3;
+      const row = Math.floor(index / 3);
+      const chipX = x + 24 + col * 172;
+      const chipY = y + 66 + row * 40;
+      this.add.rectangle(chipX + 74, chipY, 148, 27, 0x1a2536, 0.96).setStrokeStyle(1, 0x415779, 0.85);
+      this.add.text(chipX + 14, chipY, chip, {
+        fontFamily: 'Trebuchet MS, Arial, sans-serif',
+        fontSize: '14px',
+        color: '#e8eefc',
+      }).setOrigin(0, 0.5);
+    });
+  }
+
+  private drawPromptConsole(x: number, y: number, width: number, height: number): void {
+    this.drawPanel(x, y, width, height, 0x4c6389);
+
+    this.promptAccent = this.add.circle(x + width - 58, y + 54, 20, 0x7ee7c8, 0.18);
+    this.add.circle(x + width - 58, y + 54, 7, 0x7ee7c8, 0.92);
+
+    this.add.text(x + 34, y + 40, 'PROMPT DRUM', {
+      fontFamily: 'Consolas, monospace',
+      fontSize: '15px',
+      color: '#7ee7c8',
+    });
+
+    this.add.text(x + 34, y + 78, 'Drop one sentence into an agent. It already knows the workflow.', {
+      fontFamily: 'Trebuchet MS, Arial, sans-serif',
+      fontSize: '18px',
+      color: '#aebbdd',
+      wordWrap: { width: width - 80 },
+    });
+
+    this.add.rectangle(x + width / 2, y + 216, width - 72, 168, 0x0e141f, 0.82).setStrokeStyle(1, 0x263a55);
+    this.add.line(0, 0, x + 58, y + 342, x + width - 58, y + 342, 0xffc857, 0.34).setOrigin(0);
   }
 
   private spinPrompt(): void {
     this.currentPrompt = (this.currentPrompt + 1) % ideaPrompts.length;
     this.promptText.setText(ideaPrompts[this.currentPrompt]);
+    this.promptIndexText.setText('PROMPT ' + String(this.currentPrompt + 1).padStart(2, '0') + ' / 06');
 
     this.tweens.add({
       targets: this.promptText,
       scale: { from: 0.96, to: 1 },
       alpha: { from: 0.55, to: 1 },
       duration: 160,
+      ease: 'Sine.easeOut',
+    });
+
+    this.tweens.add({
+      targets: this.promptAccent,
+      scale: { from: 1.25, to: 1 },
+      alpha: { from: 0.85, to: 0.18 },
+      duration: 260,
       ease: 'Sine.easeOut',
     });
   }
