@@ -2620,6 +2620,7 @@ export class GameScene extends Phaser.Scene {
   private promptText!: Phaser.GameObjects.Text;
   private promptIndexText!: Phaser.GameObjects.Text;
   private promptAccent!: Phaser.GameObjects.Arc;
+  private copyStatusText!: Phaser.GameObjects.Text;
 
   constructor() {
     super(SceneKeys.Game);
@@ -2631,60 +2632,63 @@ export class GameScene extends Phaser.Scene {
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.shutdown());
 
     this.drawBackground(width, height);
-    this.drawAgentMap(width, height);
 
     this.add
-      .text(70, 54, 'PHASER GAME CREATOR', {
+      .text(72, 58, 'PHASER GAME CREATOR', {
         fontFamily: 'Trebuchet MS, Arial, sans-serif',
         fontSize: '15px',
         color: '#7ee7c8',
-        letterSpacing: 2,
       })
       .setOrigin(0, 0.5);
 
-    createTitleText(this, 68, 142, '${options.title}').setOrigin(0, 0.5).setDepth(4);
+    createTitleText(this, 70, 138, '${options.title}').setOrigin(0, 0.5).setDepth(4);
 
     this.add
-      .text(72, 214, 'A ready-made agent operating system for building the first playable Phaser loop.', {
+      .text(74, 210, 'A clean agent workspace: audit the repo, choose a loop, build with skills, validate before done.', {
         fontFamily: 'Trebuchet MS, Arial, sans-serif',
-        fontSize: '24px',
+        fontSize: '22px',
         color: '#d8e2f8',
-        wordWrap: { width: 520 },
+        wordWrap: { width: 540 },
       })
       .setOrigin(0, 0.5);
 
-    this.drawWorkflow(78, 292);
-    this.drawSkillMatrix(70, 486);
-    this.drawPromptConsole(width - 560, 126, 490, 432);
+    this.drawWorkflowPanel(72, 276, 540, 184);
+    this.drawSkillMatrix(72, 498);
+    this.drawPromptConsole(680, 92, 528, 520);
 
     this.promptText = this.add
-      .text(width - 316, 318, ideaPrompts[this.currentPrompt], {
+      .text(944, 320, ideaPrompts[this.currentPrompt], {
         fontFamily: 'Trebuchet MS, Arial, sans-serif',
-        fontSize: '31px',
+        fontSize: '32px',
         color: '#ffffff',
         align: 'left',
-        wordWrap: { width: 370 },
+        wordWrap: { width: 376 },
       })
       .setOrigin(0.5);
 
     this.promptIndexText = this.add
-      .text(width - 525, 166, 'PROMPT 01 / 06', {
+      .text(722, 142, 'PROMPT 01 / 06', {
         fontFamily: 'Consolas, monospace',
         fontSize: '14px',
         color: '#7ee7c8',
       })
       .setOrigin(0, 0.5);
 
-    const spinHint = this.add
-      .text(width - 316, 512, 'CLICK / TAP / SPACE  ->  SPIN GAME IDEAS', {
+    this.copyStatusText = this.add
+      .text(944, 545, 'Space spins ideas. Copy sends this prompt to your clipboard.', {
         fontFamily: 'Consolas, monospace',
-        fontSize: '16px',
-        color: '#7ee7c8',
+        fontSize: '13px',
+        color: '#8c98b4',
+        align: 'center',
+        wordWrap: { width: 408 },
       })
       .setOrigin(0.5);
 
+    const spinButton = this.createButton(722, 468, 190, 48, 'SPIN IDEA', 0x7ee7c8, () => this.spinPrompt());
+    const copyButton = this.createButton(932, 468, 224, 48, 'COPY PROMPT', 0xffc857, () => void this.copyPrompt());
+
     this.add
-      .text(72, height - 58, 'AGENT BRAIN  //  agent:audit  /  skills  /  recipes  /  blueprints  /  module templates  /  quality gates', {
+      .text(72, height - 52, 'AGENT BRAIN // agent:audit / skills / recipes / blueprints / module templates / quality gates', {
         fontFamily: 'Consolas, monospace',
         fontSize: '15px',
         color: '#8c98b4',
@@ -2692,11 +2696,12 @@ export class GameScene extends Phaser.Scene {
       .setOrigin(0, 0.5);
 
     this.tweens.add({
-      targets: spinHint,
-      alpha: 0.5,
-      yoyo: true,
+      targets: [spinButton, copyButton],
+      y: '+=2',
       repeat: -1,
-      duration: 850,
+      yoyo: true,
+      duration: 1400,
+      ease: 'Sine.easeInOut',
     });
 
     this.tweens.add({
@@ -2709,7 +2714,6 @@ export class GameScene extends Phaser.Scene {
       ease: 'Sine.easeInOut',
     });
 
-    this.input.on('pointerdown', () => this.spinPrompt());
     this.input.keyboard?.on('keydown-SPACE', () => this.spinPrompt());
 
     ${options.includeYandexGames ? 'gameplayStart();' : ''}
@@ -2754,42 +2758,14 @@ export class GameScene extends Phaser.Scene {
     graphics.lineBetween(x + 20, y + 20, x + width - 20, y + 20);
   }
 
-  private drawAgentMap(width: number, height: number): void {
-    const graphics = this.add.graphics();
-    const cx = width * 0.52;
-    const cy = height * 0.52;
-
-    graphics.lineStyle(2, 0x263a55, 0.55);
-    graphics.strokeCircle(cx, cy, 155);
-    graphics.strokeCircle(cx, cy, 94);
-    graphics.lineStyle(1, 0x7ee7c8, 0.25);
-    graphics.lineBetween(cx - 220, cy, cx + 220, cy);
-    graphics.lineBetween(cx, cy - 205, cx, cy + 205);
-
-    const labels = [
-      ['AUDIT', cx, cy - 154],
-      ['SKILLS', cx + 146, cy - 18],
-      ['BUILD', cx + 54, cy + 132],
-      ['VERIFY', cx - 126, cy + 72],
-      ['INTAKE', cx - 136, cy - 84],
-    ];
-
-    labels.forEach(([label, lx, ly]) => {
-      graphics.fillStyle(0x172235, 0.96);
-      graphics.fillCircle(Number(lx), Number(ly), 34);
-      graphics.lineStyle(2, 0x7ee7c8, 0.38);
-      graphics.strokeCircle(Number(lx), Number(ly), 34);
-      this.add
-        .text(Number(lx), Number(ly), String(label), {
-          fontFamily: 'Consolas, monospace',
-          fontSize: '11px',
-          color: '#b9fff0',
-        })
-        .setOrigin(0.5);
+  private drawWorkflowPanel(x: number, y: number, width: number, height: number): void {
+    this.drawPanel(x, y, width, height, 0x2f4565);
+    this.add.text(x + 24, y + 32, 'AGENT OPERATING LOOP', {
+      fontFamily: 'Consolas, monospace',
+      fontSize: '13px',
+      color: '#7ee7c8',
     });
-  }
 
-  private drawWorkflow(x: number, y: number): void {
     const steps = [
       ['01', 'AUDIT', 'agent:audit maps the repo'],
       ['02', 'INTAKE', 'idea becomes 3 playable loops'],
@@ -2798,33 +2774,34 @@ export class GameScene extends Phaser.Scene {
     ];
 
     steps.forEach((step, index) => {
-      const itemX = x + index * 144;
-      this.add.rectangle(itemX + 54, y, 108, 74, 0x121925, 0.92).setStrokeStyle(1, 0x33435f, 0.9);
-      this.add.text(itemX + 16, y - 20, step[0], {
+      const itemX = x + 24 + index * 126;
+      const itemY = y + 92;
+      this.add.rectangle(itemX + 50, itemY, 100, 72, 0x172235, 0.96).setStrokeStyle(1, 0x415779, 0.9);
+      this.add.text(itemX + 14, itemY - 20, step[0], {
         fontFamily: 'Consolas, monospace',
         fontSize: '14px',
         color: '#ffc857',
       });
-      this.add.text(itemX + 16, y + 1, step[1], {
+      this.add.text(itemX + 14, itemY + 1, step[1], {
         fontFamily: 'Trebuchet MS, Arial, sans-serif',
-        fontSize: '17px',
+        fontSize: '16px',
         color: '#ffffff',
       });
-      this.add.text(itemX + 16, y + 25, step[2], {
+      this.add.text(itemX + 14, itemY + 24, step[2], {
         fontFamily: 'Consolas, monospace',
         fontSize: '10px',
         color: '#8d9bb7',
-        wordWrap: { width: 86 },
+        wordWrap: { width: 82 },
       });
 
       if (index < steps.length - 1) {
-        this.add.line(0, 0, itemX + 111, y, itemX + 141, y, 0x7ee7c8, 0.45).setOrigin(0);
+        this.add.line(0, 0, itemX + 102, itemY, itemX + 122, itemY, 0x7ee7c8, 0.42).setOrigin(0);
       }
     });
   }
 
   private drawSkillMatrix(x: number, y: number): void {
-    this.drawPanel(x, y, 560, 142, 0x263a55);
+    this.drawPanel(x, y, 540, 126, 0x263a55);
     this.add.text(x + 22, y + 32, 'LOADED AGENT PACK', {
       fontFamily: 'Consolas, monospace',
       fontSize: '13px',
@@ -2835,12 +2812,12 @@ export class GameScene extends Phaser.Scene {
     chips.forEach((chip, index) => {
       const col = index % 3;
       const row = Math.floor(index / 3);
-      const chipX = x + 24 + col * 172;
+      const chipX = x + 24 + col * 166;
       const chipY = y + 66 + row * 40;
-      this.add.rectangle(chipX + 74, chipY, 148, 27, 0x1a2536, 0.96).setStrokeStyle(1, 0x415779, 0.85);
+      this.add.rectangle(chipX + 70, chipY, 140, 27, 0x1a2536, 0.96).setStrokeStyle(1, 0x415779, 0.85);
       this.add.text(chipX + 14, chipY, chip, {
         fontFamily: 'Trebuchet MS, Arial, sans-serif',
-        fontSize: '14px',
+        fontSize: '13px',
         color: '#e8eefc',
       }).setOrigin(0, 0.5);
     });
@@ -2858,15 +2835,70 @@ export class GameScene extends Phaser.Scene {
       color: '#7ee7c8',
     });
 
-    this.add.text(x + 34, y + 78, 'Drop one sentence into an agent. It already knows the workflow.', {
+    this.add.text(x + 34, y + 78, 'Pick one seed prompt, copy it, and paste it into Codex, Claude, Gemini, or Cursor.', {
       fontFamily: 'Trebuchet MS, Arial, sans-serif',
       fontSize: '18px',
       color: '#aebbdd',
       wordWrap: { width: width - 80 },
     });
 
-    this.add.rectangle(x + width / 2, y + 216, width - 72, 168, 0x0e141f, 0.82).setStrokeStyle(1, 0x263a55);
-    this.add.line(0, 0, x + 58, y + 342, x + width - 58, y + 342, 0xffc857, 0.34).setOrigin(0);
+    this.add.rectangle(x + width / 2, y + 228, width - 72, 182, 0x0e141f, 0.82).setStrokeStyle(1, 0x263a55);
+    this.add.line(0, 0, x + 58, y + 390, x + width - 58, y + 390, 0xffc857, 0.34).setOrigin(0);
+  }
+
+  private createButton(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    label: string,
+    accent: number,
+    onClick: () => void,
+  ): Phaser.GameObjects.Container {
+    const container = this.add.container(x, y);
+    const background = this.add.rectangle(0, 0, width, height, 0x172235, 0.98).setStrokeStyle(2, accent, 0.9);
+    const text = this.add
+      .text(0, 0, label, {
+        fontFamily: 'Consolas, monospace',
+        fontSize: '16px',
+        color: '#ffffff',
+      })
+      .setOrigin(0.5);
+
+    container.add([background, text]);
+    container.setSize(width, height);
+    container.setInteractive({ useHandCursor: true });
+    container.on('pointerover', () => {
+      background.setFillStyle(0x20304a, 1);
+      text.setColor('#7ee7c8');
+    });
+    container.on('pointerout', () => {
+      background.setFillStyle(0x172235, 0.98);
+      text.setColor('#ffffff');
+    });
+    container.on('pointerdown', onClick);
+
+    return container;
+  }
+
+  private async copyPrompt(): Promise<void> {
+    const prompt = ideaPrompts[this.currentPrompt];
+
+    try {
+      await navigator.clipboard.writeText(prompt);
+      this.copyStatusText.setText('Copied. Paste this into your agent to start the first playable loop.');
+      this.copyStatusText.setColor('#7ee7c8');
+    } catch {
+      this.copyStatusText.setText('Copy blocked by browser. Select the prompt text manually or use HTTPS/local permissions.');
+      this.copyStatusText.setColor('#ffc857');
+    }
+
+    this.tweens.add({
+      targets: this.copyStatusText,
+      scale: { from: 1.04, to: 1 },
+      duration: 180,
+      ease: 'Sine.easeOut',
+    });
   }
 
   private spinPrompt(): void {
