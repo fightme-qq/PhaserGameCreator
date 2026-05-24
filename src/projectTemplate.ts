@@ -2654,10 +2654,11 @@ export class GameScene extends Phaser.Scene {
 
     this.drawWorkflowPanel(72, 276, 540, 184);
     this.drawSkillMatrix(72, 498);
-    this.drawPromptConsole(680, 92, 528, 520);
+    const promptPanel = { x: 680, y: 92, width: 528, height: 520 };
+    this.drawPromptConsole(promptPanel.x, promptPanel.y, promptPanel.width, promptPanel.height);
 
     this.promptText = this.add
-      .text(944, 320, ideaPrompts[this.currentPrompt], {
+      .text(promptPanel.x + promptPanel.width / 2, promptPanel.y + 228, ideaPrompts[this.currentPrompt], {
         fontFamily: 'Trebuchet MS, Arial, sans-serif',
         fontSize: '32px',
         color: '#ffffff',
@@ -2667,7 +2668,7 @@ export class GameScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.promptIndexText = this.add
-      .text(722, 142, 'PROMPT 01 / 06', {
+      .text(promptPanel.x + promptPanel.width - 152, promptPanel.y + 40, 'PROMPT 01 / 06', {
         fontFamily: 'Consolas, monospace',
         fontSize: '14px',
         color: '#7ee7c8',
@@ -2675,7 +2676,7 @@ export class GameScene extends Phaser.Scene {
       .setOrigin(0, 0.5);
 
     this.copyStatusText = this.add
-      .text(944, 545, 'Space spins ideas. Copy sends this prompt to your clipboard.', {
+      .text(promptPanel.x + promptPanel.width / 2, promptPanel.y + promptPanel.height - 74, 'Space spins ideas. Copy sends this prompt to your clipboard.', {
         fontFamily: 'Consolas, monospace',
         fontSize: '13px',
         color: '#8c98b4',
@@ -2684,8 +2685,9 @@ export class GameScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    const spinButton = this.createButton(722, 468, 190, 48, 'SPIN IDEA', 0x7ee7c8, () => this.spinPrompt());
-    const copyButton = this.createButton(932, 468, 224, 48, 'COPY PROMPT', 0xffc857, () => void this.copyPrompt());
+    const buttonY = promptPanel.y + promptPanel.height - 168;
+    const spinButton = this.createButton(promptPanel.x + 152, buttonY, 188, 48, 'SPIN IDEA', 0x7ee7c8, () => this.spinPrompt());
+    const copyButton = this.createButton(promptPanel.x + 376, buttonY, 224, 48, 'COPY PROMPT', 0xffc857, () => void this.copyPrompt());
 
     this.add
       .text(72, height - 52, 'AGENT BRAIN // agent:audit / skills / recipes / blueprints / module templates / quality gates', {
@@ -2843,7 +2845,7 @@ export class GameScene extends Phaser.Scene {
     });
 
     this.add.rectangle(x + width / 2, y + 228, width - 72, 182, 0x0e141f, 0.82).setStrokeStyle(1, 0x263a55);
-    this.add.line(0, 0, x + 58, y + 390, x + width - 58, y + 390, 0xffc857, 0.34).setOrigin(0);
+    this.add.line(0, 0, x + 58, y + height - 106, x + width - 58, y + height - 106, 0xffc857, 0.34).setOrigin(0);
   }
 
   private createButton(
