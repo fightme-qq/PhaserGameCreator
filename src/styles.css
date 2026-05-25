@@ -35,7 +35,8 @@ body::before {
 }
 
 button,
-input {
+input,
+textarea {
   font: inherit;
 }
 
@@ -218,7 +219,8 @@ legend {
   padding: 0;
 }
 
-input[type="text"] {
+input[type="text"],
+textarea {
   width: 100%;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 8px;
@@ -228,7 +230,18 @@ input[type="text"] {
   outline: none;
 }
 
-input[type="text"]:focus {
+textarea {
+  resize: vertical;
+  min-height: 118px;
+  line-height: 1.42;
+}
+
+textarea::placeholder {
+  color: #7f8ba1;
+}
+
+input[type="text"]:focus,
+textarea:focus {
   border-color: #2bbd91;
   box-shadow: 0 0 0 3px rgba(43, 189, 145, 0.18);
 }
@@ -311,6 +324,29 @@ input[type="text"]:focus {
   transform: translateY(-1px);
   background: #37d3a4;
   box-shadow: 0 16px 30px rgba(43, 189, 145, 0.22);
+}
+
+.next-action {
+  display: grid;
+  gap: 8px;
+  color: #aeb8ca;
+  font-size: 13px;
+  line-height: 1.42;
+}
+
+.next-action strong {
+  color: #ffffff;
+}
+
+.next-action code {
+  display: block;
+  border: 1px solid rgba(126, 231, 200, 0.22);
+  border-radius: 8px;
+  background: rgba(126, 231, 200, 0.08);
+  color: #dffcf4;
+  padding: 10px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 12px;
 }
 
 .flow {

@@ -53,6 +53,11 @@ app.innerHTML = `
           <input id="project-name" name="projectName" type="text" value="My Phaser Game" maxlength="64" autocomplete="off" />
         </label>
 
+        <label class="field">
+          <span>Game idea</span>
+          <textarea id="game-idea" name="gameIdea" maxlength="600" rows="5" placeholder="Example: Vampire Survivors but with cats"></textarea>
+        </label>
+
         <fieldset class="target-field">
           <legend>Primary target</legend>
           <div class="segments" role="radiogroup" aria-label="Primary target">
@@ -81,7 +86,11 @@ app.innerHTML = `
           </span>
         </label>
 
-        <button class="primary" type="submit">Download ZIP</button>
+        <button class="primary" type="submit">Download Agent-Ready ZIP</button>
+        <div class="next-action">
+          <strong>Next:</strong> unzip, open the folder in your coding agent, then paste:
+          <code>Read START_HERE.md, AGENTS.md, and NEXT_AGENT_TASK.md. Guide me to the smallest first playable.</code>
+        </div>
       </form>
     </section>
 
@@ -118,6 +127,7 @@ app.innerHTML = `
 
 const form = document.querySelector<HTMLFormElement>('#creator-form')!;
 const projectName = document.querySelector<HTMLInputElement>('#project-name')!;
+const gameIdea = document.querySelector<HTMLTextAreaElement>('#game-idea')!;
 const yandexGames = document.querySelector<HTMLInputElement>('#yandex-games')!;
 const previewTitle = document.querySelector<HTMLHeadingElement>('#preview-title')!;
 const fileCount = document.querySelector<HTMLSpanElement>('#file-count')!;
@@ -128,6 +138,7 @@ function readOptions(): ProjectOptions {
   const title = titleFromName(projectName.value);
   return {
     projectName: projectName.value,
+    gameIdea: gameIdea.value,
     slug: slugifyProjectName(projectName.value),
     title,
     target: document.querySelector<HTMLInputElement>('input[name="target"]:checked')?.value === 'desktop' ? 'desktop' : 'mobile',
@@ -151,6 +162,8 @@ function renderPreview(): void {
     .filter((path) => {
       return (
         path === 'START_HERE.md' ||
+        path === 'GAME_BRIEF.md' ||
+        path === 'NEXT_AGENT_TASK.md' ||
         path === 'AGENTS.md' ||
         path === 'CLAUDE.md' ||
         path === 'GEMINI.md' ||
@@ -206,7 +219,7 @@ form.addEventListener('submit', async (event) => {
   downloadBlob(blob, `${options.slug}.zip`);
 });
 
-for (const input of [projectName, ...document.querySelectorAll<HTMLInputElement>('input[name="target"]')]) {
+for (const input of [projectName, gameIdea, ...document.querySelectorAll<HTMLInputElement>('input[name="target"]')]) {
   input.addEventListener('input', renderPreview);
   input.addEventListener('change', renderPreview);
 }

@@ -1,5 +1,6 @@
 export type ProjectOptions = {
   projectName: string;
+  gameIdea: string;
   slug: string;
   title: string;
   target: 'mobile' | 'desktop';

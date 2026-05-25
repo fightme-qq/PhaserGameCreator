@@ -10,6 +10,7 @@ const outRoot = join(repoRoot, '.generated-validation', `run-${Date.now()}`);
 const cases: ProjectOptions[] = [
   {
     projectName: 'Validation Base',
+    gameIdea: 'A top-down arena game where a tiny wizard survives a one-minute slime rush.',
     slug: 'validation-base',
     title: 'Validation Base',
     target: 'mobile',
@@ -21,6 +22,7 @@ const cases: ProjectOptions[] = [
   },
   {
     projectName: 'Validation Yandex',
+    gameIdea: 'A mobile puzzle game about connecting power nodes before the timer ends.',
     slug: 'validation-yandex',
     title: 'Validation Yandex',
     target: 'desktop',
@@ -59,6 +61,8 @@ function generateProject(projectDir: string, options: ProjectOptions): void {
 function validateStructure(projectDir: string, options: ProjectOptions): void {
   const requiredFiles = [
     'START_HERE.md',
+    'GAME_BRIEF.md',
+    'NEXT_AGENT_TASK.md',
     'README.md',
     'AGENTS.md',
     'CLAUDE.md',

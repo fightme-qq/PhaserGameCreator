@@ -3,6 +3,7 @@ import { getSkillNames } from './skillNames';
 
 export function rootDocs(options: ProjectOptions): GeneratedFile[] {
   const skillNames = getSkillNames(options);
+  const gameIdea = normalizeGameIdea(options.gameIdea);
   return [
     {
       path: 'START_HERE.md',
@@ -13,8 +14,14 @@ You opened a generated Phaser game repository.
 If you are a human:
 
 1. Open this folder in Codex, Claude Code, Gemini CLI, or another coding agent.
-2. Tell the agent your game idea.
-3. Run:
+2. Paste this:
+
+\`\`\`text
+Read START_HERE.md, AGENTS.md, and NEXT_AGENT_TASK.md. Guide me to the smallest first playable.
+\`\`\`
+
+3. The original idea is recorded in \`GAME_BRIEF.md\`.
+4. Run:
 
 \`\`\`bash
 npm install
@@ -22,7 +29,7 @@ npm run agent:audit
 npm run dev
 \`\`\`
 
-4. Open the local URL printed by Vite.
+5. Open the local URL printed by Vite.
 
 If you are an AI coding agent:
 
@@ -45,6 +52,7 @@ If you are an AI coding agent:
 - Primary target: ${options.target === 'mobile' ? 'mobile-first browser game' : 'desktop-first browser game'}
 - Yandex Games publish pack: ${options.includeYandexGames ? 'included' : 'not included'}
 - Generated skills: ${skillNames.length}
+- Initial idea: ${gameIdea}
 
 ## First Useful Agent Prompts
 
@@ -59,6 +67,95 @@ Use phaser-scene-workflow. Replace the template guide with real gameplay for thi
 \`\`\`text
 Use the phaser-input-mobile-desktop and phaser-responsive-layout skills to make this work well on phone and desktop.
 \`\`\`
+`,
+    },
+    {
+      path: 'GAME_BRIEF.md',
+      content: `# Game Brief
+
+Generated with Phaser Game Creator.
+
+## Original Idea
+
+${gameIdea}
+
+## Target
+
+- Platform: ${options.target === 'mobile' ? 'mobile-first browser game with desktop fallback' : 'desktop-first browser game with mobile fallback'}
+- Engine: Phaser 3
+- Language: TypeScript
+- Build tool: Vite
+- Yandex Games pack: ${options.includeYandexGames ? 'included' : 'not included'}
+
+## Agent Interpretation Rules
+
+Use \`phaser-game-design-interviewer\` first. Do not treat this brief as a final design document.
+
+The agent should turn the idea into:
+
+- clarified game concept;
+- genre and closest blueprint;
+- player goal;
+- core loop;
+- controls;
+- camera;
+- win condition;
+- lose condition;
+- progression model;
+- MVP scope;
+- first playable requirements;
+- feature backlog;
+- risks.
+
+## First Playable Bias
+
+Start with one action, one challenge, one feedback moment, one progress signal, one fail/win state, and one restart path.
+
+Do not start with:
+
+- full menus;
+- final art;
+- complex economy;
+- many levels;
+- multiplayer;
+- backend;
+- platform SDK work beyond generated adapters.
+`,
+    },
+    {
+      path: 'NEXT_AGENT_TASK.md',
+      content: `# Next Agent Task
+
+Use \`AGENT_WORKFLOW.md\`, \`GAME_BRIEF.md\`, \`phaser-game-design-interviewer\`, and \`phaser-first-playable-builder\`.
+
+## Task
+
+Turn this game idea into the smallest verified Phaser first playable:
+
+> ${gameIdea}
+
+## Required Output Before Coding
+
+1. Clarified game concept.
+2. MVP scope.
+3. First playable loop:
+   - player action;
+   - challenge;
+   - feedback;
+   - score/progress;
+   - fail/win;
+   - restart.
+4. Target files and skills to use.
+5. Risks or assumptions.
+
+## Implementation Rules
+
+- Build the first playable before adding polish.
+- Keep \`GameScene\` thin.
+- Put reusable logic in \`systems/\`, \`entities/\`, \`input/\`, \`state/\`, \`save/\`, \`ui/\`, or \`data/\`.
+- Use placeholder art when real assets are missing.
+- Validate with \`npm run build\`.
+- If Playwright browsers are installed, also run \`npm run test:smoke\`.
 `,
     },
     {
@@ -142,5 +239,10 @@ skills/       Project-local AI skills
 `,
     },
   ];
+}
+
+function normalizeGameIdea(value: string): string {
+  const idea = value.trim().replace(/\s+/g, ' ');
+  return idea || 'No specific idea was entered. Ask the human for a one-sentence game idea, then propose three tiny first playable loops.';
 }
 
