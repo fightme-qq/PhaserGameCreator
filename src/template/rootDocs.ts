@@ -83,12 +83,23 @@ npm run dev
 npm run build
 \`\`\`
 
+## Smoke Tests
+
+If this project includes Playwright smoke tests, install the browser once before running them:
+
+\`\`\`bash
+npx playwright install
+npm run test:smoke
+\`\`\`
+
+On Linux CI, use \`npx playwright install --with-deps\` if the environment is missing browser dependencies.
+
 ## Project Shape
 
 \`\`\`text
 src/game/
   config/     Phaser configuration and constants
-  scenes/     Boot, Preload, Menu, Game, UI scenes
+  scenes/     Boot, Preload, TemplateGuide, Game, UI scenes
   systems/    Gameplay systems with explicit boundaries
   entities/   Game objects and entity factories
   input/      Mobile/desktop input abstraction
