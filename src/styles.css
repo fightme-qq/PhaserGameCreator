@@ -442,6 +442,58 @@ h2 {
   background: rgba(25, 32, 43, 0.035);
 }
 
+.creator {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 24px;
+  border: 1px solid rgba(25, 32, 43, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.58);
+  padding: 14px 16px;
+}
+
+.creator > div:first-child {
+  display: grid;
+  gap: 4px;
+}
+
+.creator strong {
+  color: #111722;
+  font-size: 15px;
+}
+
+.creator span {
+  color: #596273;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.creator-links {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
+}
+
+.creator-links a {
+  border: 1px solid rgba(25, 32, 43, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.64);
+  color: #111722;
+  padding: 8px 11px;
+  font-size: 13px;
+  font-weight: 820;
+  text-decoration: none;
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+.creator-links a:hover {
+  transform: translateY(-1px);
+  border-color: rgba(43, 189, 145, 0.56);
+  background: #ffffff;
+}
+
 @media (max-width: 960px) {
   .stage,
   .flow {
@@ -460,6 +512,11 @@ h2 {
 
   .tree {
     grid-template-columns: 1fr;
+  }
+
+  .creator {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }
 

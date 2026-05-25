@@ -122,6 +122,17 @@ app.innerHTML = `
       </div>
       <div class="tree" id="file-tree"></div>
     </section>
+
+    <section class="creator">
+      <div>
+        <strong>Ramazan Rizvanov</strong>
+        <span>Game Designer · systems, progression, economy, player experience</span>
+      </div>
+      <div class="creator-links" aria-label="Creator links">
+        <a href="https://www.linkedin.com/in/ramazan-rizvanov-639374296/" target="_blank" rel="noreferrer">LinkedIn</a>
+        <a href="https://t.me/zamazilo" target="_blank" rel="noreferrer">Telegram</a>
+      </div>
+    </section>
   </section>
 `;
 
