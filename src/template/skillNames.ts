@@ -1,6 +1,21 @@
 import type { ProjectOptions } from '../types';
 
 const coreSkillNames = [
+  'phaser-game-design-interviewer',
+  'phaser-first-playable-builder',
+  'phaser-feature-slicer',
+  'phaser-refactor-guardian',
+  'phaser-error-recovery-debugger',
+  'phaser-version-docs-sync',
+  'phaser-state-machine-patterns',
+  'phaser-physics-collision-designer',
+  'phaser-camera-level-design',
+  'phaser-content-pipeline',
+  'phaser-save-schema-migrations',
+  'phaser-progression-economy',
+  'phaser-accessibility-localization',
+  'phaser-release-platforms',
+  'phaser-ai-art-asset-brief',
   'phaser-project-architect',
   'phaser-scene-workflow',
   'phaser-assets-pipeline',

@@ -37,6 +37,21 @@ Using phaser-scene-workflow because this changes scene lifecycle and transitions
 
 ## Skill Routing
 
+- Raw or vague game idea before coding: \`phaser-game-design-interviewer\`
+- Approved concept into the smallest playable loop: \`phaser-first-playable-builder\`
+- Large feature request into safe implementation steps: \`phaser-feature-slicer\`
+- Refactor or risky edit planning before changing files: \`phaser-refactor-guardian\`
+- Build/runtime/blank-canvas debugging: \`phaser-error-recovery-debugger\`
+- Phaser API/plugin/version-sensitive work: \`phaser-version-docs-sync\`
+- Player/enemy/game/boss behavior modes and boolean-flag cleanup: \`phaser-state-machine-patterns\`
+- Physics engine, hitboxes, overlaps, colliders, and collision model selection: \`phaser-physics-collision-designer\`
+- Camera follow, bounds, zoom, level shape, spawns, and restart positions: \`phaser-camera-level-design\`
+- Enemies, items, waves, levels, upgrades, cards, and other gameplay content as data: \`phaser-content-pipeline\`
+- Versioned save data, migrations, defaults, corrupted save fallback, settings/progress split: \`phaser-save-schema-migrations\`
+- XP, levels, coins, shops, unlocks, difficulty curves, and reward pacing: \`phaser-progression-economy\`
+- Keyboard/touch accessibility, reduced motion, readable UI, string tables, localization: \`phaser-accessibility-localization\`
+- Release targets, static hosting, portals, SDK boundaries, fullscreen/orientation/storage: \`phaser-release-platforms\`
+- Sprite lists, animation frames, palette, atlas plan, naming, placeholder art briefs: \`phaser-ai-art-asset-brief\`
 - Architecture or folder boundaries: \`phaser-project-architect\`
 - Boot/preload/menu/gameplay/UI scenes: \`phaser-scene-workflow\`
 - Asset keys, loaders, manifests, atlases, audio: \`phaser-assets-pipeline\`
@@ -53,7 +68,7 @@ Using phaser-scene-workflow because this changes scene lifecycle and transitions
 - Vite, Playwright, canvas smoke tests, Vitest: \`phaser-testing\`
 - Updating or adding skills: \`phaser-skill-pack-maintainer\`
 ${options.includeYandexGames ? '- Yandex Games SDK, moderation, ads, localization, build ZIP: `yandex-publish`' : ''}
-- Turning a new idea into the first playable: start with \`docs/game-creator-guide.md\`, then \`phaser-project-architect\`
+- Turning a new idea into the first playable: start with \`phaser-game-design-interviewer\`, then \`phaser-first-playable-builder\`
 - Vague idea intake: \`docs/game-design-intake.md\`
 - First playable definition of done: \`docs/first-playable-contract.md\`
 - Common feature implementation: \`docs/feature-recipes/\`
@@ -158,6 +173,21 @@ ${sharedAgentEntry('Cursor', options, skillNames)}
             path: `skills/${name}/SKILL.md`,
           })),
           routing: {
+            gameDesignIntake: 'phaser-game-design-interviewer',
+            firstPlayableBuilder: 'phaser-first-playable-builder',
+            featureSlicing: 'phaser-feature-slicer',
+            refactorGuard: 'phaser-refactor-guardian',
+            errorRecovery: 'phaser-error-recovery-debugger',
+            versionDocsSync: 'phaser-version-docs-sync',
+            stateMachines: 'phaser-state-machine-patterns',
+            physicsCollision: 'phaser-physics-collision-designer',
+            cameraLevelDesign: 'phaser-camera-level-design',
+            contentPipeline: 'phaser-content-pipeline',
+            saveMigrations: 'phaser-save-schema-migrations',
+            progressionEconomy: 'phaser-progression-economy',
+            accessibilityLocalization: 'phaser-accessibility-localization',
+            releasePlatforms: 'phaser-release-platforms',
+            aiArtAssetBrief: 'phaser-ai-art-asset-brief',
             architecture: 'phaser-project-architect',
             scenes: 'phaser-scene-workflow',
             assets: 'phaser-assets-pipeline',
@@ -216,6 +246,21 @@ Use this map to choose the correct skill.
 
 | Task | Skill |
 | --- | --- |
+| Clarify a vague game idea before coding | \`phaser-game-design-interviewer\` |
+| Turn a concept into the smallest first playable loop | \`phaser-first-playable-builder\` |
+| Slice a broad feature into safe incremental steps | \`phaser-feature-slicer\` |
+| Plan risky edits or refactors before touching files | \`phaser-refactor-guardian\` |
+| Debug build failures, runtime errors, or blank canvas | \`phaser-error-recovery-debugger\` |
+| Check Phaser version, docs, APIs, plugins, or deprecations | \`phaser-version-docs-sync\` |
+| Add player, enemy, boss, or game behavior states | \`phaser-state-machine-patterns\` |
+| Design physics bodies, overlaps, colliders, hitboxes, or collision model | \`phaser-physics-collision-designer\` |
+| Add camera follow, bounds, zoom, level layout, spawns, or restart positions | \`phaser-camera-level-design\` |
+| Add enemies, items, waves, levels, upgrades, cards, or balance as data | \`phaser-content-pipeline\` |
+| Change persisted save data, settings, defaults, versions, or migrations | \`phaser-save-schema-migrations\` |
+| Add XP, levels, coins, shops, unlocks, scaling, or reward pacing | \`phaser-progression-economy\` |
+| Improve keyboard/touch accessibility, reduced motion, readable UI, or localization | \`phaser-accessibility-localization\` |
+| Prepare release targets, static hosting, portal constraints, SDK boundaries, or PWA notes | \`phaser-release-platforms\` |
+| Plan sprite lists, frame counts, palette, atlas layout, naming, or art handoff brief | \`phaser-ai-art-asset-brief\` |
 | Plan project architecture, folders, boundaries | \`phaser-project-architect\` |
 | Add or refactor scenes | \`phaser-scene-workflow\` |
 | Load images, spritesheets, atlases, audio, fonts, tilemaps | \`phaser-assets-pipeline\` |
@@ -233,7 +278,7 @@ Use this map to choose the correct skill.
 | Update, add, or validate skills | \`phaser-skill-pack-maintainer\` |
 ${options.includeYandexGames ? '| Publish to Yandex Games, SDK, moderation, submission ZIP | `yandex-publish` |\n' : ''}
 
-If multiple skills apply, start with architecture, then scene/input/layout, then implementation details.
+If multiple skills apply, start with design intake or feature slicing, then architecture, then scene/input/layout, then implementation details.
 `,
     },
     {
@@ -315,13 +360,13 @@ Run npm run agent:audit, then summarize the available skills, scenes, recipes, b
 ## Build First Playable
 
 \`\`\`text
-Use AGENT_WORKFLOW.md, docs/game-design-intake.md, docs/first-playable-contract.md, phaser-project-architect, phaser-scene-workflow, phaser-input-mobile-desktop, and phaser-responsive-layout. Propose and implement the smallest playable loop for this game.
+Use AGENT_WORKFLOW.md, phaser-game-design-interviewer, phaser-first-playable-builder, phaser-project-architect, phaser-scene-workflow, phaser-input-mobile-desktop, and phaser-responsive-layout. Propose and implement the smallest playable loop for this game.
 \`\`\`
 
 ## From One Sentence
 
 \`\`\`text
-Use AGENT_WORKFLOW.md. My game idea is: [one sentence]. Infer missing details, propose 3 tiny first playable loops, recommend the smallest, then implement it.
+Use AGENT_WORKFLOW.md, phaser-game-design-interviewer, and phaser-first-playable-builder. My game idea is: [one sentence]. Infer missing details, propose 3 tiny first playable loops, recommend the smallest, then implement it.
 \`\`\`
 
 ## Use A Genre Blueprint
@@ -399,6 +444,21 @@ ${skillNames.map((name) => `- \`${name}\` at \`skills/${name}/SKILL.md\``).join(
 
 ## Default Routing
 
+- Raw game idea: \`phaser-game-design-interviewer\`
+- First playable loop: \`phaser-first-playable-builder\`
+- Broad feature slicing: \`phaser-feature-slicer\`
+- Refactor guardrails: \`phaser-refactor-guardian\`
+- Build/runtime debugging: \`phaser-error-recovery-debugger\`
+- Phaser version/API sync: \`phaser-version-docs-sync\`
+- Behavior state machines: \`phaser-state-machine-patterns\`
+- Physics/collision design: \`phaser-physics-collision-designer\`
+- Camera and level design: \`phaser-camera-level-design\`
+- Gameplay content as data: \`phaser-content-pipeline\`
+- Save schema migrations: \`phaser-save-schema-migrations\`
+- Progression/economy: \`phaser-progression-economy\`
+- Accessibility/localization: \`phaser-accessibility-localization\`
+- Release platforms: \`phaser-release-platforms\`
+- Art asset briefs: \`phaser-ai-art-asset-brief\`
 - Architecture: \`phaser-project-architect\`
 - Scenes: \`phaser-scene-workflow\`
 - Assets: \`phaser-assets-pipeline\`
