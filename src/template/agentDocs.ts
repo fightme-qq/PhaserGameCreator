@@ -10,20 +10,22 @@ export function agentDocs(options: ProjectOptions): GeneratedFile[] {
 
 This repository is a Phaser mobile/desktop game project. Treat Phaser game development as the primary domain.
 
+## Always-On Context
+
+For every user prompt in this repository, treat this \`AGENTS.md\` file as the always-on context anchor. The user should not need to say "read the docs" or "load the context"; this file, \`AGENT_WORKFLOW.md\`, and the local skill map define the default operating context.
+
+Use deeper docs only when the current task needs them, but never ignore this project context.
+
 ## First Read Order
 
-1. \`START_HERE.md\`
-2. \`AGENT_WORKFLOW.md\`
-3. \`npm run agent:audit\` if dependencies are installed
-4. \`docs/game-design-intake.md\`
-5. \`docs/first-playable-contract.md\`
-6. \`docs/validation-matrix.md\`
-7. \`docs/quality-gates.md\`
-8. \`docs/game-creator-guide.md\`
-9. \`skills/README.md\`
-10. \`skills/_meta/task-map.md\`
-11. The specific \`skills/<skill-name>/SKILL.md\` for the task
-12. Relevant source files under \`src/game/\`
+1. \`AGENTS.md\`
+2. \`START_HERE.md\`
+3. \`AGENT_WORKFLOW.md\`
+4. \`npm run agent:audit\` if dependencies are installed
+5. \`skills/_meta/task-map.md\`
+6. The specific \`skills/<skill-name>/SKILL.md\` for the task
+7. Relevant docs for the task, such as \`docs/first-playable-contract.md\`, \`docs/validation-matrix.md\`, and \`docs/quality-gates.md\`
+8. Relevant source files under \`src/game/\`
 
 ## Core Rule
 
@@ -52,6 +54,9 @@ Using phaser-scene-workflow because this changes scene lifecycle and transitions
 - Keyboard/touch accessibility, reduced motion, readable UI, string tables, localization: \`phaser-accessibility-localization\`
 - Release targets, static hosting, portals, SDK boundaries, fullscreen/orientation/storage: \`phaser-release-platforms\`
 - Sprite lists, animation frames, palette, atlas plan, naming, placeholder art briefs: \`phaser-ai-art-asset-brief\`
+- Visual direction, polished HUD/menu style, screen hierarchy, and anti-generic UI checks: \`phaser-visual-taste\`
+- Existing HUD/menu/overlay redesign without changing gameplay logic: \`phaser-ui-redesign-auditor\`
+- Game logo, palette, UI motif, key art, capsule, icon, and brandkit planning: \`phaser-brandkit-brief\`
 - Architecture or folder boundaries: \`phaser-project-architect\`
 - Boot/preload/menu/gameplay/UI scenes: \`phaser-scene-workflow\`
 - Asset keys, loaders, manifests, atlases, audio: \`phaser-assets-pipeline\`
@@ -66,6 +71,7 @@ Using phaser-scene-workflow because this changes scene lifecycle and transitions
 - Debug overlays, FPS, pools, low-end mobile performance: \`phaser-debug-performance\`
 - Placeholder sprites, coded UI visuals, SVG/canvas art direction: \`phaser-programmatic-art\`
 - Vite, Playwright, canvas smoke tests, Vitest: \`phaser-testing\`
+- Reporting generator-level learnings after a failed/reworked task: \`phaser-generator-feedback-reporter\`
 - Updating or adding skills: \`phaser-skill-pack-maintainer\`
 ${options.includeYandexGames ? '- Yandex Games SDK, moderation, ads, localization, build ZIP: `yandex-publish`' : ''}
 - Turning a new idea into the first playable: start with \`phaser-game-design-interviewer\`, then \`phaser-first-playable-builder\`
@@ -160,6 +166,7 @@ ${sharedAgentEntry('Cursor', options, skillNames)}
             'skills/_meta/source-registry.md',
           ],
           agentOperatingLoop: 'AGENT_WORKFLOW.md',
+          contextAnchor: 'AGENTS.md',
           designIntake: 'docs/game-design-intake.md',
           firstPlayableContract: 'docs/first-playable-contract.md',
           validationMatrix: 'docs/validation-matrix.md',
@@ -188,6 +195,9 @@ ${sharedAgentEntry('Cursor', options, skillNames)}
             accessibilityLocalization: 'phaser-accessibility-localization',
             releasePlatforms: 'phaser-release-platforms',
             aiArtAssetBrief: 'phaser-ai-art-asset-brief',
+            visualTaste: 'phaser-visual-taste',
+            uiRedesignAudit: 'phaser-ui-redesign-auditor',
+            brandkitBrief: 'phaser-brandkit-brief',
             architecture: 'phaser-project-architect',
             scenes: 'phaser-scene-workflow',
             assets: 'phaser-assets-pipeline',
@@ -202,6 +212,7 @@ ${sharedAgentEntry('Cursor', options, skillNames)}
             debugPerformance: 'phaser-debug-performance',
             programmaticArt: 'phaser-programmatic-art',
             testing: 'phaser-testing',
+            generatorFeedback: 'phaser-generator-feedback-reporter',
             skillMaintenance: 'phaser-skill-pack-maintainer',
             ...(options.includeYandexGames ? { yandexPublishing: 'yandex-publish' } : {}),
           },
@@ -261,6 +272,9 @@ Use this map to choose the correct skill.
 | Improve keyboard/touch accessibility, reduced motion, readable UI, or localization | \`phaser-accessibility-localization\` |
 | Prepare release targets, static hosting, portal constraints, SDK boundaries, or PWA notes | \`phaser-release-platforms\` |
 | Plan sprite lists, frame counts, palette, atlas layout, naming, or art handoff brief | \`phaser-ai-art-asset-brief\` |
+| Polish visual direction, HUD/menu hierarchy, palettes, motion density, or anti-generic UI quality | \`phaser-visual-taste\` |
+| Redesign an existing HUD, menu, overlay, shop, card UI, pause screen, or game-over screen | \`phaser-ui-redesign-auditor\` |
+| Plan game logo, palette, key art, UI motifs, app icon, capsule, or brand identity | \`phaser-brandkit-brief\` |
 | Plan project architecture, folders, boundaries | \`phaser-project-architect\` |
 | Add or refactor scenes | \`phaser-scene-workflow\` |
 | Load images, spritesheets, atlases, audio, fonts, tilemaps | \`phaser-assets-pipeline\` |
@@ -275,6 +289,7 @@ Use this map to choose the correct skill.
 | Add debug overlays, FPS checks, object pools, mobile performance fixes | \`phaser-debug-performance\` |
 | Create placeholder art, coded UI visuals, SVG/canvas effects without stock assets | \`phaser-programmatic-art\` |
 | Add tests, smoke checks, build validation | \`phaser-testing\` |
+| Report a generator-level issue after a failed or reworked task in this game | \`phaser-generator-feedback-reporter\` |
 | Update, add, or validate skills | \`phaser-skill-pack-maintainer\` |
 ${options.includeYandexGames ? '| Publish to Yandex Games, SDK, moderation, submission ZIP | `yandex-publish` |\n' : ''}
 
@@ -324,6 +339,7 @@ Use these sources when a task needs current Phaser or Agent Skills knowledge.
 - Phaser Vite TypeScript template: https://github.com/phaserjs/template-vite-ts
 - Agent Skills spec: https://agentskills.io/specification.md
 - Anthropic skill creator: https://github.com/anthropics/skills/tree/main/skills/skill-creator
+- Taste Skill visual quality references: https://github.com/Leonxlnx/taste-skill
 ${options.includeYandexGames ? '- Yandex Games SDK docs: https://yandex.com/dev/games/doc/en/sdk/sdk-about\n- Yandex Games requirements: https://yandex.ru/dev/games/doc/ru/concepts/requirements' : ''}
 
 ## Update Policy
@@ -333,6 +349,7 @@ ${options.includeYandexGames ? '- Yandex Games SDK docs: https://yandex.com/dev/
 - When official sources disagree with local skills, update the local skill and explain why.
 - Keep this project focused on Phaser mobile/desktop games.
 - Do not introduce unrelated framework guidance into core skills.
+- Treat generic frontend taste sources as inspiration only; adapt them to Phaser canvas, HUD, menus, and game screens.
 
 ## Version Notes
 
@@ -348,7 +365,7 @@ Use these prompts when opening this repo in Codex, Claude, Gemini, or another co
 ## First Session
 
 \`\`\`text
-Read START_HERE.md, AGENTS.md, AGENT_WORKFLOW.md, docs/game-design-intake.md, docs/first-playable-contract.md, docs/validation-matrix.md, skills/README.md, and skills/_meta/task-map.md. Then explain how this Phaser project is organized and which workflow you will follow.
+Read AGENTS.md, then explain how this Phaser project is organized and which workflow you will follow.
 \`\`\`
 
 ## Audit This Repo
@@ -387,10 +404,28 @@ Use phaser-input-mobile-desktop, phaser-responsive-layout, and phaser-gamefeel. 
 Use phaser-assets-pipeline. Add the requested assets through the manifest and update preload usage without scattering asset keys.
 \`\`\`
 
+## Polish A Game Screen
+
+\`\`\`text
+Use phaser-visual-taste and phaser-ui-redesign-auditor. Improve the HUD/menu/game-over screen so it reads clearly on phone and desktop without changing gameplay logic.
+\`\`\`
+
+## Create A Game Brand Direction
+
+\`\`\`text
+Use phaser-brandkit-brief and phaser-ai-art-asset-brief. Define the game's logo concept, palette, UI motif, runtime asset style, and marketing image direction.
+\`\`\`
+
 ## Update Skills
 
 \`\`\`text
 Use phaser-skill-pack-maintainer. Check skills/_meta/source-registry.md and update the local skill pack while keeping it Phaser mobile/desktop focused.
+\`\`\`
+
+## Report Generator Feedback
+
+\`\`\`text
+Use phaser-generator-feedback-reporter. The previous attempt failed, then we found the working solution. Write concise generator feedback so the Phaser Game Creator can be improved later.
 \`\`\`
 `,
     },
@@ -402,6 +437,10 @@ function sharedAgentEntry(agentName: string, options: ProjectOptions, skillNames
 
 This repository is a generated Phaser mobile/desktop game project. It includes a local skill pack. Use those skills before changing code.
 
+## Always-On Context
+
+For every user prompt, treat the current file as the compact context anchor for this agent, with \`AGENTS.md\` as the root operating contract. The human should be able to ask naturally without repeating "read AGENTS.md" or "load the skill map".
+
 ## Immediate Startup
 
 When opening this repository, assume these files are relevant even if the user did not mention them:
@@ -409,14 +448,13 @@ When opening this repository, assume these files are relevant even if the user d
 1. \`AGENTS.md\`
 2. \`AGENT_WORKFLOW.md\`
 3. \`scripts/agent-audit.mjs\`
-4. \`docs/game-design-intake.md\`
-5. \`docs/first-playable-contract.md\`
-6. \`docs/validation-matrix.md\`
-7. \`docs/quality-gates.md\`
-8. \`skills/README.md\`
-9. \`skills/_meta/task-map.md\`
-10. \`templates/modules/\`
-11. \`.ai/skill-manifest.json\`
+4. \`skills/_meta/task-map.md\`
+5. \`skills/README.md\`
+6. \`docs/first-playable-contract.md\`
+7. \`docs/validation-matrix.md\`
+8. \`docs/quality-gates.md\`
+9. \`templates/modules/\`
+10. \`.ai/skill-manifest.json\`
 
 ## Project Facts
 
@@ -459,6 +497,9 @@ ${skillNames.map((name) => `- \`${name}\` at \`skills/${name}/SKILL.md\``).join(
 - Accessibility/localization: \`phaser-accessibility-localization\`
 - Release platforms: \`phaser-release-platforms\`
 - Art asset briefs: \`phaser-ai-art-asset-brief\`
+- Visual taste and screen polish: \`phaser-visual-taste\`
+- Existing UI redesign audit: \`phaser-ui-redesign-auditor\`
+- Brandkit and identity briefs: \`phaser-brandkit-brief\`
 - Architecture: \`phaser-project-architect\`
 - Scenes: \`phaser-scene-workflow\`
 - Assets: \`phaser-assets-pipeline\`
@@ -473,6 +514,7 @@ ${skillNames.map((name) => `- \`${name}\` at \`skills/${name}/SKILL.md\``).join(
 - Debug overlays/performance: \`phaser-debug-performance\`
 - Programmatic placeholder art and coded visuals: \`phaser-programmatic-art\`
 - Tests/build validation: \`phaser-testing\`
+- Generator feedback after failed/reworked task: \`phaser-generator-feedback-reporter\`
 - Skills/docs updates: \`phaser-skill-pack-maintainer\`
 ${options.includeYandexGames ? '- Yandex Games publishing: `yandex-publish`' : ''}
 

@@ -17,27 +17,28 @@ app.innerHTML = `
         <span></span>
         <strong>Phaser Game Creator</strong>
       </div>
-      <div class="nav-pill">Static ZIP generator</div>
+      <div class="nav-pill">Agent-ready Phaser archive</div>
     </header>
 
     <section class="stage">
       <div class="statement">
-        <p class="eyebrow">Agent-ready game repository</p>
+        <p class="eyebrow">Production-minded Phaser starter</p>
         <h1>Best skills for Phaser games.</h1>
         <p class="lead">
-          Generate a complete Phaser starter repo with AGENTS.md, local AI skills, source maps,
-          validation notes, and a project structure that Codex, Claude, or Gemini can understand immediately.
+          Generate a complete Phaser + TypeScript project with architecture, local skills, tests,
+          scene communication, save slots, asset rules, and publishing checks already wired in.
         </p>
 
         <div class="skill-wall" aria-label="Included sources and systems">
-          <span>Anthropic Skill Creator</span>
-          <span>Phaser Official Skills</span>
-          <span>Agent Skills Spec</span>
+          <span>EventBus + GameState</span>
+          <span>SaveManager with slots</span>
+          <span>Scene transitions</span>
           <span>Phaser + TypeScript</span>
-          <span>Vite Template</span>
-          <span>Playwright Smoke Tests</span>
-          <span>Mobile/Desktop Input</span>
-          <span>Responsive Layout</span>
+          <span>Vitest unit tests</span>
+          <span>Playwright desktop/mobile smoke</span>
+          <span>Visual taste + brandkit skills</span>
+          <span>Spritesheet optimization guide</span>
+          <span>Object pool templates</span>
           <span id="yandex-badge">Yandex Games optional</span>
         </div>
       </div>
@@ -87,38 +88,84 @@ app.innerHTML = `
         </label>
 
         <button class="primary" type="submit">Download Agent-Ready ZIP</button>
+        <div class="validation-stack" aria-label="Validation included in the archive">
+          <span>npm run test</span>
+          <span>npm run build</span>
+          <span>npm run test:smoke</span>
+          <span>validate:yandex</span>
+        </div>
         <div class="next-action">
-          <strong>Next:</strong> unzip, open the folder in your coding agent, then paste:
-          <code>Read START_HERE.md, AGENTS.md, and NEXT_AGENT_TASK.md. Guide me to the smallest first playable.</code>
+          <strong>Next:</strong> unzip, open the folder in your coding agent, then ask normally:
+          <code>Guide me to the smallest first playable.</code>
         </div>
       </form>
     </section>
 
     <section class="flow">
       <article>
-        <span>Open</span>
-        <strong>Drop the archive into an agent workspace.</strong>
-        <p>The repo tells the agent where to start and which local skills to use.</p>
+        <span>Generate</span>
+        <strong>Download a full working repo, not a prompt.</strong>
+        <p>The ZIP contains source code, docs, tests, local skills, and agent instructions.</p>
       </article>
       <article>
         <span>Build</span>
-        <strong>Work through Phaser-specific skills.</strong>
-        <p>Architecture, scenes, assets, input, layout, UI, gamefeel, and tests are routed explicitly.</p>
+          <strong>Agents are routed through Phaser-specific decisions.</strong>
+          <p>Scenes, state, input, assets, UI polish, brand direction, gamefeel, and publishing each have local guidance.</p>
       </article>
       <article>
-        <span>Ship</span>
-        <strong>Add Yandex publishing when needed.</strong>
-        <p>The optional pack adds SDK and moderation knowledge without cluttering every project.</p>
+        <span>Verify</span>
+        <strong>The archive tests itself after generation.</strong>
+        <p>Unit checks, build checks, desktop/mobile smoke tests, and optional Yandex validation are included.</p>
       </article>
+    </section>
+
+    <section class="capabilities" aria-label="What the generated archive includes">
+      <div class="capability-head">
+        <p class="eyebrow">What the client gets</p>
+        <h2>Useful work is already inside the ZIP</h2>
+      </div>
+      <div class="capability-grid">
+        <article>
+          <span>Architecture</span>
+          <strong>EventBus, GameState, SaveManager, scene transitions</strong>
+          <p>Starter code separates runtime state, persistence, UI events, and Phaser scene orchestration.</p>
+        </article>
+        <article>
+          <span>Testing</span>
+          <strong>Vitest + Playwright included</strong>
+          <p>Generated projects verify pure logic, canvas boot, scene transition, and live update loop.</p>
+        </article>
+        <article>
+          <span>Assets</span>
+          <strong>Manifest-driven spritesheets and optimization rules</strong>
+          <p>Frame dimensions, cache-busters, VRAM budgets, alpha checks, and alignment fixes are documented.</p>
+        </article>
+        <article>
+          <span>Visual taste</span>
+          <strong>HUD, menus, brandkit, and anti-generic UI checks</strong>
+          <p>Local skills adapt premium design audit ideas to Phaser screens instead of generic landing-page polish.</p>
+        </article>
+        <article>
+          <span>Publishing</span>
+          <strong>Optional Yandex Games pack</strong>
+          <p>SDK startup, loading readiness, pause/resume hooks, ZIP validation, and moderation notes are generated.</p>
+        </article>
+      </div>
     </section>
 
     <section class="payload">
       <div class="payload-head">
         <div>
           <p class="eyebrow">Archive contents</p>
-          <h2>Agent operating system + Phaser starter</h2>
+          <h2>Inspect the generated structure</h2>
         </div>
         <span id="file-count">0 files</span>
+      </div>
+      <div class="payload-summary">
+        <span>Local agent skills</span>
+        <span>Phaser runtime skeleton</span>
+        <span>Unit and smoke tests</span>
+        <span>Asset and publishing docs</span>
       </div>
       <div class="tree" id="file-tree"></div>
     </section>
@@ -184,13 +231,19 @@ function renderPreview(): void {
         path.startsWith('skills/') ||
         path.startsWith('docs/yandex') ||
         path.startsWith('scripts/') ||
+        path.startsWith('tests/') ||
+        path.startsWith('src/game/assets/') ||
+        path.startsWith('src/game/config/') ||
+        path.startsWith('src/game/events/') ||
+        path.startsWith('src/game/save/') ||
         path.startsWith('src/game/platform/') ||
         path.startsWith('src/game/scenes/') ||
+        path.startsWith('src/game/state/') ||
         path.startsWith('src/game/input/') ||
         path === 'package.json'
       );
     })
-    .slice(0, 42);
+    .slice(0, 64);
 
   fileTree.innerHTML = importantFiles.map((path) => `<div>${escapeHtml(path)}</div>`).join('');
 }

@@ -220,7 +220,7 @@ Rules:
 ## Workflow
 
 1. Read \`references/save-versioning.md\`.
-2. Check the existing save module before adding persisted fields.
+2. Check \`src/game/save/SaveManager.ts\` before adding persisted fields.
 3. Add or update a versioned save type when structure changes.
 4. Provide defaults for missing data.
 5. Migrate old saves forward or reset safely with a clear fallback.

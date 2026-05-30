@@ -16,6 +16,9 @@ const coreSkillNames = [
   'phaser-accessibility-localization',
   'phaser-release-platforms',
   'phaser-ai-art-asset-brief',
+  'phaser-visual-taste',
+  'phaser-ui-redesign-auditor',
+  'phaser-brandkit-brief',
   'phaser-project-architect',
   'phaser-scene-workflow',
   'phaser-assets-pipeline',
@@ -30,6 +33,7 @@ const coreSkillNames = [
   'phaser-debug-performance',
   'phaser-programmatic-art',
   'phaser-testing',
+  'phaser-generator-feedback-reporter',
   'phaser-skill-pack-maintainer',
 ];
 

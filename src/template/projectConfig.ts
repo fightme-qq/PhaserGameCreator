@@ -5,12 +5,14 @@ export function projectConfig(options: ProjectOptions): GeneratedFile[] {
     'agent:audit': 'node scripts/agent-audit.mjs',
     dev: 'vite --host 0.0.0.0',
     build: 'tsc && vite build',
+    test: 'vitest run tests/unit',
     preview: 'vite preview --host 0.0.0.0',
   };
 
   const devDependencies: Record<string, string> = {
     typescript: '^5.7.3',
     vite: '^6.3.5',
+    vitest: '^4.1.7',
   };
 
   if (options.includePlaywright) {
@@ -139,10 +141,14 @@ body,
 
 export default defineConfig({
   testDir: './tests',
+  testMatch: '**/*.spec.ts',
   webServer: {
     command: 'npm run dev -- --port 4177',
     url: 'http://127.0.0.1:4177',
     reuseExistingServer: !process.env.CI,
+  },
+  use: {
+    baseURL: 'http://127.0.0.1:4177',
   },
   projects: [
     { name: 'desktop', use: { ...devices['Desktop Chrome'] } },
@@ -165,12 +171,207 @@ test('game canvas renders', async ({ page }) => {
   }));
   expect(size.width).toBeGreaterThan(0);
   expect(size.height).toBeGreaterThan(0);
-  await page.waitForTimeout(500);
+  await expect.poll(() => page.evaluate(() => Boolean(window.__phaserGame)), { timeout: 15_000 }).toBe(true);
+  await expect
+    .poll(() => page.evaluate(() => window.__phaserGame?.scene.isActive('TemplateGuideScene') ?? false), {
+      timeout: 15_000,
+    })
+    .toBe(true);
+
+  await page.keyboard.press('Enter');
+  await expect
+    .poll(() => page.evaluate(() => window.__phaserGame?.scene.isActive('GameScene') ?? false), {
+      timeout: 15_000,
+    })
+    .toBe(true);
+
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const scene = window.__phaserGame?.scene.getScene('GameScene') as unknown as
+          | { getDebugSnapshot?: () => { elapsedMs: number; phase: string } }
+          | undefined;
+
+        return scene?.getDebugSnapshot?.().elapsedMs ?? 0;
+      }),
+      { timeout: 15_000 },
+    )
+    .toBeGreaterThan(0);
+
+  const gameState = await page.evaluate(() => {
+    const scene = window.__phaserGame?.scene.getScene('GameScene') as unknown as
+      | { getDebugSnapshot?: () => { elapsedMs: number; phase: string } }
+      | undefined;
+
+    return scene?.getDebugSnapshot?.();
+  });
+
+  expect(gameState?.phase).toBe('playing');
+  expect(gameState?.elapsedMs).toBeGreaterThan(0);
 });
+`,
+          },
+          {
+            path: 'tests/types.d.ts',
+            content: `import type Phaser from 'phaser';
+
+declare global {
+  interface Window {
+    __phaserGame?: Phaser.Game;
+  }
+}
+
+export {};
 `,
           },
         ]
       : []),
+    {
+      path: 'tests/unit/GameState.test.ts',
+      content: `import { describe, expect, it } from 'vitest';
+import { GameState } from '../../src/game/state/GameState';
+
+describe('GameState', () => {
+  it('starts with saved best score and resets run score', () => {
+    const state = new GameState(12);
+
+    expect(state.value).toEqual({
+      phase: 'ready',
+      score: 0,
+      bestScore: 12,
+      elapsedMs: 0,
+    });
+
+    expect(state.start()).toEqual({
+      phase: 'playing',
+      score: 0,
+      bestScore: 12,
+      elapsedMs: 0,
+    });
+  });
+
+  it('tracks elapsed time only while playing', () => {
+    const state = new GameState();
+
+    state.update(1000);
+    expect(state.value.elapsedMs).toBe(0);
+
+    state.start();
+    state.update(250);
+    state.update(750);
+
+    expect(state.value.elapsedMs).toBe(1000);
+  });
+
+  it('reports score and best score changes', () => {
+    const state = new GameState(2);
+    state.start();
+
+    expect(state.addScore(1)).toEqual({ score: 1, bestScore: 2, bestChanged: false });
+    expect(state.addScore(2)).toEqual({ score: 3, bestScore: 3, bestChanged: true });
+  });
+});
+`,
+    },
+    {
+      path: 'tests/unit/SaveManager.test.ts',
+      content: `import { beforeEach, describe, expect, it } from 'vitest';
+import { SaveManager, type SaveData } from '../../src/game/save/SaveManager';
+
+class MemoryStorage implements Storage {
+  private readonly values = new Map<string, string>();
+
+  get length(): number {
+    return this.values.size;
+  }
+
+  clear(): void {
+    this.values.clear();
+  }
+
+  getItem(key: string): string | null {
+    return this.values.get(key) ?? null;
+  }
+
+  key(index: number): string | null {
+    return Array.from(this.values.keys())[index] ?? null;
+  }
+
+  removeItem(key: string): void {
+    this.values.delete(key);
+  }
+
+  setItem(key: string, value: string): void {
+    this.values.set(key, value);
+  }
+}
+
+describe('SaveManager', () => {
+  let storage: MemoryStorage;
+  let saves: SaveManager;
+
+  beforeEach(() => {
+    storage = new MemoryStorage();
+    saves = new SaveManager('test-game', storage);
+  });
+
+  it('returns safe defaults for empty and corrupted saves', () => {
+    expect(saves.load()).toEqual({
+      version: 1,
+      bestScore: 0,
+      settings: {
+        musicVolume: 0.8,
+        sfxVolume: 0.8,
+        reducedMotion: false,
+      },
+    });
+
+    storage.setItem('test-game:save:slot-1', '{bad json');
+    expect(saves.load().bestScore).toBe(0);
+  });
+
+  it('saves and lists independent slots', () => {
+    const data: SaveData = {
+      version: 1,
+      bestScore: 42,
+      settings: {
+        musicVolume: 0.5,
+        sfxVolume: 0.25,
+        reducedMotion: true,
+      },
+    };
+
+    saves.save(data, 'slot-2');
+
+    expect(saves.load('slot-1').bestScore).toBe(0);
+    expect(saves.load('slot-2')).toEqual(data);
+    expect(saves.listSlots().find((entry) => entry.slot === 'slot-2')?.updatedAt).toBeDefined();
+  });
+
+  it('migrates old plain save data and fills missing settings', () => {
+    storage.setItem('test-game:save:slot-1', JSON.stringify({ version: 0, bestScore: 7 }));
+
+    expect(saves.load()).toEqual({
+      version: 1,
+      bestScore: 7,
+      settings: {
+        musicVolume: 0.8,
+        sfxVolume: 0.8,
+        reducedMotion: false,
+      },
+    });
+  });
+
+  it('can reset a slot', () => {
+    saves.save(saves.load());
+    expect(storage.length).toBe(1);
+
+    saves.reset();
+    expect(storage.length).toBe(0);
+  });
+});
+`,
+    },
     {
       path: 'scripts/agent-audit.mjs',
       content: `import fs from 'node:fs';

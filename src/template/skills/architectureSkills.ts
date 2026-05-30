@@ -187,6 +187,7 @@ Recommended base:
 - \`TemplateGuideScene\`: generated onboarding scene; replace with real menu/gameplay once the first loop exists.
 - \`GameScene\`: first playable or sandbox scene.
 - \`UIScene\`: HUD overlay.
+- \`sceneTransitions.ts\`: fade helpers for scene changes that should feel intentional.
 
 Optional:
 
@@ -203,13 +204,14 @@ Keep scene names stable because agent routing and tests often refer to them.
 Preferred options:
 
 1. Pass simple data through \`scene.start(key, data)\` or \`scene.launch(key, data)\`.
-2. Use Phaser events for short-lived notifications.
+2. Use \`src/game/events/EventBus.ts\` for typed cross-scene notifications such as gameplay -> HUD updates.
 3. Use a small state module for cross-scene state.
 4. Use save modules only for persisted data.
 
 Avoid:
 
 - Reading random properties from another scene.
+- Calling \`scene.get()\` just to mutate another scene's UI.
 - Global mutable objects without ownership.
 - Circular scene dependencies.
 - UI scene directly mutating gameplay internals.

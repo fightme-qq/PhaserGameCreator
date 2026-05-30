@@ -14,14 +14,15 @@ You opened a generated Phaser game repository.
 If you are a human:
 
 1. Open this folder in Codex, Claude Code, Gemini CLI, or another coding agent.
-2. Paste this:
+2. The archive includes auto-loaded context files for common agents. You can ask normally; the agent should already see \`AGENTS.md\` or the matching agent-specific entry file.
+3. If an agent seems lost, paste this fallback:
 
 \`\`\`text
-Read START_HERE.md, AGENTS.md, and NEXT_AGENT_TASK.md. Guide me to the smallest first playable.
+Read AGENTS.md, then answer my last request using the local skill map.
 \`\`\`
 
-3. The original idea is recorded in \`GAME_BRIEF.md\`.
-4. Run:
+4. The original idea is recorded in \`GAME_BRIEF.md\`.
+5. Run:
 
 \`\`\`bash
 npm install
@@ -29,19 +30,18 @@ npm run agent:audit
 npm run dev
 \`\`\`
 
-5. Open the local URL printed by Vite.
+6. Open the local URL printed by Vite.
 
 If you are an AI coding agent:
 
 1. Read \`AGENTS.md\` first.
 2. Read \`AGENT_WORKFLOW.md\`.
 3. Run \`npm run agent:audit\` if dependencies are installed.
-4. Read \`docs/game-design-intake.md\`, \`docs/first-playable-contract.md\`, \`docs/validation-matrix.md\`, and \`docs/quality-gates.md\`.
-5. Read \`skills/README.md\`.
-6. Pick the right skill from \`skills/_meta/task-map.md\`.
-7. Check \`templates/modules/\` before inventing common systems from scratch.
-8. Before changing code, explain which skill you are using and why.
-9. Keep this repo Phaser-focused. Do not convert it into a generic web app.
+4. Read \`skills/_meta/task-map.md\` and the selected skill for the task.
+5. Pull deeper docs only when the current task needs them.
+6. Check \`templates/modules/\` before inventing common systems from scratch.
+7. Before changing code, explain which skill you are using and why.
+8. Keep this repo Phaser-focused. Do not convert it into a generic web app.
 
 ## What This Project Is
 
@@ -164,7 +164,7 @@ Turn this game idea into the smallest verified Phaser first playable:
 
 Generated with Phaser Game Creator.
 
-This repo is built to be opened by a coding agent. The agent should read \`AGENTS.md\`, then use the project-local skills in \`skills/\`.
+This repo is built to be opened by a coding agent. Common agents should auto-load the root instructions; \`AGENTS.md\` is the context anchor and operating contract for every prompt.
 
 ## Run
 
@@ -224,7 +224,7 @@ skills/       Project-local AI skills
 - \`docs/game-design-intake.md\`: how to parse vague game ideas.
 - \`docs/first-playable-contract.md\`: what must be true before the first loop is done.
 - \`docs/validation-matrix.md\`: checks before finishing work.
-- \`docs/quality-gates.md\`: first playable, architecture, asset, mobile, and runtime gates.
+- \`docs/quality-gates.md\`: first playable, architecture, visual taste, asset, mobile, and runtime gates.
 - \`docs/release-checklist.md\`: public build readiness checklist.
 - \`docs/mobile-checklist.md\`: phone and touch validation checklist.
 - \`docs/asset-credits-policy.md\`: asset sourcing and copyright rules.

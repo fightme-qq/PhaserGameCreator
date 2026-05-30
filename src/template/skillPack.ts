@@ -6,6 +6,7 @@ import { designWorkflowSkills } from './skills/designWorkflowSkills';
 import { gameplayStructureSkills } from './skills/gameplayStructureSkills';
 import { productionGrowthSkills } from './skills/productionGrowthSkills';
 import { testingMaintainerSkills } from './skills/testingMaintainerSkills';
+import { visualTasteSkills } from './skills/visualTasteSkills';
 import { yandexSkill } from './skills/yandexSkill';
 
 export function skillPack(options: ProjectOptions): GeneratedFile[] {
@@ -16,6 +17,7 @@ export function skillPack(options: ProjectOptions): GeneratedFile[] {
     ...architectureSkills(),
     ...coreRuntimeSkills(),
     ...advancedGameplaySkills(),
+    ...visualTasteSkills(),
     ...testingMaintainerSkills(),
     ...(options.includeYandexGames ? yandexSkill() : []),
   ];

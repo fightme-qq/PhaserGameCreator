@@ -211,7 +211,7 @@ Use skills:
 Steps:
 
 1. Define projectile owner, speed, lifetime, damage, and collision targets.
-2. Use a group or object pool for repeated shots.
+2. Use \`templates/modules/PhaserSpritePool.ts\` or a Phaser group with \`maxSize\` for repeated shots.
 3. Reset velocity, active state, visibility, tint, and timers on reuse.
 4. Disable projectiles when offscreen or after collision.
 5. Add readable firing/hit feedback.
@@ -230,7 +230,7 @@ Use skills:
 Steps:
 
 1. Save only meaningful data: settings, best score, unlocks, level progress.
-2. Include a schema version once the save has more than one field.
+2. Use \`src/game/save/SaveManager.ts\` for slots, schema version, and safe defaults.
 3. Handle missing, malformed, or old saves gracefully.
 4. Never store Phaser objects.
 5. Add a reset path for development.
@@ -251,7 +251,7 @@ Steps:
 
 1. Add a MenuScene only when the first playable needs entry choices.
 2. Keep buttons large enough for touch and readable on desktop.
-3. Start gameplay through explicit scene transition.
+3. Start gameplay through \`src/game/scenes/sceneTransitions.ts\`.
 4. Avoid complex settings/progression before the loop works.
 5. Validate menu -> game -> restart/menu flow.
 `,

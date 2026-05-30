@@ -41,6 +41,17 @@ Use these gates before calling the project ready for a user, test build, or rele
 - Third-party assets are recorded in \`public/assets/credits.md\`.
 - Runtime assets are self-hosted, not loaded from CDN.
 
+## Visual Taste Gate
+
+- HUD, menu, pause, win, fail, and restart states are readable on phone and desktop.
+- One visual language is used across gameplay, HUD, menus, and overlays.
+- Critical information is not hidden by particles, glows, backgrounds, or decorative panels.
+- Buttons and interactive UI have hover/active/focus/disabled or touch-equivalent states where relevant.
+- Text does not clip, wrap awkwardly, or sit below readable contrast.
+- Motion supports feedback, reward, danger, navigation, or state change; it is not constant noise.
+- Reduced-motion settings are respected for heavy shake, flash, particles, and looping effects.
+- The UI avoids generic AI tells: random purple/blue glow, equal-card filler rows, meaningless pills, and cards inside cards.
+
 ## Runtime Gate
 
 - \`npm run build\` passes.

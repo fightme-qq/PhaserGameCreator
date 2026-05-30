@@ -41,7 +41,12 @@ for (const testCase of cases) {
   generateProject(projectDir, testCase);
   validateStructure(projectDir, testCase);
   run('npm', ['install', '--ignore-scripts'], projectDir);
+  run('npm', ['run', 'test'], projectDir);
   run('npm', ['run', 'build'], projectDir);
+
+  if (testCase.includePlaywright) {
+    run('npm', ['run', 'test:smoke'], projectDir);
+  }
 
   if (testCase.includeYandexGames) {
     run('npm', ['run', 'validate:yandex'], projectDir);
@@ -77,7 +82,11 @@ function validateStructure(projectDir: string, options: ProjectOptions): void {
     'src/game/config/gameConfig.ts',
     'src/game/config/sceneKeys.ts',
     'src/game/config/gameEvents.ts',
+    'src/game/events/EventBus.ts',
+    'src/game/state/GameState.ts',
     'src/game/assets/assetManifest.ts',
+    'src/game/scenes/sceneTransitions.ts',
+    'src/game/save/SaveManager.ts',
   ];
 
   for (const file of requiredFiles) {

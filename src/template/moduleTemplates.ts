@@ -14,10 +14,10 @@ They are intentionally outside \`src/\` so they do not compile until copied or a
 Use them when a feature needs a common system shape:
 
 - \`InputActions.ts\`: action-based input snapshot.
-- \`GameState.ts\`: small runtime state container.
 - \`TimerSystem.ts\`: countdown/count-up loop.
 - \`HealthSystem.ts\`: health, damage, invulnerability.
 - \`ObjectPool.ts\`: reusable object lifecycle.
+- \`PhaserSpritePool.ts\`: Phaser Group-based sprite recycling.
 - \`DebugOverlay.ts\`: development-only text overlay.
 - \`AudioManager.ts\`: music/SFX volume and unlock shape.
 - \`AnimationStateMachine.ts\`: animation state transitions.
@@ -56,52 +56,6 @@ export function normalizeAxis(value: number): number {
   }
 
   return Math.max(-1, Math.min(1, value));
-}
-`,
-    },
-    {
-      path: 'templates/modules/GameState.ts',
-      content: `export type RunPhase = 'ready' | 'playing' | 'won' | 'lost';
-
-export type GameStateSnapshot = {
-  phase: RunPhase;
-  score: number;
-  bestScore: number;
-  elapsedMs: number;
-};
-
-export class GameState {
-  private snapshot: GameStateSnapshot = {
-    phase: 'ready',
-    score: 0,
-    bestScore: 0,
-    elapsedMs: 0,
-  };
-
-  get value(): GameStateSnapshot {
-    return { ...this.snapshot };
-  }
-
-  start(): void {
-    this.snapshot.phase = 'playing';
-    this.snapshot.score = 0;
-    this.snapshot.elapsedMs = 0;
-  }
-
-  addScore(amount: number): void {
-    this.snapshot.score += amount;
-    this.snapshot.bestScore = Math.max(this.snapshot.bestScore, this.snapshot.score);
-  }
-
-  update(deltaMs: number): void {
-    if (this.snapshot.phase === 'playing') {
-      this.snapshot.elapsedMs += deltaMs;
-    }
-  }
-
-  finish(phase: Extract<RunPhase, 'won' | 'lost'>): void {
-    this.snapshot.phase = phase;
-  }
 }
 `,
     },
@@ -229,6 +183,79 @@ export class ObjectPool<T extends Poolable> {
 
   get activeCount(): number {
     return this.items.filter((item) => item.active).length;
+  }
+}
+`,
+    },
+    {
+      path: 'templates/modules/PhaserSpritePool.ts',
+      content: `import Phaser from 'phaser';
+
+export type PhaserSpritePoolConfig = {
+  defaultKey: string;
+  maxSize: number;
+  classType?: typeof Phaser.GameObjects.Sprite;
+  runChildUpdate?: boolean;
+};
+
+export class PhaserSpritePool<TSprite extends Phaser.GameObjects.Sprite = Phaser.GameObjects.Sprite> {
+  private readonly group: Phaser.GameObjects.Group;
+
+  constructor(
+    scene: Phaser.Scene,
+    private readonly config: PhaserSpritePoolConfig,
+  ) {
+    this.group = scene.add.group({
+      classType: config.classType ?? Phaser.GameObjects.Sprite,
+      defaultKey: config.defaultKey,
+      maxSize: config.maxSize,
+      runChildUpdate: config.runChildUpdate ?? false,
+    });
+  }
+
+  prewarm(count = this.config.maxSize): void {
+    const repeat = Math.max(0, Math.min(count, this.config.maxSize) - 1);
+
+    if (repeat < 0) {
+      return;
+    }
+
+    this.group.createMultiple({
+      key: this.config.defaultKey,
+      repeat,
+      active: false,
+      visible: false,
+    });
+  }
+
+  acquire(x: number, y: number, frame?: string | number): TSprite | undefined {
+    const sprite = this.group.get(x, y, this.config.defaultKey, frame) as TSprite | null;
+
+    if (!sprite) {
+      return undefined;
+    }
+
+    sprite.setActive(true);
+    sprite.setVisible(true);
+    sprite.setPosition(x, y);
+
+    return sprite;
+  }
+
+  release(sprite: TSprite): void {
+    this.group.killAndHide(sprite);
+  }
+
+  get children(): TSprite[] {
+    return this.group.getChildren() as TSprite[];
+  }
+
+  get activeCount(): number {
+    return this.group.countActive(true);
+  }
+
+  get freeCount(): number {
+    return this.group.getTotalFree();
   }
 }
 `,

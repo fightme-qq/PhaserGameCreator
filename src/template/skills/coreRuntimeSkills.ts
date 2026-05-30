@@ -35,6 +35,15 @@ export const ImageKeys = {
 export const imageAssets = [
   { key: ImageKeys.player, url: '/assets/images/player.png' },
 ];
+
+export const spritesheetAssets = [
+  {
+    key: 'player',
+    url: '/assets/spritesheets/player.png?v=1',
+    frameWidth: 128,
+    frameHeight: 128,
+  },
+];
 \`\`\`
 
 Rules:
@@ -43,6 +52,8 @@ Rules:
 - Do not duplicate string keys across scenes.
 - Group by asset type: images, spritesheets, atlases, audio, fonts, tilemaps.
 - Keep filenames lowercase and hyphenated.
+- Keep spritesheet \`frameWidth\` and \`frameHeight\` beside the URL in the manifest.
+- Bump a temporary \`?v=N\` cache-buster when replacing binary files under \`public/assets/\` during development.
 - Add comments only for non-obvious export settings or ownership.
 `),
     reference('phaser-assets-pipeline', 'loader-patterns.md', `# Loader Patterns
@@ -84,6 +95,8 @@ Rules:
 - Keep frame names stable.
 - Prefer TexturePacker/Aseprite export settings that are easy to reproduce.
 - Document export settings if another tool must regenerate assets.
+- For fixed-grid spritesheets, update PNG dimensions and manifest frame dimensions in the same change.
+- If a resized sheet shows wrong frames, inspect \`frameWidth\`, \`frameHeight\`, \`margin\`, and \`spacing\` first.
 `),
     reference('phaser-assets-pipeline', 'tilemaps.md', `# Tilemaps
 
