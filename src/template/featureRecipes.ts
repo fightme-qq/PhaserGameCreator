@@ -26,7 +26,7 @@ Use skills:
 
 - \`phaser-scene-workflow\`
 - \`phaser-input-mobile-desktop\`
-- \`phaser-sprite-animation\` if animated
+- \`phaser-spritesheet-pipeline\` if animated or processed from generated art
 - \`phaser-debug-performance\` if tuning physics
 
 Steps:

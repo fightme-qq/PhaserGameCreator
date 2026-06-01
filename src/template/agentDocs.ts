@@ -65,7 +65,7 @@ Using phaser-scene-workflow because this changes scene lifecycle and transitions
 - Systems/entities/state/events/save: \`phaser-game-systems\`
 - HUD, menu, dialogs, overlays: \`phaser-ui-hud\`
 - Tweens, camera, particles, juice, audio feedback: \`phaser-gamefeel\`
-- Spritesheets, texture atlases, frame animation, animation states: \`phaser-sprite-animation\`
+- Spritesheet cutting, chroma cleanup, optimization, atlases, frame animation, animation states: \`phaser-spritesheet-pipeline\`
 - Tiled maps, tile layers, object layers, tile collisions: \`phaser-tilemaps-tiled\`
 - Music, SFX, mute, mobile audio unlock, volume settings: \`phaser-audio-sfx\`
 - Debug overlays, FPS, pools, low-end mobile performance: \`phaser-debug-performance\`
@@ -206,7 +206,7 @@ ${sharedAgentEntry('Cursor', options, skillNames)}
             systems: 'phaser-game-systems',
             ui: 'phaser-ui-hud',
             gamefeel: 'phaser-gamefeel',
-            spriteAnimation: 'phaser-sprite-animation',
+            spritesheetPipeline: 'phaser-spritesheet-pipeline',
             tilemaps: 'phaser-tilemaps-tiled',
             audio: 'phaser-audio-sfx',
             debugPerformance: 'phaser-debug-performance',
@@ -283,7 +283,7 @@ Use this map to choose the correct skill.
 | Add gameplay systems, entities, state, save, events | \`phaser-game-systems\` |
 | Build HUD, menus, dialogs, overlays | \`phaser-ui-hud\` |
 | Improve feel with tweens, camera, particles, audio feedback | \`phaser-gamefeel\` |
-| Load, slice, animate, or debug spritesheets and texture atlases | \`phaser-sprite-animation\` |
+| Cut, clean, resize, optimize, animate, or debug spritesheets and texture atlases | \`phaser-spritesheet-pipeline\` |
 | Build tile-based worlds, Tiled maps, collision layers, object spawns | \`phaser-tilemaps-tiled\` |
 | Add music, SFX, mute/volume, mobile audio unlock | \`phaser-audio-sfx\` |
 | Add debug overlays, FPS checks, object pools, mobile performance fixes | \`phaser-debug-performance\` |
@@ -508,7 +508,7 @@ ${skillNames.map((name) => `- \`${name}\` at \`skills/${name}/SKILL.md\``).join(
 - Systems/state/save/events: \`phaser-game-systems\`
 - HUD/menus/overlays: \`phaser-ui-hud\`
 - Game feel: \`phaser-gamefeel\`
-- Spritesheets/atlases/animation states: \`phaser-sprite-animation\`
+- Spritesheet cutting/cleanup/atlases/animation states: \`phaser-spritesheet-pipeline\`
 - Tilemaps/Tiled worlds: \`phaser-tilemaps-tiled\`
 - Audio/music/SFX: \`phaser-audio-sfx\`
 - Debug overlays/performance: \`phaser-debug-performance\`

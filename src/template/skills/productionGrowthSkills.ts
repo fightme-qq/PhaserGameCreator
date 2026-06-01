@@ -163,6 +163,7 @@ Release checklist:
 - Keep gameplay readability above decorative detail.
 - Prefer small consistent spritesheets/atlases over many loose files when content grows.
 - Keep briefs specific enough for an artist or image tool to produce usable files.
+- For image-generator sprite sheets that will be cut automatically, request a flat \`#FF00FF\` chroma background with no transparency, gradient, texture, touching shadow/glow, or edge spill. Use \`#00FF00\` when sprites contain purple elements. The chroma color must not appear inside sprites.
 `),
     reference('phaser-ai-art-asset-brief', 'asset-brief-template.md', `# Asset Brief Template
 
@@ -186,6 +187,7 @@ Output:
   - PNG spritesheets or texture atlas JSON.
   - Lowercase kebab-case filenames.
   - Transparent background for sprites/UI.
+  - For image-generator sheets that need automatic background removal: generate on flat \`#FF00FF\` chroma, or \`#00FF00\` when sprites contain purple. Keep generous spacing and do not let shadow/glow touch the background.
 - Placeholder fallback:
   - generated geometric textures or simple coded sprites until final art exists.
 `),

@@ -52,7 +52,7 @@ Skills:
 
 - \`phaser-input-mobile-desktop\`
 - \`phaser-responsive-layout\`
-- \`phaser-sprite-animation\`
+- \`phaser-spritesheet-pipeline\`
 - \`phaser-tilemaps-tiled\` if using tile levels
 `,
     },

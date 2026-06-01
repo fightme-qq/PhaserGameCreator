@@ -27,7 +27,7 @@ const coreSkillNames = [
   'phaser-game-systems',
   'phaser-ui-hud',
   'phaser-gamefeel',
-  'phaser-sprite-animation',
+  'phaser-spritesheet-pipeline',
   'phaser-tilemaps-tiled',
   'phaser-audio-sfx',
   'phaser-debug-performance',
