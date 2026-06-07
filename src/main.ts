@@ -39,6 +39,7 @@ app.innerHTML = `
           <span>Visual taste + brandkit skills</span>
           <span>Spritesheet optimization guide</span>
           <span>Object pool templates</span>
+          <span id="idle-badge">Idle economy optional</span>
           <span id="yandex-badge">Yandex Games optional</span>
         </div>
       </div>
@@ -78,6 +79,14 @@ app.innerHTML = `
             </label>
           </div>
         </fieldset>
+
+        <label class="publish-toggle">
+          <input id="idle-pack" type="checkbox" />
+          <span>
+            <strong>Add Idle / Incremental Game Pack</strong>
+            <small>Resources, producers, upgrades, offline progress, Phaser-ready AI skills</small>
+          </span>
+        </label>
 
         <label class="publish-toggle">
           <input id="yandex-games" type="checkbox" />
@@ -146,6 +155,11 @@ app.innerHTML = `
           <p>Local skills adapt premium design audit ideas to Phaser screens instead of generic landing-page polish.</p>
         </article>
         <article>
+          <span>Idle games</span>
+          <strong>Optional incremental economy architecture</strong>
+          <p>Resources, producers, upgrades, achievements, temporary bonuses, offline progress, and balance tests can be generated.</p>
+        </article>
+        <article>
           <span>Publishing</span>
           <strong>Optional Yandex Games pack</strong>
           <p>SDK startup, loading readiness, pause/resume hooks, ZIP validation, and moderation notes are generated.</p>
@@ -186,10 +200,12 @@ app.innerHTML = `
 const form = document.querySelector<HTMLFormElement>('#creator-form')!;
 const projectName = document.querySelector<HTMLInputElement>('#project-name')!;
 const gameIdea = document.querySelector<HTMLTextAreaElement>('#game-idea')!;
+const idlePack = document.querySelector<HTMLInputElement>('#idle-pack')!;
 const yandexGames = document.querySelector<HTMLInputElement>('#yandex-games')!;
 const previewTitle = document.querySelector<HTMLHeadingElement>('#preview-title')!;
 const fileCount = document.querySelector<HTMLSpanElement>('#file-count')!;
 const fileTree = document.querySelector<HTMLDivElement>('#file-tree')!;
+const idleBadge = document.querySelector<HTMLSpanElement>('#idle-badge')!;
 const yandexBadge = document.querySelector<HTMLSpanElement>('#yandex-badge')!;
 
 function readOptions(): ProjectOptions {
@@ -201,6 +217,7 @@ function readOptions(): ProjectOptions {
     title,
     target: document.querySelector<HTMLInputElement>('input[name="target"]:checked')?.value === 'desktop' ? 'desktop' : 'mobile',
     includeYandexGames: yandexGames.checked,
+    includeIdlePack: idlePack.checked,
     includePwa: false,
     includeArcadePhysics: true,
     includeTilemaps: false,
@@ -213,7 +230,11 @@ function renderPreview(): void {
   const files = getProjectFiles(options);
   previewTitle.textContent = `${options.slug}.zip`;
   fileCount.textContent = `${files.length} files`;
+  idleBadge.classList.toggle('active', options.includeIdlePack);
   yandexBadge.classList.toggle('active', options.includeYandexGames);
+  gameIdea.placeholder = options.includeIdlePack
+    ? 'Example: Space bakery that bakes stars while offline'
+    : 'Example: Vampire Survivors but with cats';
 
   const importantFiles = files
     .map((file) => file.path)
@@ -230,8 +251,11 @@ function renderPreview(): void {
         path.startsWith('.github/') ||
         path.startsWith('skills/') ||
         path.startsWith('docs/yandex') ||
+        path.startsWith('docs/IDLE') ||
         path.startsWith('scripts/') ||
         path.startsWith('tests/') ||
+        path.startsWith('src/data/') ||
+        path.startsWith('src/game/idle/') ||
         path.startsWith('src/game/assets/') ||
         path.startsWith('src/game/config/') ||
         path.startsWith('src/game/events/') ||
@@ -288,6 +312,7 @@ for (const input of [projectName, gameIdea, ...document.querySelectorAll<HTMLInp
   input.addEventListener('change', renderPreview);
 }
 
+idlePack.addEventListener('change', renderPreview);
 yandexGames.addEventListener('change', renderPreview);
 
 renderPreview();

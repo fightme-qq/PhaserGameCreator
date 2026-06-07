@@ -38,5 +38,17 @@ const coreSkillNames = [
 ];
 
 export function getSkillNames(options: ProjectOptions): string[] {
-  return options.includeYandexGames ? [...coreSkillNames, 'yandex-publish'] : coreSkillNames;
+  const optionalSkillNames = [
+    ...(options.includeIdlePack
+      ? [
+          'phaser-idle-game-architect',
+          'phaser-idle-economy-balancer',
+          'phaser-idle-ui-feedback',
+          'phaser-idle-offline-prestige',
+        ]
+      : []),
+    ...(options.includeYandexGames ? ['yandex-publish'] : []),
+  ];
+
+  return [...coreSkillNames, ...optionalSkillNames];
 }

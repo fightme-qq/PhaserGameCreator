@@ -13,8 +13,8 @@
     "jszip": "^3.10.1"
   },
   "devDependencies": {
-    "typescript": "^5.7.3",
     "tsx": "^4.19.4",
+    "typescript": "^5.7.3",
     "vite": "^6.3.5"
   }
 }

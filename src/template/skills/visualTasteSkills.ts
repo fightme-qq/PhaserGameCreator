@@ -5,7 +5,7 @@ export function visualTasteSkills(): GeneratedFile[] {
   const files: GeneratedFile[] = [];
 
   files.push(
-    skill('phaser-visual-taste', 'Use when shaping or polishing the visual direction of a Phaser game: title screens, HUD, menus, cards, shops, upgrade choices, game-over screens, palettes, typography, motion density, art direction, and anti-generic UI checks before calling a screen finished.', `# Phaser Visual Taste
+    skill('phaser-visual-taste', 'Use when shaping or polishing the visual direction of a Phaser game: title screens, HUD, menus, cards, shops, upgrade choices, game-over screens, palettes, typography, motion density, text fit, overlap checks, art direction, and anti-generic UI checks before calling a screen finished.', `# Phaser Visual Taste
 
 ## Workflow
 
@@ -14,13 +14,16 @@ export function visualTasteSkills(): GeneratedFile[] {
 3. Set three dials: visual variance, motion intensity, and information density.
 4. Choose one visual language and keep it consistent across gameplay, HUD, menus, and overlays.
 5. Improve hierarchy before decoration: goal, current state, danger, reward, and next action must read first.
-6. Run the visual pre-flight before finishing.
+6. Run the visual pre-flight before finishing, with a specific pass for text fit and overlap.
 
 ## Rules
 
 - Do not polish a static screen before the first playable loop works.
 - Do not use generic purple/blue glow, random particles, or equal card rows as the default visual answer.
 - Do not hide game-critical information behind tiny labels, low contrast, or decorative frames.
+- Treat clipped text, overlapping text, and text that touches container edges as defects, not styling choices.
+- Long labels, dynamic values, and state-dependent copy must fit their container on the target viewport before polish work starts.
+- If text does not fit, fix layout, line breaks, font size, spacing, or container size before adding more decoration.
 - Keep one accent color family unless the gameplay meaning requires multiple semantic colors.
 - Use motion for state change, feedback, reward, danger, or navigation, not constant noise.
 - Respect reduced motion for heavy shake, flashes, particles, and looping effects.
@@ -56,7 +59,9 @@ Visual language checklist:
 Pre-flight:
 
 - Goal, score/progress, health/danger, and restart/next action are immediately readable.
-- No critical text clips on phone or desktop.
+- No critical text clips, overlaps, or truncation on phone or desktop.
+- Every text block fits its card, panel, button, or HUD strip at the tested viewport.
+- Longest plausible labels and values are checked, not just the default sample text.
 - Buttons have hover, active, focus, and disabled states where relevant.
 - Menus can be navigated without pixel-perfect pointing.
 - Game-over, win, pause, and empty states look intentionally designed.

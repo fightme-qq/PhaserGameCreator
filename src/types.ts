@@ -5,6 +5,7 @@ export type ProjectOptions = {
   title: string;
   target: 'mobile' | 'desktop';
   includeYandexGames: boolean;
+  includeIdlePack: boolean;
   includePwa: boolean;
   includeArcadePhysics: boolean;
   includeTilemaps: boolean;

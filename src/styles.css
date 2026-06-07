@@ -162,6 +162,17 @@ h1 {
   border-color: rgba(43, 189, 145, 0.2);
 }
 
+#idle-badge {
+  color: #064442;
+  background: rgba(43, 189, 145, 0.16);
+  border-color: rgba(43, 189, 145, 0.3);
+}
+
+#idle-badge.active {
+  color: #061713;
+  background: #2bbd91;
+}
+
 #yandex-badge {
   color: #6c3d05;
   background: rgba(245, 184, 75, 0.18);

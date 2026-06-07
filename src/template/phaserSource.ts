@@ -451,7 +451,6 @@ export function startSceneWithFade(
       path: 'src/game/scenes/TemplateGuideScene.ts',
       content: `import Phaser from 'phaser';
 import { SceneKeys } from '../config/sceneKeys';
-import { createTitleText } from '../ui/textStyles';
 import { fadeInScene, startSceneWithFade } from './sceneTransitions';
 
 const ideaPrompts = [
@@ -476,56 +475,101 @@ export class TemplateGuideScene extends Phaser.Scene {
   create(): void {
     const { width, height } = this.scale;
     fadeInScene(this);
-    createTitleText(this, width / 2, height * 0.16, '${options.title}');
+    this.drawBackground(width, height);
 
-    this.add
-      .text(width / 2, height * 0.27, 'Pick a prompt, open this repo with an agent, and build the first playable loop.', {
-        fontFamily: 'Arial, sans-serif',
-        fontSize: '24px',
-        color: '#b9c7e6',
-        align: 'center',
-      })
-      .setOrigin(0.5);
+    const contentWidth = Math.min(width - 96, 1180);
+    const left = (width - contentWidth) / 2;
+    const right = left + contentWidth - 360;
+    const top = 58;
 
-    this.add.rectangle(width / 2, height * 0.5, width * 0.72, height * 0.26, 0x151b26, 0.96);
-    this.add.rectangle(width / 2, height * 0.5, width * 0.72, height * 0.26).setStrokeStyle(2, 0x33435f);
+    this.add.text(left, top, '${options.title}', {
+      fontFamily: 'Trebuchet MS, Arial, sans-serif',
+      fontSize: '44px',
+      color: '#ffffff',
+      fontStyle: 'bold',
+      shadow: { offsetX: 0, offsetY: 3, color: '#000000', blur: 8, fill: true },
+    });
+
+    this.add.text(left, top + 58, '${options.includeIdlePack ? 'Idle starter preset with economy, producers, upgrades, offline progress, and tests.' : 'Agent-ready Phaser starter with scenes, state, save flow, tests, and skills.'}', {
+      fontFamily: 'Trebuchet MS, Arial, sans-serif',
+      fontSize: '19px',
+      color: '#b9c7e6',
+      wordWrap: { width: 700 },
+    });
+
+    this.add.rectangle(left, 178, 760, 300, 0x121a27, 0.96).setOrigin(0, 0).setStrokeStyle(1, 0x314766, 0.95);
+    this.add.text(left + 30, 204, 'Prompt seed', {
+      fontFamily: 'Trebuchet MS, Arial, sans-serif',
+      fontSize: '18px',
+      color: '#ffc857',
+      fontStyle: 'bold',
+    });
 
     this.promptText = this.add
-      .text(width / 2, height * 0.47, ideaPrompts[this.currentPrompt], {
-        fontFamily: 'Arial, sans-serif',
-        fontSize: '28px',
+      .text(left + 30, 254, ideaPrompts[this.currentPrompt], {
+        fontFamily: 'Trebuchet MS, Arial, sans-serif',
+        fontSize: '30px',
         color: '#ffffff',
-        align: 'center',
-        wordWrap: { width: width * 0.6 },
+        lineSpacing: 8,
+        wordWrap: { width: 690 },
       })
-      .setOrigin(0.5);
+      .setOrigin(0, 0);
 
     this.spinHint = this.add
-      .text(width / 2, height * 0.62, 'Click / tap / Space to spin ideas', {
-        fontFamily: 'Arial, sans-serif',
-        fontSize: '20px',
+      .text(left + 30, 420, 'Click this card, tap anywhere, or press Space to spin ideas.', {
+        fontFamily: 'Trebuchet MS, Arial, sans-serif',
+        fontSize: '17px',
         color: '#7ee7c8',
+        wordWrap: { width: 690 },
       })
-      .setOrigin(0.5);
+      .setOrigin(0, 0);
 
     this.tweens.add({
       targets: this.spinHint,
-      alpha: 0.5,
+      alpha: 0.58,
       yoyo: true,
       repeat: -1,
       duration: 850,
     });
 
+    this.add.rectangle(right, 178, 360, 300, 0x151f2d, 0.96).setOrigin(0, 0).setStrokeStyle(1, 0x314766, 0.95);
+    this.add.text(right + 26, 204, 'Next steps', {
+      fontFamily: 'Trebuchet MS, Arial, sans-serif',
+      fontSize: '18px',
+      color: '#ffc857',
+      fontStyle: 'bold',
+    });
+    this.add.text(right + 26, 246, '1. Open the starter scene.\\n2. Ask an agent to build the first playable loop.\\n3. Use the local Phaser skills and tests.', {
+      fontFamily: 'Trebuchet MS, Arial, sans-serif',
+      fontSize: '17px',
+      color: '#d8e2f8',
+      lineSpacing: 10,
+      wordWrap: { width: 300 },
+    });
+
+    const startButton = this.add.rectangle(right + 26, 390, 308, 58, 0x2bbd91, 1).setOrigin(0, 0).setInteractive({ useHandCursor: true });
     const startText = this.add
-      .text(width / 2, height * 0.78, 'Press Enter or tap here to open the sandbox scene', {
-        fontFamily: 'Arial, sans-serif',
-        fontSize: '18px',
-        color: '#7d8aa5',
+      .text(right + 180, 419, 'Open starter scene', {
+        fontFamily: 'Trebuchet MS, Arial, sans-serif',
+        fontSize: '20px',
+        color: '#061713',
+        fontStyle: 'bold',
       })
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
 
+    this.add.text(left, 530, 'Keyboard: Space spins ideas, Enter opens the scene. Pointer/touch works on desktop and mobile.', {
+      fontFamily: 'Trebuchet MS, Arial, sans-serif',
+      fontSize: '16px',
+      color: '#8fa2c4',
+      wordWrap: { width: contentWidth },
+    });
+
     this.input.on('pointerdown', () => this.spinPrompt());
+    startButton.on('pointerdown', (pointer: Phaser.Input.Pointer, _localX: number, _localY: number, event: Phaser.Types.Input.EventData) => {
+      event.stopPropagation();
+      this.startGame();
+    });
     startText.on('pointerdown', (pointer: Phaser.Input.Pointer, _localX: number, _localY: number, event: Phaser.Types.Input.EventData) => {
       event.stopPropagation();
       this.startGame();
@@ -559,15 +603,37 @@ export class TemplateGuideScene extends Phaser.Scene {
     this.transitioning = true;
     startSceneWithFade(this, SceneKeys.Game, {
       durationMs: 260,
-      loadingText: 'Opening sandbox',
+      loadingText: 'Opening starter scene',
     });
+  }
+
+  private drawBackground(width: number, height: number): void {
+    this.add.rectangle(width / 2, height / 2, width, height, 0x0c1017);
+
+    const graphics = this.add.graphics();
+    graphics.fillStyle(0x111824, 0.94);
+    graphics.fillRect(0, 0, width, height);
+    graphics.lineStyle(1, 0x26384f, 0.28);
+
+    for (let x = 0; x <= width; x += 64) {
+      graphics.lineBetween(x, 0, x, height);
+    }
+
+    for (let y = 0; y <= height; y += 64) {
+      graphics.lineBetween(0, y, width, y);
+    }
+
+    graphics.fillStyle(0x2bbd91, 0.055);
+    graphics.fillCircle(width * 0.18, height * 0.22, 260);
+    graphics.fillStyle(0xffc857, 0.052);
+    graphics.fillCircle(width * 0.84, height * 0.7, 300);
   }
 }
 `,
     },
     {
       path: 'src/game/scenes/GameScene.ts',
-      content: `import Phaser from 'phaser';
+      content: options.includeIdlePack ? idleGameSceneContent(options) : `import Phaser from 'phaser';
 import { GameEvents } from '../config/gameEvents';
 import { SceneKeys } from '../config/sceneKeys';
 import { createTitleText } from '../ui/textStyles';
@@ -900,6 +966,7 @@ export class PlayerInput {
       content: `export type SaveData = {
   version: number;
   bestScore: number;
+  idle?: unknown;
   settings: {
     musicVolume: number;
     sfxVolume: number;
@@ -1099,5 +1166,470 @@ When changing tilemaps, use the \`phaser-assets-pipeline\` and \`phaser-responsi
         ]
       : []),
   ];
+}
+
+function idleGameSceneContent(options: ProjectOptions): string {
+  return `import Phaser from 'phaser';
+import { idleContent } from '../../data/idleContent';
+import { GameEvents } from '../config/gameEvents';
+import { SceneKeys } from '../config/sceneKeys';
+import { eventBus } from '../events/EventBus';
+import { IdleEconomy } from '../idle/IdleEconomy';
+import type { IdleOfflineReport, IdleSaveData, IdleUiModel } from '../idle/idleTypes';
+import { SaveManager, type SaveData } from '../save/SaveManager';
+import { GameState } from '../state/GameState';
+import { fadeInScene } from './sceneTransitions';
+${options.includeYandexGames ? "import { gameplayStart, gameplayStop } from '../platform/yandexGames';" : ''}
+
+export class GameScene extends Phaser.Scene {
+  private readonly saveManager = new SaveManager('${options.slug}');
+  private saveData!: SaveData;
+  private state!: GameState;
+  private economy!: IdleEconomy;
+  private resourceText!: Phaser.GameObjects.Text;
+  private statusText!: Phaser.GameObjects.Text;
+  private producerText!: Phaser.GameObjects.Text;
+  private upgradeTexts: Phaser.GameObjects.Text[] = [];
+  private upgradeButtons: Phaser.GameObjects.Rectangle[] = [];
+  private upgradeButtonLabels: Phaser.GameObjects.Text[] = [];
+  private achievementText!: Phaser.GameObjects.Text;
+  private shinyText!: Phaser.GameObjects.Text;
+  private shinyButton!: Phaser.GameObjects.Rectangle;
+  private prestigeText!: Phaser.GameObjects.Text;
+  private autosaveMs = 0;
+  private refreshMs = 0;
+
+  constructor() {
+    super(SceneKeys.Game);
+  }
+
+  create(): void {
+    const { width, height } = this.scale;
+
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.shutdown());
+
+    this.saveData = this.saveManager.load();
+    this.state = new GameState(this.saveData.bestScore);
+    this.state.start();
+    this.economy = new IdleEconomy(idleContent, this.saveData.idle as IdleSaveData | undefined);
+    const offlineReport = this.economy.applyOfflineProgress(Date.now());
+
+    fadeInScene(this);
+    this.drawBackground(width, height);
+    const contentWidth = Math.min(width - 96, 1180);
+    const left = (width - contentWidth) / 2;
+    const right = left + contentWidth - 420;
+    const top = 48;
+
+    this.add.text(left, top, '${options.title}', {
+      fontFamily: 'Trebuchet MS, Arial, sans-serif',
+      fontSize: '42px',
+      color: '#ffffff',
+      fontStyle: 'bold',
+      shadow: { offsetX: 0, offsetY: 3, color: '#000000', blur: 8, fill: true },
+    });
+
+    this.add
+      .text(left, top + 54, 'Click, automate, upgrade, save, return later.', {
+        fontFamily: 'Trebuchet MS, Arial, sans-serif',
+        fontSize: '19px',
+        color: '#b8c7e6',
+        wordWrap: { width: 620 },
+      })
+      .setOrigin(0, 0);
+
+    this.add.rectangle(left, 138, 560, 178, 0x111a27, 0.96).setOrigin(0, 0).setStrokeStyle(1, 0x29415f, 0.9);
+
+    this.resourceText = this.add.text(left + 28, 160, '', {
+      fontFamily: 'Trebuchet MS, Arial, sans-serif',
+      fontSize: '27px',
+      color: '#ffffff',
+      lineSpacing: 8,
+    });
+
+    this.statusText = this.add.text(left + 28, 266, this.getOfflineStatus(offlineReport), {
+      fontFamily: 'Trebuchet MS, Arial, sans-serif',
+      fontSize: '16px',
+      color: '#9fb2d8',
+      wordWrap: { width: 500 },
+      lineSpacing: 5,
+    });
+
+    this.createActionButton(right, 138);
+    this.createShinyPanel(right, 256);
+    this.createProducerPanel(left, 344);
+    this.createUpgradePanel(right, 344);
+    this.createAchievementPanel(left, 628);
+    this.createPrestigePanel(right, 628);
+    this.refreshUi();
+
+    eventBus.emit(GameEvents.GameplayStarted, { scene: SceneKeys.Game });
+    eventBus.emit(GameEvents.RunStateChanged, { phase: 'playing' });
+    eventBus.emit(GameEvents.StatusChanged, {
+      status: 'Click Bake cookie, buy ovens, then add content in src/data/idleContent.ts.',
+    });
+    ${options.includeYandexGames ? 'gameplayStart();' : ''}
+  }
+
+  update(_time: number, delta: number): void {
+    this.state.update(delta);
+    this.economy.tick(delta / 1000);
+    this.autosaveMs += delta;
+    this.refreshMs += delta;
+
+    if (this.refreshMs >= 250) {
+      this.refreshMs = 0;
+      this.refreshUi();
+    }
+
+    if (this.autosaveMs >= 5000) {
+      this.autosaveMs = 0;
+      this.persist();
+    }
+  }
+
+  shutdown(): void {
+    if (this.economy && this.state && this.saveData) {
+      const snapshot = this.state.stop();
+      this.persist(snapshot.bestScore);
+      eventBus.emit(GameEvents.RunStateChanged, { phase: snapshot.phase });
+    }
+
+    eventBus.emit(GameEvents.GameplayStopped, { scene: SceneKeys.Game });
+    ${options.includeYandexGames ? 'gameplayStop();' : ''}
+  }
+
+  getDebugSnapshot(): {
+    phase: string;
+    elapsedMs: number;
+    cookies: number;
+    cookiesPerSecond: number;
+    ovens: number;
+    shinyActive: boolean;
+    prestigePoints: number;
+  } {
+    const ui = this.economy.getUiModel();
+    const cookies = ui.resources.find((entry) => entry.id === 'cookies');
+    const oven = ui.producers.find((entry) => entry.id === 'oven');
+    const shiny = ui.shinies.find((entry) => entry.id === 'goldenCookie');
+
+    return {
+      phase: this.state.value.phase,
+      elapsedMs: this.state.value.elapsedMs,
+      cookies: cookies?.current ?? 0,
+      cookiesPerSecond: cookies?.perSecond ?? 0,
+      ovens: oven?.owned ?? 0,
+      shinyActive: shiny?.active ?? false,
+      prestigePoints: ui.prestige?.points ?? 0,
+    };
+  }
+
+  private createActionButton(x: number, y: number): void {
+    const button = this.add.rectangle(x, y, 420, 96, 0x2bbd91, 1).setOrigin(0, 0).setInteractive({ useHandCursor: true });
+    const label = this.add.text(x + 210, y + 48, 'Bake cookie\\n+1 now', {
+      fontFamily: 'Trebuchet MS, Arial, sans-serif',
+      fontSize: '24px',
+      color: '#061713',
+      align: 'center',
+      lineSpacing: 6,
+    }).setOrigin(0.5);
+
+    button.on('pointerdown', () => {
+      this.economy.clickAction('bakeCookie');
+      this.flashText(label);
+      this.refreshUi();
+    });
+
+    this.input.keyboard?.on('keydown-SPACE', () => {
+      this.economy.clickAction('bakeCookie');
+      this.flashText(label);
+      this.refreshUi();
+    });
+  }
+
+  private createProducerPanel(x: number, y: number): void {
+    this.add.rectangle(x, y, 560, 244, 0x151f2d, 0.96).setOrigin(0, 0).setStrokeStyle(1, 0x2d415c, 1);
+    this.add.text(x + 24, y + 18, 'Production', {
+      fontFamily: 'Trebuchet MS, Arial, sans-serif',
+      fontSize: '18px',
+      color: '#ffc857',
+      fontStyle: 'bold',
+    });
+    this.producerText = this.add.text(x + 22, y + 20, '', {
+      fontFamily: 'Trebuchet MS, Arial, sans-serif',
+      fontSize: '17px',
+      color: '#e6eefc',
+      lineSpacing: 7,
+      wordWrap: { width: 310 },
+    });
+    this.producerText.setY(y + 56);
+
+    this.addIdleButton(x + 400, y + 54, 'Buy 1', () => {
+      if (this.economy.buyProducer('oven')) {
+        this.statusText.setText('Bought an oven. Passive production is now ticking in IdleEconomy.');
+        this.refreshUi();
+      }
+    });
+
+    this.addIdleButton(x + 400, y + 106, 'Buy 10', () => {
+      const bought = this.economy.buyProducerBulk('oven', 10);
+      if (bought > 0) {
+        this.statusText.setText(\`Bought \${bought} ovens. Bulk buy is handled by IdleEconomy, not scene math.\`);
+        this.refreshUi();
+      }
+    });
+
+    this.addIdleButton(x + 400, y + 158, 'Max', () => {
+      const bought = this.economy.buyMaxProducer('oven');
+      if (bought > 0) {
+        this.statusText.setText(\`Bought \${bought} ovens with max-buy.\`);
+        this.refreshUi();
+      }
+    });
+  }
+
+  private createShinyPanel(x: number, y: number): void {
+    this.shinyButton = this.add.rectangle(x, y, 420, 52, 0x7f5af0, 0.24).setOrigin(0, 0).setStrokeStyle(1, 0x7f5af0, 0.42);
+    this.shinyText = this.add.text(x + 210, y + 26, '', {
+      fontFamily: 'Trebuchet MS, Arial, sans-serif',
+      fontSize: '16px',
+      color: '#dcd4ff',
+      align: 'center',
+      wordWrap: { width: 370 },
+    }).setOrigin(0.5);
+
+    this.shinyButton.setInteractive({ useHandCursor: true });
+    this.shinyButton.on('pointerdown', () => {
+      if (this.economy.clickShiny('goldenCookie')) {
+        this.statusText.setText('Golden cookie claimed. Temporary bonuses live in IdleEconomy.');
+        this.flashText(this.shinyText);
+        this.refreshUi();
+      }
+    });
+  }
+
+  private createUpgradePanel(x: number, y: number): void {
+    this.add.rectangle(x, y, 420, 244, 0x151f2d, 0.96).setOrigin(0, 0).setStrokeStyle(1, 0x2d415c, 1);
+    this.add.text(x + 22, y + 18, 'Upgrades', {
+      fontFamily: 'Trebuchet MS, Arial, sans-serif',
+      fontSize: '20px',
+      color: '#ffc857',
+    });
+
+    const upgradeIds = idleContent.upgrades.map((upgrade) => upgrade.id);
+    this.upgradeTexts = upgradeIds.map((id, index) => {
+      const rowY = y + 58 + index * 62;
+      const control = this.addIdleButton(x + 290, rowY - 3, 'Buy', () => {
+        if (this.economy.buyUpgrade(id)) {
+          this.statusText.setText('Upgrade purchased. The economy rule changed, not just the label.');
+          this.refreshUi();
+        }
+      });
+      this.upgradeButtons[index] = control.button;
+      this.upgradeButtonLabels[index] = control.label;
+
+      return this.add.text(x + 22, rowY, '', {
+        fontFamily: 'Trebuchet MS, Arial, sans-serif',
+        fontSize: '15px',
+        color: '#d8e2f8',
+        lineSpacing: 3,
+        wordWrap: { width: 250 },
+      });
+    });
+  }
+
+  private createPrestigePanel(x: number, y: number): void {
+    this.add.rectangle(x, y, 420, 92, 0x151f2d, 0.96).setOrigin(0, 0).setStrokeStyle(1, 0x7f5af0, 0.6);
+    this.prestigeText = this.add.text(x + 22, y + 16, '', {
+      fontFamily: 'Trebuchet MS, Arial, sans-serif',
+      fontSize: '16px',
+      color: '#dcd4ff',
+      lineSpacing: 4,
+      wordWrap: { width: 260 },
+    });
+    this.addIdleButton(x + 286, y + 25, 'Reset', () => {
+      if (this.economy.prestigeReset()) {
+        this.statusText.setText('Prestige reset complete. Meta progress is preserved in IdleEconomy.');
+        this.refreshUi();
+        this.persist();
+      }
+    });
+  }
+
+  private createAchievementPanel(x: number, y: number): void {
+    this.add.rectangle(x, y, 560, 92, 0x151f2d, 0.9).setOrigin(0, 0).setStrokeStyle(1, 0x2d415c, 0.82);
+    this.achievementText = this.add.text(x + 22, y + 16, '', {
+      fontFamily: 'Trebuchet MS, Arial, sans-serif',
+      fontSize: '16px',
+      color: '#c4d3f1',
+      wordWrap: { width: 510 },
+      lineSpacing: 5,
+    });
+  }
+
+  private addIdleButton(
+    x: number,
+    y: number,
+    text: string,
+    onClick: () => void,
+  ): { button: Phaser.GameObjects.Rectangle; label: Phaser.GameObjects.Text } {
+    const button = this.add.rectangle(x, y, 104, 40, 0xffc857, 1).setOrigin(0, 0).setInteractive({ useHandCursor: true });
+    const label = this.add.text(x + 52, y + 20, text, {
+      fontFamily: 'Trebuchet MS, Arial, sans-serif',
+      fontSize: '18px',
+      color: '#191104',
+      fontStyle: 'bold',
+    }).setOrigin(0.5);
+    button.on('pointerdown', onClick);
+    return { button, label };
+  }
+
+  private refreshUi(): void {
+    const ui = this.economy.getUiModel();
+    const cookies = ui.resources.find((entry) => entry.id === 'cookies');
+    const action = ui.actions.find((entry) => entry.id === 'bakeCookie');
+    const oven = ui.producers.find((entry) => entry.id === 'oven');
+    const shiny = ui.shinies.find((entry) => entry.id === 'goldenCookie');
+    const prestige = ui.prestige;
+
+    if (cookies && action) {
+      this.resourceText.setText([
+        \`\${cookies.name}: \${this.formatNumber(cookies.current)}\`,
+        \`Per second: \${this.formatNumber(cookies.perSecond)}\`,
+        \`Manual bake: +\${this.formatNumber(action.gain)} | Clicks: \${action.clicks}\`,
+      ]);
+      eventBus.emit(GameEvents.ScoreChanged, {
+        score: Math.floor(cookies.current),
+        bestScore: Math.max(this.saveData.bestScore, Math.floor(cookies.maxSeen)),
+      });
+    }
+
+    if (oven) {
+      this.producerText.setText([
+        \`\${oven.name}\`,
+        \`Owned: \${oven.owned}\`,
+        \`Next cost: \${this.formatNumber(oven.nextCost)} cookies\`,
+        \`Buy 10 cost: \${this.formatNumber(oven.bulk10Cost)} cookies\`,
+        \`Max affordable: \${oven.maxAffordable}\`,
+        \`Output each: \${this.formatNumber(oven.productionPerSecond)}/s\`,
+        \`Can buy: \${oven.affordable ? 'yes' : 'not yet'}\`,
+      ]);
+    }
+
+    if (shiny) {
+      const activeText = shiny.active
+        ? \`\${shiny.name}: click now (+25) | \${Math.ceil(shiny.remainingSeconds)}s\`
+        : shiny.visible
+          ? \`\${shiny.name}: waiting for spawn | claimed \${shiny.clicks}\`
+          : \`\${shiny.name}: unlock after first oven\`;
+      this.shinyText.setText(activeText);
+      this.shinyButton.setFillStyle(shiny.active ? 0x7f5af0 : 0x151f2d, shiny.active ? 0.92 : 0.55);
+      this.shinyText.setColor(shiny.active ? '#ffffff' : '#b9c4dc');
+    }
+
+    for (const [index, upgrade] of ui.upgrades.entries()) {
+      const target = this.upgradeTexts[index];
+      if (!target) continue;
+      const visibleLines = [
+        \`\${upgrade.name} - \${upgrade.owned ? 'owned' : upgrade.affordable ? 'available' : upgrade.visible ? 'locked by cost' : 'hidden'}\`,
+        upgrade.lockedReason ? \`Gate: \${upgrade.lockedReason}\` : '',
+        upgrade.visible || upgrade.owned ? upgrade.description : '',
+      ].filter(Boolean);
+      target.setText(visibleLines);
+      target.setAlpha(upgrade.owned ? 0.62 : upgrade.visible ? 1 : 0.42);
+
+      const button = this.upgradeButtons[index];
+      const label = this.upgradeButtonLabels[index];
+      const buttonEnabled = upgrade.visible && !upgrade.owned;
+      button?.setAlpha(buttonEnabled ? 1 : 0.26);
+      label?.setAlpha(buttonEnabled ? 1 : 0.38);
+    }
+
+    if (prestige) {
+      this.prestigeText.setText([
+        \`\${prestige.name}: \${prestige.points} \${prestige.currencyName}\`,
+        \`Pending: +\${prestige.pendingPoints} | Multiplier: x\${prestige.multiplier.toFixed(2)}\`,
+        prestige.canPrestige ? 'Reset available.' : prestige.lockedReason ?? 'Earn more before reset.',
+      ]);
+    }
+
+    this.achievementText.setText(this.formatAchievements(ui));
+  }
+
+  private persist(bestScore = this.saveData.bestScore): void {
+    const cookies = this.economy.getResource('cookies');
+    this.saveData = {
+      ...this.saveData,
+      bestScore: Math.max(bestScore, Math.floor(cookies.maxSeen)),
+      idle: this.economy.toSaveData(),
+    };
+    this.saveManager.save(this.saveData);
+  }
+
+  private getOfflineStatus(report: IdleOfflineReport): string {
+    if (report.simulatedSeconds <= 0) {
+      return 'Offline progress is ready. Buy an oven, leave, and come back to see capped gains.';
+    }
+
+    const gainedCookies = report.resourceGains.cookies ?? 0;
+    const unlocked = report.unlockedAchievementIds.length > 0
+      ? \` Achievements: \${report.unlockedAchievementIds.join(', ')}.\`
+      : '';
+    const capText = report.capReached ? ' Offline cap reached.' : '';
+
+    return \`While away: +\${this.formatNumber(gainedCookies)} cookies over \${Math.floor(report.simulatedSeconds / 60)} min.\${capText}\${unlocked}\`;
+  }
+
+  private formatAchievements(ui: IdleUiModel): string {
+    const unlocked = ui.achievements.filter((entry) => entry.unlocked);
+    const next = ui.achievements.find((entry) => !entry.unlocked);
+
+    return [
+      \`Achievements: \${unlocked.length}/\${ui.achievements.length}\`,
+      ...unlocked.map((entry) => \`Unlocked: \${entry.name}\`),
+      next ? \`Next: \${next.name} - \${next.description}\` : 'All starter achievements unlocked.',
+    ].join('\\n');
+  }
+
+  private flashText(target: Phaser.GameObjects.Text): void {
+    this.tweens.add({
+      targets: target,
+      scale: { from: 1.08, to: 1 },
+      duration: 140,
+      ease: 'Sine.easeOut',
+    });
+  }
+
+  private formatNumber(value: number): string {
+    if (value >= 1000) {
+      return value.toLocaleString('en-US', { maximumFractionDigits: 0 });
+    }
+
+    return value.toLocaleString('en-US', { maximumFractionDigits: 1 });
+  }
+
+  private drawBackground(width: number, height: number): void {
+    this.add.rectangle(width / 2, height / 2, width, height, 0x0c1017);
+
+    const graphics = this.add.graphics();
+    graphics.fillStyle(0x111824, 0.92);
+    graphics.fillRect(0, 0, width, height);
+    graphics.lineStyle(1, 0x26384f, 0.42);
+
+    for (let x = 0; x <= width; x += 64) {
+      graphics.lineBetween(x, 0, x, height);
+    }
+
+    for (let y = 0; y <= height; y += 64) {
+      graphics.lineBetween(0, y, width, y);
+    }
+
+    graphics.fillStyle(0x2bbd91, 0.06);
+    graphics.fillCircle(width * 0.16, height * 0.22, 260);
+    graphics.fillStyle(0xffc857, 0.055);
+    graphics.fillCircle(width * 0.84, height * 0.66, 300);
+  }
+}
+`;
 }
 

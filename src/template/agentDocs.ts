@@ -37,6 +37,18 @@ When starting a task, say which skill you are using:
 Using phaser-scene-workflow because this changes scene lifecycle and transitions.
 \`\`\`
 
+## Skill Authoring Rule
+
+This repository generates project-local Phaser skills. When adding, editing, renaming, or reorganizing generated skills, use \`phaser-skill-pack-maintainer\` first.
+
+Keep each skill concise and task-triggered:
+
+- put trigger conditions in the skill description/frontmatter;
+- move detailed notes into \`references/\`;
+- keep scripts deterministic when a repeatable action is needed;
+- update \`skills/README.md\`, \`skills/_meta/task-map.md\`, the skill name list, and the skill pack together;
+- validate a fresh generated project after skill changes.
+
 ## Skill Routing
 
 - Raw or vague game idea before coding: \`phaser-game-design-interviewer\`
@@ -51,6 +63,7 @@ Using phaser-scene-workflow because this changes scene lifecycle and transitions
 - Enemies, items, waves, levels, upgrades, cards, and other gameplay content as data: \`phaser-content-pipeline\`
 - Versioned save data, migrations, defaults, corrupted save fallback, settings/progress split: \`phaser-save-schema-migrations\`
 - XP, levels, coins, shops, unlocks, difficulty curves, and reward pacing: \`phaser-progression-economy\`
+${options.includeIdlePack ? '- Idle, incremental, clicker, factory, tycoon, automation, offline progress, and prestige economy: `phaser-idle-game-architect`\n- Idle cost curves, producer output, upgrades, bulk buy, milestones, and time-band tuning: `phaser-idle-economy-balancer`\n- Idle resource panels, producer cards, upgrade grids, achievements, temporary bonuses, and dense economy UI: `phaser-idle-ui-feedback`\n- Offline progress, return summaries, save migrations, reset loops, and prestige: `phaser-idle-offline-prestige`' : ''}
 - Keyboard/touch accessibility, reduced motion, readable UI, string tables, localization: \`phaser-accessibility-localization\`
 - Release targets, static hosting, portals, SDK boundaries, fullscreen/orientation/storage: \`phaser-release-platforms\`
 - Sprite lists, animation frames, palette, atlas plan, naming, placeholder art briefs: \`phaser-ai-art-asset-brief\`
@@ -151,6 +164,7 @@ ${sharedAgentEntry('Cursor', options, skillNames)}
           generatedBy: 'Phaser Game Creator',
           primaryTarget: options.target,
           yandexGames: options.includeYandexGames,
+          idlePack: options.includeIdlePack,
           firstRead: [
             'AGENTS.md',
             'AGENT_WORKFLOW.md',
@@ -192,6 +206,14 @@ ${sharedAgentEntry('Cursor', options, skillNames)}
             contentPipeline: 'phaser-content-pipeline',
             saveMigrations: 'phaser-save-schema-migrations',
             progressionEconomy: 'phaser-progression-economy',
+            ...(options.includeIdlePack
+              ? {
+                  idleArchitecture: 'phaser-idle-game-architect',
+                  idleEconomyBalancing: 'phaser-idle-economy-balancer',
+                  idleUiFeedback: 'phaser-idle-ui-feedback',
+                  idleOfflinePrestige: 'phaser-idle-offline-prestige',
+                }
+              : {}),
             accessibilityLocalization: 'phaser-accessibility-localization',
             releasePlatforms: 'phaser-release-platforms',
             aiArtAssetBrief: 'phaser-ai-art-asset-brief',
@@ -269,6 +291,7 @@ Use this map to choose the correct skill.
 | Add enemies, items, waves, levels, upgrades, cards, or balance as data | \`phaser-content-pipeline\` |
 | Change persisted save data, settings, defaults, versions, or migrations | \`phaser-save-schema-migrations\` |
 | Add XP, levels, coins, shops, unlocks, scaling, or reward pacing | \`phaser-progression-economy\` |
+${options.includeIdlePack ? '| Build an idle, incremental, clicker, factory, tycoon, automation, merge-idle, RPG-idle, or collection-idle game | `phaser-idle-game-architect` |\n| Tune idle costs, producer output, upgrade multipliers, bulk buy, milestones, or unlock timing | `phaser-idle-economy-balancer` |\n| Build idle resource panels, producer cards, upgrade grids, achievements, logs, toasts, or temporary bonus UI | `phaser-idle-ui-feedback` |\n| Add offline progress, return summaries, reset loops, prestige, or idle save migrations | `phaser-idle-offline-prestige` |' : ''}
 | Improve keyboard/touch accessibility, reduced motion, readable UI, or localization | \`phaser-accessibility-localization\` |
 | Prepare release targets, static hosting, portal constraints, SDK boundaries, or PWA notes | \`phaser-release-platforms\` |
 | Plan sprite lists, frame counts, palette, atlas layout, naming, or art handoff brief | \`phaser-ai-art-asset-brief\` |
@@ -340,6 +363,7 @@ Use these sources when a task needs current Phaser or Agent Skills knowledge.
 - Agent Skills spec: https://agentskills.io/specification.md
 - Anthropic skill creator: https://github.com/anthropics/skills/tree/main/skills/skill-creator
 - Taste Skill visual quality references: https://github.com/Leonxlnx/taste-skill
+${options.includeIdlePack ? '- Idle Game Maker Handbook: https://orteil.dashnet.org/igm/help.html\n- Idle Game Maker Bunny Clicker source: https://orteil.dashnet.org/igm/games/bunnyclicker.txt' : ''}
 ${options.includeYandexGames ? '- Yandex Games SDK docs: https://yandex.com/dev/games/doc/en/sdk/sdk-about\n- Yandex Games requirements: https://yandex.ru/dev/games/doc/ru/concepts/requirements' : ''}
 
 ## Update Policy
@@ -462,6 +486,7 @@ When opening this repository, assume these files are relevant even if the user d
 - Language: TypeScript
 - Build tool: Vite
 - Primary target: ${options.target === 'mobile' ? 'mobile-first browser game' : 'desktop-first browser game'}
+- Idle / Incremental pack: ${options.includeIdlePack ? 'enabled' : 'disabled'}
 - Yandex Games pack: ${options.includeYandexGames ? 'enabled' : 'disabled'}
 
 ## Skill Rule
@@ -494,6 +519,7 @@ ${skillNames.map((name) => `- \`${name}\` at \`skills/${name}/SKILL.md\``).join(
 - Gameplay content as data: \`phaser-content-pipeline\`
 - Save schema migrations: \`phaser-save-schema-migrations\`
 - Progression/economy: \`phaser-progression-economy\`
+${options.includeIdlePack ? '- Idle/incremental architecture: `phaser-idle-game-architect`\n- Idle balance and cost curves: `phaser-idle-economy-balancer`\n- Idle UI and feedback: `phaser-idle-ui-feedback`\n- Idle offline progress and prestige: `phaser-idle-offline-prestige`' : ''}
 - Accessibility/localization: \`phaser-accessibility-localization\`
 - Release platforms: \`phaser-release-platforms\`
 - Art asset briefs: \`phaser-ai-art-asset-brief\`
