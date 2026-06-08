@@ -1,4 +1,5 @@
 import type { GeneratedFile, ProjectOptions } from '../types';
+import { idleGameSkills } from './idleGamePack';
 import { advancedGameplaySkills } from './skills/advancedGameplaySkills';
 import { architectureSkills } from './skills/architectureSkills';
 import { coreRuntimeSkills } from './skills/coreRuntimeSkills';
@@ -19,6 +20,7 @@ export function skillPack(options: ProjectOptions): GeneratedFile[] {
     ...advancedGameplaySkills(),
     ...visualTasteSkills(),
     ...testingMaintainerSkills(),
+    ...(options.includeIdlePack ? idleGameSkills() : []),
     ...(options.includeYandexGames ? yandexSkill() : []),
   ];
 }

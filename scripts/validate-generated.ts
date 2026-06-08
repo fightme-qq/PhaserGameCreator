@@ -15,6 +15,7 @@ const cases: ProjectOptions[] = [
     title: 'Validation Base',
     target: 'mobile',
     includeYandexGames: false,
+    includeIdlePack: false,
     includePwa: false,
     includeArcadePhysics: true,
     includeTilemaps: false,
@@ -27,6 +28,20 @@ const cases: ProjectOptions[] = [
     title: 'Validation Yandex',
     target: 'desktop',
     includeYandexGames: true,
+    includeIdlePack: false,
+    includePwa: false,
+    includeArcadePhysics: true,
+    includeTilemaps: false,
+    includePlaywright: true,
+  },
+  {
+    projectName: 'Validation Idle',
+    gameIdea: 'A bakery factory idle game where ovens bake cookies while the player is away.',
+    slug: 'validation-idle',
+    title: 'Validation Idle',
+    target: 'mobile',
+    includeYandexGames: false,
+    includeIdlePack: true,
     includePwa: false,
     includeArcadePhysics: true,
     includeTilemaps: false,
@@ -107,6 +122,23 @@ function validateStructure(projectDir: string, options: ProjectOptions): void {
     assertExists(projectDir, 'docs/yandex-games.md');
     assertExists(projectDir, 'scripts/make-yandex-zip.py');
     assertExists(projectDir, 'src/game/platform/yandexGames.ts');
+  }
+
+  if (options.includeIdlePack) {
+    assertExists(projectDir, 'skills/phaser-idle-game-architect/SKILL.md');
+    assertExists(projectDir, 'skills/phaser-idle-game-architect/references/igm-handbook-derived-model.md');
+    assertExists(projectDir, 'skills/phaser-idle-economy-balancer/SKILL.md');
+    assertExists(projectDir, 'skills/phaser-idle-economy-balancer/references/idle-formulas.md');
+    assertExists(projectDir, 'skills/phaser-idle-economy-balancer/references/idle-balancing-workflow.md');
+    assertExists(projectDir, 'skills/phaser-idle-ui-feedback/SKILL.md');
+    assertExists(projectDir, 'skills/phaser-idle-offline-prestige/SKILL.md');
+    assertExists(projectDir, 'docs/IDLE_GAME_DESIGN.md');
+    assertExists(projectDir, 'docs/IDLE_BALANCE_CHECKLIST.md');
+    assertExists(projectDir, 'src/game/idle/idleTypes.ts');
+    assertExists(projectDir, 'src/game/idle/IdleEconomy.ts');
+    assertExists(projectDir, 'src/data/idleContent.ts');
+    assertExists(projectDir, 'tests/unit/IdleEconomy.test.ts');
+    assertExists(projectDir, 'tests/unit/IdleFormulaExamples.test.ts');
   }
 }
 

@@ -40,8 +40,9 @@ If you are an AI coding agent:
 4. Read \`skills/_meta/task-map.md\` and the selected skill for the task.
 5. Pull deeper docs only when the current task needs them.
 6. Check \`templates/modules/\` before inventing common systems from scratch.
-7. Before changing code, explain which skill you are using and why.
-8. Keep this repo Phaser-focused. Do not convert it into a generic web app.
+7. If you are changing skills or agent docs, use \`phaser-skill-pack-maintainer\` first.
+8. Before changing code, explain which skill you are using and why.
+9. Keep this repo Phaser-focused. Do not convert it into a generic web app.
 
 ## What This Project Is
 
@@ -50,6 +51,7 @@ If you are an AI coding agent:
 - Language: TypeScript
 - Build tool: Vite
 - Primary target: ${options.target === 'mobile' ? 'mobile-first browser game' : 'desktop-first browser game'}
+- Idle / Incremental pack: ${options.includeIdlePack ? 'included' : 'not included'}
 - Yandex Games publish pack: ${options.includeYandexGames ? 'included' : 'not included'}
 - Generated skills: ${skillNames.length}
 - Initial idea: ${gameIdea}
@@ -86,6 +88,7 @@ ${gameIdea}
 - Language: TypeScript
 - Build tool: Vite
 - Yandex Games pack: ${options.includeYandexGames ? 'included' : 'not included'}
+- Idle / Incremental pack: ${options.includeIdlePack ? 'included' : 'not included'}
 
 ## Agent Interpretation Rules
 
@@ -226,6 +229,7 @@ skills/       Project-local AI skills
 - \`docs/validation-matrix.md\`: checks before finishing work.
 - \`docs/quality-gates.md\`: first playable, architecture, visual taste, asset, mobile, and runtime gates.
 - \`docs/release-checklist.md\`: public build readiness checklist.
+- ${options.includeIdlePack ? '`docs/IDLE_GAME_DESIGN.md`: idle/incremental architecture and Phaser integration notes.' : '`docs/IDLE_GAME_DESIGN.md`: generated when the optional idle pack is enabled.'}
 - \`docs/mobile-checklist.md\`: phone and touch validation checklist.
 - \`docs/asset-credits-policy.md\`: asset sourcing and copyright rules.
 - \`docs/feature-recipes/\`: common implementation recipes.
