@@ -5,10 +5,34 @@ import { downloadBlob, slugifyProjectName, titleFromName } from './utils';
 import './styles.css';
 
 const app = document.querySelector<HTMLDivElement>('#app');
+const themeStorageKey = 'phaser-game-creator-theme';
+const darkTheme = 'dark';
 
 if (!app) {
   throw new Error('App root not found');
 }
+
+function getSavedTheme(): string | null {
+  try {
+    return window.localStorage.getItem(themeStorageKey);
+  } catch {
+    return null;
+  }
+}
+
+function saveTheme(theme: string): void {
+  try {
+    window.localStorage.setItem(themeStorageKey, theme);
+  } catch {
+    // Theme still changes for this session when storage is unavailable.
+  }
+}
+
+function applyTheme(theme: string): void {
+  document.documentElement.dataset.theme = theme;
+}
+
+applyTheme(getSavedTheme() === darkTheme ? darkTheme : 'light');
 
 app.innerHTML = `
   <section class="page">
@@ -17,7 +41,13 @@ app.innerHTML = `
         <span></span>
         <strong>Phaser Game Creator</strong>
       </div>
-      <div class="nav-pill">Agent-ready Phaser archive</div>
+      <div class="nav-actions">
+        <div class="nav-pill">Agent-ready Phaser archive</div>
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="false">
+          <span class="theme-toggle-icon" aria-hidden="true"></span>
+          <span id="theme-toggle-label">Dark theme</span>
+        </button>
+      </div>
     </header>
 
     <section class="stage">
@@ -191,6 +221,14 @@ const previewTitle = document.querySelector<HTMLHeadingElement>('#preview-title'
 const fileCount = document.querySelector<HTMLSpanElement>('#file-count')!;
 const fileTree = document.querySelector<HTMLDivElement>('#file-tree')!;
 const yandexBadge = document.querySelector<HTMLSpanElement>('#yandex-badge')!;
+const themeToggle = document.querySelector<HTMLButtonElement>('#theme-toggle')!;
+const themeToggleLabel = document.querySelector<HTMLSpanElement>('#theme-toggle-label')!;
+
+function renderThemeToggle(): void {
+  const isDark = document.documentElement.dataset.theme === darkTheme;
+  themeToggle.setAttribute('aria-pressed', String(isDark));
+  themeToggleLabel.textContent = isDark ? 'Light theme' : 'Dark theme';
+}
 
 function readOptions(): ProjectOptions {
   const title = titleFromName(projectName.value);
@@ -289,5 +327,12 @@ for (const input of [projectName, gameIdea, ...document.querySelectorAll<HTMLInp
 }
 
 yandexGames.addEventListener('change', renderPreview);
+themeToggle.addEventListener('click', () => {
+  const nextTheme = document.documentElement.dataset.theme === darkTheme ? 'light' : darkTheme;
+  applyTheme(nextTheme);
+  saveTheme(nextTheme);
+  renderThemeToggle();
+});
 
+renderThemeToggle();
 renderPreview();
