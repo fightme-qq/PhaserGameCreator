@@ -34,6 +34,96 @@ function applyTheme(theme: string): void {
 
 applyTheme(getSavedTheme() === darkTheme ? darkTheme : 'light');
 
+const heroHighlights = [
+  {
+    id: 'architecture',
+    eyebrow: 'Architecture',
+    title: 'Built as a full stack, not a blank starter.',
+    summary:
+      'EventBus, SaveManager with slots, GameState, scene flow, and an asset manifest are already part of the ZIP.',
+    detail:
+      'The generated project already wires scene communication, save slots, runtime state, and asset loading rules so an agent can start from structure instead of scaffolding.',
+  },
+  {
+    id: 'production',
+    eyebrow: 'Production',
+    title: 'Ready for real release work.',
+    summary:
+      'Vitest, Playwright smoke tests, Yandex Games checks, spritesheet guidance, and cache-busting rules are included.',
+    detail:
+      'The archive is set up to catch regressions, validate builds, and keep release-ready habits visible from day one, including mobile and desktop smoke coverage.',
+  },
+  {
+    id: 'skills',
+    eyebrow: 'AI skills',
+    title: 'The repo also teaches the agent how to think.',
+    summary:
+      'A local skill pack covers physics, camera, economy, save migrations, UI taste, and publishing paths.',
+    detail:
+      'Instead of a generic prompt dump, the ZIP ships with project-local skills that route an agent to the right workflow when the task is about gameplay, UI, input, or release prep.',
+  },
+] as const;
+
+const heroChips = [
+  {
+    id: 'eventbus',
+    label: 'EventBus + GameState',
+    detail: 'Scene messages, runtime state, and scoring live in named systems instead of being scattered across screens.',
+  },
+  {
+    id: 'save',
+    label: 'SaveManager with slots',
+    detail: 'Players get multiple save slots and a clean path for versioned persistence and resets.',
+  },
+  {
+    id: 'scenes',
+    label: 'Scene transitions',
+    detail: 'Boot, preload, guide, game, and UI scenes already have a transition pattern for handoff and fades.',
+  },
+  {
+    id: 'phaser',
+    label: 'Phaser + TypeScript',
+    detail: 'The starter keeps the engine and typing choices fixed so the next agent can focus on game logic.',
+  },
+  {
+    id: 'tests',
+    label: 'Vitest unit tests',
+    detail: 'Pure game logic can be checked without opening a browser, which helps catch balance and state bugs.',
+  },
+  {
+    id: 'smoke',
+    label: 'Playwright desktop/mobile smoke',
+    detail: 'The archive validates that the rendered game boots on both desktop and mobile viewports.',
+  },
+  {
+    id: 'taste',
+    label: 'Visual taste + brandkit',
+    detail: 'The generated repo includes local guidance for screens, hierarchy, and non-generic presentation.',
+  },
+  {
+    id: 'sprites',
+    label: 'Spritesheet optimization',
+    detail: 'There is guidance for atlas shape, frame sizing, and asset hygiene before the game grows.',
+  },
+  {
+    id: 'pool',
+    label: 'Object pool templates',
+    detail: 'Reusable runtime patterns are already documented so repeated objects stay cheap and tidy.',
+  },
+  {
+    id: 'idle',
+    label: 'Idle economy optional',
+    detail: 'If the pack is enabled, the ZIP also includes idle economy systems, docs, and idle-focused skills.',
+  },
+  {
+    id: 'yandex',
+    label: 'Yandex Games optional',
+    detail: 'If enabled, the archive adds publishing docs, SDK startup, and validation paths for Yandex Games.',
+  },
+] as const;
+
+let activeHeroHighlight: (typeof heroHighlights)[number]['id'] = heroHighlights[0]?.id ?? 'architecture';
+
 app.innerHTML = `
   <section class="page">
     <header class="nav">
@@ -59,18 +149,54 @@ app.innerHTML = `
           scene communication, save slots, asset rules, and publishing checks already wired in.
         </p>
 
+        <div class="hero-highlights" id="hero-highlights" aria-label="What this project includes"></div>
+        <div class="hero-explainer" id="hero-explainer" aria-live="polite"></div>
+
         <div class="skill-wall" aria-label="Included sources and systems">
-          <span>EventBus + GameState</span>
-          <span>SaveManager with slots</span>
-          <span>Scene transitions</span>
-          <span>Phaser + TypeScript</span>
-          <span>Vitest unit tests</span>
-          <span>Playwright desktop/mobile smoke</span>
-          <span>Visual taste + brandkit skills</span>
-          <span>Spritesheet optimization guide</span>
-          <span>Object pool templates</span>
-          <span id="idle-badge">Idle economy optional</span>
-          <span id="yandex-badge">Yandex Games optional</span>
+          <button class="skill-chip" data-chip="eventbus" type="button">
+            <span class="skill-chip-label">EventBus + GameState</span>
+            <span class="skill-chip-info" aria-hidden="true">?</span>
+          </button>
+          <button class="skill-chip" data-chip="save" type="button">
+            <span class="skill-chip-label">SaveManager with slots</span>
+            <span class="skill-chip-info" aria-hidden="true">?</span>
+          </button>
+          <button class="skill-chip" data-chip="scenes" type="button">
+            <span class="skill-chip-label">Scene transitions</span>
+            <span class="skill-chip-info" aria-hidden="true">?</span>
+          </button>
+          <button class="skill-chip" data-chip="phaser" type="button">
+            <span class="skill-chip-label">Phaser + TypeScript</span>
+            <span class="skill-chip-info" aria-hidden="true">?</span>
+          </button>
+          <button class="skill-chip" data-chip="tests" type="button">
+            <span class="skill-chip-label">Vitest unit tests</span>
+            <span class="skill-chip-info" aria-hidden="true">?</span>
+          </button>
+          <button class="skill-chip" data-chip="smoke" type="button">
+            <span class="skill-chip-label">Playwright desktop/mobile smoke</span>
+            <span class="skill-chip-info" aria-hidden="true">?</span>
+          </button>
+          <button class="skill-chip" data-chip="taste" type="button">
+            <span class="skill-chip-label">Visual taste + brandkit skills</span>
+            <span class="skill-chip-info" aria-hidden="true">?</span>
+          </button>
+          <button class="skill-chip" data-chip="sprites" type="button">
+            <span class="skill-chip-label">Spritesheet optimization guide</span>
+            <span class="skill-chip-info" aria-hidden="true">?</span>
+          </button>
+          <button class="skill-chip" data-chip="pool" type="button">
+            <span class="skill-chip-label">Object pool templates</span>
+            <span class="skill-chip-info" aria-hidden="true">?</span>
+          </button>
+          <button class="skill-chip" data-chip="idle" type="button">
+            <span class="skill-chip-label" id="idle-badge">Idle economy optional</span>
+            <span class="skill-chip-info" aria-hidden="true">?</span>
+          </button>
+          <button class="skill-chip" data-chip="yandex" type="button">
+            <span class="skill-chip-label" id="yandex-badge">Yandex Games optional</span>
+            <span class="skill-chip-info" aria-hidden="true">?</span>
+          </button>
         </div>
       </div>
 
@@ -237,6 +363,9 @@ const fileCount = document.querySelector<HTMLSpanElement>('#file-count')!;
 const fileTree = document.querySelector<HTMLDivElement>('#file-tree')!;
 const idleBadge = document.querySelector<HTMLSpanElement>('#idle-badge')!;
 const yandexBadge = document.querySelector<HTMLSpanElement>('#yandex-badge')!;
+const heroHighlightsRoot = document.querySelector<HTMLDivElement>('#hero-highlights')!;
+const heroExplainer = document.querySelector<HTMLDivElement>('#hero-explainer')!;
+const skillWall = document.querySelector<HTMLDivElement>('.skill-wall')!;
 const themeToggle = document.querySelector<HTMLButtonElement>('#theme-toggle')!;
 const themeToggleLabel = document.querySelector<HTMLSpanElement>('#theme-toggle-label')!;
 
@@ -245,6 +374,70 @@ function renderThemeToggle(): void {
   themeToggle.setAttribute('aria-pressed', String(isDark));
   themeToggle.setAttribute('aria-label', isDark ? 'Switch to light theme' : 'Switch to dark theme');
   themeToggleLabel.textContent = isDark ? 'Light theme' : 'Dark theme';
+}
+
+function renderHeroHighlight(highlightId: string): void {
+  const highlight = heroHighlights.find((entry) => entry.id === highlightId) ?? heroHighlights[0];
+
+  if (!highlight) {
+    return;
+  }
+
+  activeHeroHighlight = highlight.id;
+  heroExplainer.innerHTML = `
+    <strong>${escapeHtml(highlight.title)}</strong>
+    <p>${escapeHtml(highlight.detail)}</p>
+  `;
+
+  for (const button of heroHighlightsRoot.querySelectorAll<HTMLButtonElement>('[data-highlight]')) {
+    button.classList.toggle('active', button.dataset.highlight === highlight.id);
+    button.setAttribute('aria-pressed', String(button.dataset.highlight === highlight.id));
+  }
+}
+
+function renderHeroHighlights(): void {
+  heroHighlightsRoot.innerHTML = heroHighlights
+    .map(
+      (highlight) => `
+        <button class="hero-highlight${highlight.id === activeHeroHighlight ? ' active' : ''}" type="button" data-highlight="${highlight.id}" aria-pressed="${String(highlight.id === activeHeroHighlight)}">
+          <span class="hero-highlight-head">
+            <span class="eyebrow">${escapeHtml(highlight.eyebrow)}</span>
+            <span class="hero-highlight-question" aria-hidden="true">?</span>
+          </span>
+          <strong>${escapeHtml(highlight.title)}</strong>
+          <p>${escapeHtml(highlight.summary)}</p>
+        </button>
+      `,
+    )
+    .join('');
+
+  heroHighlightsRoot.querySelectorAll<HTMLButtonElement>('[data-highlight]').forEach((button) => {
+    button.addEventListener('click', () => renderHeroHighlight(button.dataset.highlight ?? ''));
+  });
+
+  renderHeroHighlight(activeHeroHighlight);
+}
+
+function attachSkillWallExplainers(): void {
+  skillWall.querySelectorAll<HTMLButtonElement>('.skill-chip').forEach((button) => {
+    button.addEventListener('click', () => {
+      const chipId = button.dataset.chip ?? '';
+      const chip = heroChips.find((entry) => entry.id === chipId);
+
+      if (!chip) {
+        return;
+      }
+
+      heroExplainer.innerHTML = `
+        <strong>${escapeHtml(chip.label)}</strong>
+        <p>${escapeHtml(chip.detail)}</p>
+      `;
+
+      for (const chipButton of skillWall.querySelectorAll<HTMLButtonElement>('.skill-chip')) {
+        chipButton.classList.toggle('active', chipButton.dataset.chip === chip.id);
+      }
+    });
+  });
 }
 
 function readOptions(): ProjectOptions {
@@ -269,6 +462,8 @@ function renderPreview(): void {
   const files = getProjectFiles(options);
   previewTitle.textContent = `${options.slug}.zip`;
   fileCount.textContent = `${files.length} files`;
+  skillWall.querySelector<HTMLButtonElement>('[data-chip="idle"]')?.classList.toggle('active', options.includeIdlePack);
+  skillWall.querySelector<HTMLButtonElement>('[data-chip="yandex"]')?.classList.toggle('active', options.includeYandexGames);
   idleBadge.classList.toggle('active', options.includeIdlePack);
   yandexBadge.classList.toggle('active', options.includeYandexGames);
   gameIdea.placeholder = options.includeIdlePack
@@ -361,4 +556,6 @@ themeToggle.addEventListener('click', () => {
 });
 
 renderThemeToggle();
+renderHeroHighlights();
+attachSkillWallExplainers();
 renderPreview();

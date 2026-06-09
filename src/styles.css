@@ -200,6 +200,92 @@ h1 {
   line-height: 1.48;
 }
 
+.hero-highlights {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.hero-highlight {
+  display: grid;
+  gap: 10px;
+  border: 1px solid rgba(25, 32, 43, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 14px;
+  color: #19202b;
+  cursor: pointer;
+  text-align: left;
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+.hero-highlight:hover,
+.hero-highlight.active {
+  transform: translateY(-1px);
+  border-color: rgba(90, 126, 255, 0.4);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.hero-highlight-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.hero-highlight .eyebrow {
+  font-size: 11px;
+}
+
+.hero-highlight strong {
+  color: #111722;
+  font-size: 17px;
+  line-height: 1.16;
+}
+
+.hero-highlight p {
+  color: #5c6677;
+  font-size: 14px;
+  line-height: 1.44;
+}
+
+.hero-highlight-question,
+.skill-chip-info {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid rgba(25, 32, 43, 0.14);
+  background: rgba(25, 32, 43, 0.06);
+  color: #344052;
+  font-size: 13px;
+  font-weight: 860;
+}
+
+.hero-explainer {
+  display: grid;
+  gap: 8px;
+  border: 1px solid rgba(25, 32, 43, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.82);
+  padding: 16px 18px;
+}
+
+.hero-explainer strong {
+  color: #111722;
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.hero-explainer p {
+  color: #5c6677;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
 .skill-wall {
   display: flex;
   flex-wrap: wrap;
@@ -207,34 +293,89 @@ h1 {
   max-width: 780px;
 }
 
-.skill-wall span {
+.skill-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   border: 1px solid rgba(25, 32, 43, 0.1);
   border-radius: 999px;
-  color: #263040;
   background: rgba(255, 255, 255, 0.74);
-  padding: 9px 12px;
+  color: #263040;
+  padding: 8px 10px 8px 12px;
   font-size: 13px;
   font-weight: 740;
   box-shadow: 0 8px 20px rgba(23, 31, 44, 0.05);
+  cursor: pointer;
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
 }
 
-.skill-wall span:nth-child(1),
-.skill-wall span:nth-child(2),
-.skill-wall span:nth-child(3) {
-  color: #183d31;
-  background: rgba(43, 189, 145, 0.14);
-  border-color: rgba(43, 189, 145, 0.2);
+.skill-chip:hover,
+.skill-chip.active {
+  transform: translateY(-1px);
+  border-color: rgba(90, 126, 255, 0.42);
+  background: rgba(255, 255, 255, 0.92);
 }
 
-#yandex-badge {
+.skill-chip-label {
+  display: inline-block;
+}
+
+.skill-chip #idle-badge,
+.skill-chip #yandex-badge {
+  padding-right: 10px;
+}
+
+.skill-chip #idle-badge + .skill-chip-info,
+.skill-chip #yandex-badge + .skill-chip-info {
+  margin-left: 2px;
+}
+
+.skill-chip #idle-badge,
+.skill-chip #yandex-badge {
+  padding-right: 0;
+}
+
+.skill-chip[data-chip="idle"] {
+  color: #064442;
+  background: rgba(43, 189, 145, 0.16);
+  border-color: rgba(43, 189, 145, 0.3);
+}
+
+.skill-chip[data-chip="yandex"] {
   color: #6c3d05;
   background: rgba(245, 184, 75, 0.18);
   border-color: rgba(245, 184, 75, 0.34);
 }
 
-#yandex-badge.active {
-  color: #231600;
+.skill-chip[data-chip="idle"] .skill-chip-info,
+.skill-chip[data-chip="yandex"] .skill-chip-info {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.16);
+  color: inherit;
+}
+
+.skill-chip[data-chip="idle"].active,
+.skill-chip[data-chip="yandex"].active {
+  color: #111722;
+}
+
+.skill-chip[data-chip="idle"].active {
+  background: #2bbd91;
+}
+
+.skill-chip[data-chip="yandex"].active {
   background: #f5b84b;
+}
+
+.skill-chip[data-chip="idle"].active .skill-chip-info,
+.skill-chip[data-chip="yandex"].active .skill-chip-info {
+  background: rgba(255, 255, 255, 0.22);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.skill-wall .skill-chip {
+  border: 1px solid rgba(25, 32, 43, 0.1);
+  color: #263040;
 }
 
 .console {
@@ -672,6 +813,29 @@ html[data-theme="dark"] .theme-toggle {
   color: #f4f7ff;
 }
 
+html[data-theme="dark"] .hero-highlight,
+html[data-theme="dark"] .hero-explainer {
+  border-color: rgba(232, 237, 247, 0.12);
+  background: rgba(20, 28, 42, 0.78);
+}
+
+html[data-theme="dark"] .hero-highlight strong,
+html[data-theme="dark"] .hero-explainer strong {
+  color: #f4f7ff;
+}
+
+html[data-theme="dark"] .hero-highlight p,
+html[data-theme="dark"] .hero-explainer p {
+  color: #b3bed0;
+}
+
+html[data-theme="dark"] .hero-highlight-question,
+html[data-theme="dark"] .skill-chip-info {
+  border-color: rgba(232, 237, 247, 0.1);
+  background: rgba(232, 237, 247, 0.08);
+  color: #e6ecf7;
+}
+
 html[data-theme="dark"] .nav-pill,
 html[data-theme="dark"] .theme-toggle,
 html[data-theme="dark"] .flow article,
@@ -702,7 +866,7 @@ html[data-theme="dark"] .nav-pill {
   color: #b3bed0;
 }
 
-html[data-theme="dark"] .skill-wall span,
+html[data-theme="dark"] .skill-chip,
 html[data-theme="dark"] .payload-summary span,
 html[data-theme="dark"] .creator-links a {
   border-color: rgba(232, 237, 247, 0.1);
@@ -710,26 +874,31 @@ html[data-theme="dark"] .creator-links a {
   color: #e6ecf7;
 }
 
-html[data-theme="dark"] .skill-wall span:nth-child(1),
-html[data-theme="dark"] .skill-wall span:nth-child(2),
-html[data-theme="dark"] .skill-wall span:nth-child(3),
-html[data-theme="dark"] #idle-badge {
+html[data-theme="dark"] .skill-chip:hover,
+html[data-theme="dark"] .skill-chip.active,
+html[data-theme="dark"] .hero-highlight:hover,
+html[data-theme="dark"] .hero-highlight.active {
+  border-color: rgba(90, 126, 255, 0.5);
+  background: rgba(28, 39, 58, 0.95);
+}
+
+html[data-theme="dark"] .skill-chip[data-chip="idle"] {
   color: #b7f8e6;
   background: rgba(43, 189, 145, 0.18);
   border-color: rgba(43, 189, 145, 0.28);
 }
 
-html[data-theme="dark"] #yandex-badge {
+html[data-theme="dark"] .skill-chip[data-chip="yandex"] {
   color: #ffe0a3;
   background: rgba(245, 184, 75, 0.16);
   border-color: rgba(245, 184, 75, 0.3);
 }
 
-html[data-theme="dark"] #idle-badge.active {
+html[data-theme="dark"] .skill-chip[data-chip="idle"].active {
   color: #061713;
 }
 
-html[data-theme="dark"] #yandex-badge.active {
+html[data-theme="dark"] .skill-chip[data-chip="yandex"].active {
   color: #231600;
 }
 
