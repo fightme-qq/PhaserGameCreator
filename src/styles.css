@@ -710,11 +710,13 @@ h2 {
 .archive-shell {
   display: grid;
   grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
-  min-height: 420px;
+  height: 390px;
+  min-height: 0;
 }
 
 .archive-tree {
   overflow: auto;
+  min-height: 0;
   border-right: 1px solid rgba(25, 32, 43, 0.1);
   background: rgba(255, 255, 255, 0.46);
   padding: 12px;
@@ -783,6 +785,8 @@ h2 {
   display: grid;
   gap: 14px;
   align-content: start;
+  overflow: auto;
+  min-height: 0;
   padding: 22px;
   background: rgba(255, 255, 255, 0.74);
 }
@@ -1123,12 +1127,13 @@ html[data-theme="dark"] .creator-links a:hover {
 
   .archive-shell {
     grid-template-columns: 1fr;
+    height: 560px;
   }
 
   .archive-tree {
     border-right: 0;
     border-bottom: 1px solid rgba(25, 32, 43, 0.1);
-    max-height: 320px;
+    max-height: 280px;
   }
 }
 
