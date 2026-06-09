@@ -123,7 +123,58 @@ const heroChips = [
 ] as const;
 
 let activeHeroHighlight: (typeof heroHighlights)[number]['id'] = heroHighlights[0]?.id ?? 'architecture';
-let selectedArchivePath = '';
+const archiveBlocks = [
+  {
+    id: 'onboarding',
+    title: 'Start docs',
+    count: '5 files',
+    summary: 'Human-readable entry points for the generated project.',
+    detail: 'Brief, first task, README, and start guide explain what to do after downloading the ZIP.',
+    examples: ['START_HERE.md', 'GAME_BRIEF.md', 'NEXT_AGENT_TASK.md'],
+  },
+  {
+    id: 'agents',
+    title: 'Agent instructions',
+    count: '8+ files',
+    summary: 'Context files for Codex, Claude, Gemini, Cursor, and Copilot.',
+    detail: 'They tell coding agents how to route work, which skills to use, and what not to break.',
+    examples: ['AGENTS.md', 'CLAUDE.md', '.ai/skill-manifest.json'],
+  },
+  {
+    id: 'skills',
+    title: 'Local AI skills',
+    count: '30+ skills',
+    summary: 'Task-specific workflows for Phaser game development.',
+    detail: 'Physics, camera, economy, save migrations, UI polish, asset work, testing, and publishing all get local guidance.',
+    examples: ['skills/phaser-testing', 'skills/phaser-ui-hud', 'skills/phaser-progression-economy'],
+  },
+  {
+    id: 'runtime',
+    title: 'Phaser runtime',
+    count: 'Core source',
+    summary: 'The actual starter game architecture.',
+    detail: 'Scene flow, EventBus, GameState, SaveManager, asset manifest, input, UI, and runtime helpers are already wired.',
+    examples: ['src/game/scenes', 'src/game/state', 'src/game/save'],
+  },
+  {
+    id: 'validation',
+    title: 'Tests and checks',
+    count: 'Unit + smoke',
+    summary: 'Verification for generated projects.',
+    detail: 'Vitest checks pure logic; Playwright confirms that the canvas boots on desktop and mobile.',
+    examples: ['tests/unit', 'tests/smoke.spec.ts', 'npm run test:smoke'],
+  },
+  {
+    id: 'optional',
+    title: 'Optional packs',
+    count: 'Idle / Yandex',
+    summary: 'Extra systems only when the user enables them.',
+    detail: 'Idle adds economy systems and balancing docs. Yandex adds SDK startup, platform checks, and release helpers.',
+    examples: ['docs/IDLE_GAME_DESIGN.md', 'src/game/idle', 'docs/yandex-games.md'],
+  },
+] as const;
+
+let selectedArchiveBlock: (typeof archiveBlocks)[number]['id'] = archiveBlocks[0]?.id ?? 'onboarding';
 
 app.innerHTML = `
   <section class="page">
@@ -381,221 +432,45 @@ function renderThemeToggle(): void {
   themeToggleLabel.textContent = isDark ? 'Light theme' : 'Dark theme';
 }
 
-type ArchiveFileInfo = {
-  title: string;
-  category: string;
-  summary: string;
-  detail: string;
-  whenToOpen: string;
-};
-
-type ArchiveFileEntry = {
-  path: string;
-  info: ArchiveFileInfo;
-};
-
-const archiveCategoryOrder = [
-  'Onboarding',
-  'Agent instructions',
-  'Skill map',
-  'Runtime core',
-  'Idle pack',
-  'Publishing',
-  'Testing',
-  'Config',
-  'Other',
-] as const;
-
-function describeArchiveFile(path: string): ArchiveFileInfo {
-  const title = path.split('/').pop() ?? path;
-
-  if (path === 'START_HERE.md') {
-    return {
-      title,
-      category: 'Onboarding',
-      summary: 'The first page for humans and agents.',
-      detail: 'Explains what to open first and how to hand the repo to an AI coding agent without friction.',
-      whenToOpen: 'Open this at the start of every fresh session.',
-    };
-  }
-
-  if (path === 'GAME_BRIEF.md' || path === 'NEXT_AGENT_TASK.md' || path === 'README.md') {
-    return {
-      title,
-      category: 'Onboarding',
-      summary: 'Project brief and the next concrete task.',
-      detail: 'Keeps the original idea, the first playable target, and the default next move in one place.',
-      whenToOpen: 'Open this when you want the project goal or next task in plain language.',
-    };
-  }
-
-  if (path === 'AGENTS.md' || path === 'CLAUDE.md' || path === 'GEMINI.md' || path === '.github/copilot-instructions.md' || path === '.cursor/rules/phaser-game-creator.mdc' || path === '.ai/agent-entry.md' || path === '.ai/skill-manifest.json') {
-    return {
-      title,
-      category: 'Agent instructions',
-      summary: 'Auto-loaded operating rules for the agent layer.',
-      detail: 'These files tell different assistants how to read the repo, route tasks, and avoid generic web-app assumptions.',
-      whenToOpen: 'Open this when the task is about workflow, context, or agent routing.',
-    };
-  }
-
-  if (path.startsWith('skills/')) {
-    return {
-      title,
-      category: 'Skill map',
-      summary: 'Local skill documentation for task routing.',
-      detail: 'Contains the generated skill pack, task map, and references that steer an agent toward the right workflow.',
-      whenToOpen: 'Open this when the task is about skills, prompts, or agent guidance.',
-    };
-  }
-
-  if (path.startsWith('src/game/idle/') || path.startsWith('src/data/idle') || path.startsWith('docs/IDLE')) {
-    return {
-      title,
-      category: 'Idle pack',
-      summary: 'Optional incremental economy systems and docs.',
-      detail: 'Defines the idle/clicker systems, balance notes, and design guidance that get added only when the pack is enabled.',
-      whenToOpen: 'Open this when the project includes idle, incremental, or clicker mechanics.',
-    };
-  }
-
-  if (path.startsWith('src/game/platform/') || path.startsWith('docs/yandex') || path === 'scripts/make-yandex-zip.py') {
-    return {
-      title,
-      category: 'Publishing',
-      summary: 'Yandex Games publishing helpers and constraints.',
-      detail: 'This group covers SDK boot, pause/resume handling, validation, and build packaging for the Yandex path.',
-      whenToOpen: 'Open this when the target platform is Yandex Games or another portal build.',
-    };
-  }
-
-  if (path.startsWith('tests/') || path === 'scripts/validate-generated.ts' || path === 'scripts/validate-yandex-build.py' || path === 'package.json') {
-    return {
-      title,
-      category: 'Testing',
-      summary: 'Tests and validation hooks for the generated repo.',
-      detail: 'These files keep the generated project honest with unit checks, smoke tests, and release validation scripts.',
-      whenToOpen: 'Open this when you want to verify that the repo still boots and behaves as expected.',
-    };
-  }
-
-  if (path.startsWith('src/game/config/') || path.startsWith('src/game/events/') || path.startsWith('src/game/state/') || path.startsWith('src/game/assets/') || path.startsWith('src/game/scenes/') || path.startsWith('src/game/save/') || path.startsWith('src/game/input/') || path.startsWith('src/game/ui/') || path.startsWith('src/game/systems/') || path.startsWith('src/game/entities/') || path.startsWith('src/game/utils/')) {
-    return {
-      title,
-      category: 'Runtime core',
-      summary: 'Phaser runtime, state, scenes, and support systems.',
-      detail: 'This is the gameplay foundation: configuration, events, scene flow, runtime state, and helpers that the game uses every frame.',
-      whenToOpen: 'Open this when you are changing gameplay structure or runtime behavior.',
-    };
-  }
-
-  if (path.startsWith('docs/') || path.startsWith('templates/')) {
-    return {
-      title,
-      category: 'Config',
-      summary: 'Documentation and reusable starter material.',
-      detail: 'These files explain how to use the project, how the generator works, and what reusable modules are available.',
-      whenToOpen: 'Open this when you need guidance, conventions, or shared module templates.',
-    };
-  }
-
-  if (path.startsWith('.cursor/') || path.startsWith('.github/') || path.startsWith('.ai/')) {
-    return {
-      title,
-      category: 'Agent instructions',
-      summary: 'Repository metadata for coding assistants.',
-      detail: 'These files give editor integrations and agents the right assumptions before they touch the codebase.',
-      whenToOpen: 'Open this when the task is about repository automation or assistant behavior.',
-    };
-  }
-
-  return {
-    title,
-    category: 'Other',
-    summary: 'Supporting project file.',
-    detail: 'A utility or config file that supports the generated starter without being part of the visible gameplay loop.',
-    whenToOpen: 'Open this if the task touches build setup, tooling, or a file outside the main runtime.',
-  };
-}
-
-function buildArchiveEntries(files: Array<{ path: string }>): ArchiveFileEntry[] {
-  return files.map((file) => ({ path: file.path, info: describeArchiveFile(file.path) }));
-}
-
-function renderArchiveTree(entries: ArchiveFileEntry[]): void {
-  const groupedEntries = new Map<string, ArchiveFileEntry[]>();
-
-  for (const category of archiveCategoryOrder) {
-    groupedEntries.set(category, []);
-  }
-
-  for (const entry of entries) {
-    const bucket = groupedEntries.get(entry.info.category) ?? groupedEntries.get('Other')!;
-    bucket.push(entry);
-  }
-
-  archiveTree.innerHTML = Array.from(groupedEntries.entries())
-    .filter(([, items]) => items.length > 0)
+function renderArchiveBlocks(): void {
+  archiveTree.innerHTML = archiveBlocks
     .map(
-      ([category, items]) => `
-        <section class="archive-folder">
-          <div class="archive-folder-head">
-            <strong>${escapeHtml(category)}</strong>
-            <span>${items.length} files</span>
-          </div>
-          <div class="archive-file-list">
-            ${items
-              .map(
-                (entry) => `
-                  <button class="archive-file${entry.path === selectedArchivePath ? ' active' : ''}" type="button" data-archive-path="${escapeHtml(entry.path)}">
-                    <span class="archive-file-name">${escapeHtml(entry.info.title)}</span>
-                    <span class="archive-file-summary">${escapeHtml(entry.info.summary)}</span>
-                  </button>
-                `,
-              )
-              .join('')}
-          </div>
-        </section>
+      (block) => `
+        <button class="archive-block${block.id === selectedArchiveBlock ? ' active' : ''}" type="button" data-archive-block="${block.id}" aria-pressed="${String(block.id === selectedArchiveBlock)}">
+          <span>
+            <strong>${escapeHtml(block.title)}</strong>
+            <small>${escapeHtml(block.count)}</small>
+          </span>
+          <p>${escapeHtml(block.summary)}</p>
+        </button>
       `,
     )
     .join('');
 
-  archiveTree.querySelectorAll<HTMLButtonElement>('[data-archive-path]').forEach((button) => {
+  archiveTree.querySelectorAll<HTMLButtonElement>('[data-archive-block]').forEach((button) => {
     button.addEventListener('click', () => {
-      selectedArchivePath = button.dataset.archivePath ?? '';
-      renderArchiveInspector(entries);
-      renderArchiveTree(entries);
+      selectedArchiveBlock = (button.dataset.archiveBlock as typeof selectedArchiveBlock) ?? 'onboarding';
+      renderArchiveBlocks();
+      renderArchiveInspector();
     });
   });
 }
 
-function renderArchiveInspector(entries: ArchiveFileEntry[]): void {
-  const selected = entries.find((entry) => entry.path === selectedArchivePath) ?? entries[0];
+function renderArchiveInspector(): void {
+  const selected = archiveBlocks.find((block) => block.id === selectedArchiveBlock) ?? archiveBlocks[0];
 
   if (!selected) {
-    archiveInspector.innerHTML = '<p>No files found.</p>';
+    archiveInspector.innerHTML = '';
     return;
   }
 
-  selectedArchivePath = selected.path;
   archiveInspector.innerHTML = `
-    <p class="eyebrow">${escapeHtml(selected.info.category)}</p>
-    <h3>${escapeHtml(selected.info.title)}</h3>
-    <p class="archive-inspector-summary">${escapeHtml(selected.info.summary)}</p>
-    <dl class="archive-inspector-grid">
-      <div>
-        <dt>What it does</dt>
-        <dd>${escapeHtml(selected.info.detail)}</dd>
-      </div>
-      <div>
-        <dt>When to open</dt>
-        <dd>${escapeHtml(selected.info.whenToOpen)}</dd>
-      </div>
-      <div>
-        <dt>Path</dt>
-        <dd><code>${escapeHtml(selected.path)}</code></dd>
-      </div>
-    </dl>
+    <p class="eyebrow">${escapeHtml(selected.count)}</p>
+    <h3>${escapeHtml(selected.title)}</h3>
+    <p class="archive-inspector-summary">${escapeHtml(selected.detail)}</p>
+    <div class="archive-examples" aria-label="Examples">
+      ${selected.examples.map((example) => `<code>${escapeHtml(example)}</code>`).join('')}
+    </div>
   `;
 }
 
@@ -683,40 +558,6 @@ function readOptions(): ProjectOptions {
 function renderPreview(): void {
   const options = readOptions();
   const files = getProjectFiles(options);
-  const notableFiles = files
-    .map((file) => file.path)
-    .filter((path) => {
-      return (
-        path === 'START_HERE.md' ||
-        path === 'GAME_BRIEF.md' ||
-        path === 'NEXT_AGENT_TASK.md' ||
-        path === 'AGENTS.md' ||
-        path === 'CLAUDE.md' ||
-        path === 'GEMINI.md' ||
-        path.startsWith('.ai/') ||
-        path.startsWith('.cursor/') ||
-        path.startsWith('.github/') ||
-        path.startsWith('skills/') ||
-        path.startsWith('docs/yandex') ||
-        path.startsWith('docs/IDLE') ||
-        path.startsWith('scripts/') ||
-        path.startsWith('tests/') ||
-        path.startsWith('src/data/') ||
-        path.startsWith('src/game/idle/') ||
-        path.startsWith('src/game/assets/') ||
-        path.startsWith('src/game/config/') ||
-        path.startsWith('src/game/events/') ||
-        path.startsWith('src/game/save/') ||
-        path.startsWith('src/game/platform/') ||
-        path.startsWith('src/game/scenes/') ||
-        path.startsWith('src/game/state/') ||
-        path.startsWith('src/game/input/') ||
-        path.startsWith('src/game/ui/') ||
-        path === 'package.json'
-      );
-    })
-    .slice(0, 64);
-  const archiveEntries = buildArchiveEntries(notableFiles.map((path) => ({ path })));
   previewTitle.textContent = `${options.slug}.zip`;
   fileCount.textContent = `${files.length} files`;
   skillWall.querySelector<HTMLButtonElement>('[data-chip="idle"]')?.classList.toggle('active', options.includeIdlePack);
@@ -726,12 +567,8 @@ function renderPreview(): void {
   gameIdea.placeholder = options.includeIdlePack
     ? 'Example: Space bakery that bakes stars while offline'
     : 'Example: Vampire Survivors but with cats';
-  if (!selectedArchivePath || !archiveEntries.some((entry) => entry.path === selectedArchivePath)) {
-    selectedArchivePath = archiveEntries[0]?.path ?? '';
-  }
-
-  renderArchiveTree(archiveEntries);
-  renderArchiveInspector(archiveEntries);
+  renderArchiveBlocks();
+  renderArchiveInspector();
 }
 
 async function createZip(options: ProjectOptions): Promise<Blob> {
