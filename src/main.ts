@@ -243,6 +243,7 @@ const themeToggleLabel = document.querySelector<HTMLSpanElement>('#theme-toggle-
 function renderThemeToggle(): void {
   const isDark = document.documentElement.dataset.theme === darkTheme;
   themeToggle.setAttribute('aria-pressed', String(isDark));
+  themeToggle.setAttribute('aria-label', isDark ? 'Switch to light theme' : 'Switch to dark theme');
   themeToggleLabel.textContent = isDark ? 'Light theme' : 'Dark theme';
 }
 

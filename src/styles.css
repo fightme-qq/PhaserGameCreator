@@ -94,12 +94,11 @@ textarea {
   display: inline-flex;
   align-items: center;
   flex: 0 0 auto;
-  gap: 8px;
   border: 1px solid rgba(25, 32, 43, 0.12);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.74);
   color: #19202b;
-  padding: 8px 12px;
+  padding: 8px 10px;
   font-size: 13px;
   font-weight: 820;
   cursor: pointer;
@@ -108,17 +107,33 @@ textarea {
 }
 
 .theme-toggle-icon {
+  position: relative;
   flex: 0 0 auto;
   width: 12px;
   height: 12px;
+  margin-right: 18px;
   border-radius: 50%;
-  background: #19202b;
-  box-shadow: inset -4px -2px 0 #ffffff;
+  background: #f5b84b;
+  box-shadow: 18px 0 0 #596273;
+}
+
+.theme-toggle-icon::after {
+  position: absolute;
+  top: -4px;
+  left: -7px;
+  width: 44px;
+  height: 20px;
+  content: "";
 }
 
 #theme-toggle-label {
-  width: auto;
-  height: auto;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
 }
 
 .theme-toggle:hover {
@@ -129,7 +144,7 @@ textarea {
 
 .theme-toggle[aria-pressed="true"] .theme-toggle-icon {
   background: #f5b84b;
-  box-shadow: 0 0 0 3px rgba(245, 184, 75, 0.18);
+  box-shadow: 18px 0 0 #f5b84b;
 }
 
 .stage {
