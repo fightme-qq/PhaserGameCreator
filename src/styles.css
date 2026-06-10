@@ -58,6 +58,7 @@ textarea {
   display: flex;
   align-items: center;
   gap: 10px;
+  min-width: 0;
   color: #19202b;
 }
 
@@ -72,6 +73,7 @@ textarea {
 .brand strong {
   margin-left: 20px;
   font-size: 15px;
+  overflow-wrap: anywhere;
 }
 
 .nav-pill {
@@ -88,6 +90,7 @@ textarea {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex: 0 0 auto;
 }
 
 .theme-toggle {
@@ -154,10 +157,23 @@ textarea {
   align-items: stretch;
 }
 
+.stage > *,
+.statement > *,
+.console > *,
+.flow > *,
+.capability-grid > *,
+.archive-shell > *,
+.archive-tree > *,
+.payload-head > *,
+.creator > * {
+  min-width: 0;
+}
+
 .statement {
   display: grid;
   align-content: start;
   gap: 20px;
+  min-width: 0;
   min-height: 620px;
   padding: clamp(28px, 6vw, 72px);
   padding-top: clamp(38px, 7vw, 96px);
@@ -198,6 +214,7 @@ h1 {
   color: #475163;
   font-size: clamp(18px, 2vw, 23px);
   line-height: 1.48;
+  overflow-wrap: anywhere;
 }
 
 .hero-highlights {
@@ -241,12 +258,14 @@ h1 {
   color: #111722;
   font-size: 17px;
   line-height: 1.16;
+  overflow-wrap: anywhere;
 }
 
 .hero-highlight p {
   color: #5c6677;
   font-size: 14px;
   line-height: 1.44;
+  overflow-wrap: anywhere;
 }
 
 .hero-highlight-question {
@@ -271,6 +290,8 @@ h1 {
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.82);
   padding: 16px 18px;
+  height: 96px;
+  overflow: hidden;
 }
 
 .hero-explainer strong {
@@ -317,6 +338,8 @@ h1 {
 
 .skill-chip-label {
   display: inline-block;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .skill-chip[data-chip="idle"] {
@@ -353,6 +376,7 @@ h1 {
   display: grid;
   align-content: center;
   gap: 20px;
+  min-width: 0;
   min-height: 620px;
   border-radius: 8px;
   background: #111722;
@@ -1033,9 +1057,18 @@ html[data-theme="dark"] .creator-links a:hover {
     grid-template-columns: 1fr;
   }
 
+  .hero-highlights {
+    grid-template-columns: 1fr;
+  }
+
   .statement,
   .console {
     min-height: 0;
+  }
+
+  .hero-explainer {
+    height: auto;
+    overflow: visible;
   }
 
   h1 {
@@ -1049,6 +1082,12 @@ html[data-theme="dark"] .creator-links a:hover {
 
   .payload-summary {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .capability-head,
+  .payload-head {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .creator {
@@ -1073,12 +1112,13 @@ html[data-theme="dark"] .creator-links a:hover {
 
   .nav {
     align-items: flex-start;
+    flex-direction: column;
     gap: 12px;
   }
 
   .nav-actions {
-    align-items: flex-end;
-    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
   }
 
   .nav-pill {
@@ -1091,7 +1131,33 @@ html[data-theme="dark"] .creator-links a:hover {
   }
 
   h1 {
-    font-size: 42px;
+    font-size: 40px;
+    line-height: 0.98;
+  }
+
+  h2,
+  .archive-inspector h3 {
+    font-size: 24px;
+  }
+
+  .lead {
+    font-size: 17px;
+  }
+
+  .skill-wall,
+  .creator-links {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .skill-chip,
+  .creator-links a {
+    width: 100%;
+  }
+
+  .payload-head,
+  .archive-inspector {
+    padding: 18px;
   }
 
   .payload-summary,
@@ -1101,6 +1167,12 @@ html[data-theme="dark"] .creator-links a:hover {
 
   .archive-tree {
     grid-template-columns: 1fr;
+  }
+
+  .archive-block span {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
   }
 
   .segments {
