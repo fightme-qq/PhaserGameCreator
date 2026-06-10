@@ -249,8 +249,7 @@ h1 {
   line-height: 1.44;
 }
 
-.hero-highlight-question,
-.skill-chip-info {
+.hero-highlight-question {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -320,21 +319,6 @@ h1 {
   display: inline-block;
 }
 
-.skill-chip #idle-badge,
-.skill-chip #yandex-badge {
-  padding-right: 10px;
-}
-
-.skill-chip #idle-badge + .skill-chip-info,
-.skill-chip #yandex-badge + .skill-chip-info {
-  margin-left: 2px;
-}
-
-.skill-chip #idle-badge,
-.skill-chip #yandex-badge {
-  padding-right: 0;
-}
-
 .skill-chip[data-chip="idle"] {
   color: #064442;
   background: rgba(43, 189, 145, 0.16);
@@ -345,13 +329,6 @@ h1 {
   color: #6c3d05;
   background: rgba(245, 184, 75, 0.18);
   border-color: rgba(245, 184, 75, 0.34);
-}
-
-.skill-chip[data-chip="idle"] .skill-chip-info,
-.skill-chip[data-chip="yandex"] .skill-chip-info {
-  border-color: rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.16);
-  color: inherit;
 }
 
 .skill-chip[data-chip="idle"].active,
@@ -365,12 +342,6 @@ h1 {
 
 .skill-chip[data-chip="yandex"].active {
   background: #f5b84b;
-}
-
-.skill-chip[data-chip="idle"].active .skill-chip-info,
-.skill-chip[data-chip="yandex"].active .skill-chip-info {
-  background: rgba(255, 255, 255, 0.22);
-  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .skill-wall .skill-chip {
@@ -915,8 +886,7 @@ html[data-theme="dark"] .hero-explainer p {
   color: #b3bed0;
 }
 
-html[data-theme="dark"] .hero-highlight-question,
-html[data-theme="dark"] .skill-chip-info {
+html[data-theme="dark"] .hero-highlight-question {
   border-color: rgba(232, 237, 247, 0.1);
   background: rgba(232, 237, 247, 0.08);
   color: #e6ecf7;

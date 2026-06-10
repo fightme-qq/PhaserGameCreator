@@ -207,47 +207,36 @@ app.innerHTML = `
         <div class="skill-wall" aria-label="Included sources and systems">
           <button class="skill-chip" data-chip="eventbus" type="button">
             <span class="skill-chip-label">EventBus + GameState</span>
-            <span class="skill-chip-info" aria-hidden="true">?</span>
           </button>
           <button class="skill-chip" data-chip="save" type="button">
             <span class="skill-chip-label">SaveManager with slots</span>
-            <span class="skill-chip-info" aria-hidden="true">?</span>
           </button>
           <button class="skill-chip" data-chip="scenes" type="button">
             <span class="skill-chip-label">Scene transitions</span>
-            <span class="skill-chip-info" aria-hidden="true">?</span>
           </button>
           <button class="skill-chip" data-chip="phaser" type="button">
             <span class="skill-chip-label">Phaser + TypeScript</span>
-            <span class="skill-chip-info" aria-hidden="true">?</span>
           </button>
           <button class="skill-chip" data-chip="tests" type="button">
             <span class="skill-chip-label">Vitest unit tests</span>
-            <span class="skill-chip-info" aria-hidden="true">?</span>
           </button>
           <button class="skill-chip" data-chip="smoke" type="button">
             <span class="skill-chip-label">Playwright desktop/mobile smoke</span>
-            <span class="skill-chip-info" aria-hidden="true">?</span>
           </button>
           <button class="skill-chip" data-chip="taste" type="button">
             <span class="skill-chip-label">Visual taste + brandkit skills</span>
-            <span class="skill-chip-info" aria-hidden="true">?</span>
           </button>
           <button class="skill-chip" data-chip="sprites" type="button">
             <span class="skill-chip-label">Spritesheet optimization guide</span>
-            <span class="skill-chip-info" aria-hidden="true">?</span>
           </button>
           <button class="skill-chip" data-chip="pool" type="button">
             <span class="skill-chip-label">Object pool templates</span>
-            <span class="skill-chip-info" aria-hidden="true">?</span>
           </button>
           <button class="skill-chip" data-chip="idle" type="button">
             <span class="skill-chip-label" id="idle-badge">Idle economy optional</span>
-            <span class="skill-chip-info" aria-hidden="true">?</span>
           </button>
           <button class="skill-chip" data-chip="yandex" type="button">
             <span class="skill-chip-label" id="yandex-badge">Yandex Games optional</span>
-            <span class="skill-chip-info" aria-hidden="true">?</span>
           </button>
         </div>
       </div>
