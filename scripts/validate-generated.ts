@@ -130,8 +130,11 @@ function validateStructure(projectDir: string, options: ProjectOptions): void {
     assertExists(projectDir, 'skills/phaser-idle-economy-balancer/SKILL.md');
     assertExists(projectDir, 'skills/phaser-idle-economy-balancer/references/idle-formulas.md');
     assertExists(projectDir, 'skills/phaser-idle-economy-balancer/references/idle-balancing-workflow.md');
+    assertExists(projectDir, 'skills/phaser-idle-economy-balancer/references/idle-bulk-buy-and-simulation.md');
+    assertExists(projectDir, 'skills/phaser-idle-economy-balancer/references/idle-big-numbers-and-notation.md');
     assertExists(projectDir, 'skills/phaser-idle-ui-feedback/SKILL.md');
     assertExists(projectDir, 'skills/phaser-idle-offline-prestige/SKILL.md');
+    assertExists(projectDir, 'skills/phaser-idle-offline-prestige/references/idle-prestige-and-offline.md');
     assertExists(projectDir, 'docs/IDLE_GAME_DESIGN.md');
     assertExists(projectDir, 'docs/IDLE_BALANCE_CHECKLIST.md');
     assertExists(projectDir, 'src/game/idle/idleTypes.ts');

@@ -11,18 +11,21 @@ export function idleGameSkills(): GeneratedFile[] {
 ## Workflow
 
 1. Read \`references/igm-handbook-derived-model.md\`.
-2. Define the loop as resources -> production -> spending -> upgrades -> unlocks -> long-term growth.
-3. Put idle rules in \`src/game/idle/\` and content in \`src/data/idleContent.ts\`.
-4. Keep Phaser scenes thin. Scenes should render, route input, and call the idle systems.
-5. Add or update unit tests before tuning numbers.
-6. Use stable content IDs because saves depend on them.
+2. Define the content model: resources, actions, producers, upgrades, achievements, shinies, effects, requirements, and UI groups.
+3. Define the loop as resources -> production -> spending -> upgrades -> unlocks -> long-term growth.
+4. Put idle rules in \`src/game/idle/\` and content in \`src/data/idleContent.ts\`.
+5. Define the save contract before coding. Saves store state, not derived prices or per-second values.
+6. Keep Phaser scenes thin. Scenes should render, route input, and call the idle systems.
+7. Add or update unit tests before tuning numbers.
 
 ## Rules
 
 - Do not implement an idle game as a scene-local click counter.
 - Do not tie production to frame rate; convert Phaser delta to seconds.
 - Do not scatter resource changes through tweens, UI callbacks, and scene code.
-- Every purchaseable thing should show cost, affordability, owned count, and next effect.
+- Every purchasable thing should show cost, affordability, owned count, and next effect.
+- Use stable content IDs because saves depend on them.
+- Do not save derived values such as next cost, affordability, visibility, or per-second output.
 - Use typed effects/selectors/configs instead of an unreviewed string DSL.
 `,
     ),
@@ -36,11 +39,13 @@ export function idleGameSkills(): GeneratedFile[] {
 
 1. Read \`references/idle-formulas.md\`.
 2. Read \`references/idle-balancing-workflow.md\`.
-3. List target time bands: 10 seconds, 1 minute, 5 minutes, 30 minutes, 2 hours, next day.
-4. For each band, define expected unlocks and purchases.
-5. Tune producer costs and output in \`src/data/idleContent.ts\`.
-6. Add simulation-style unit tests for cost, production, upgrades, and offline caps.
-7. Check that every visible purchase is reachable and useful.
+3. Read \`references/idle-bulk-buy-and-simulation.md\`.
+4. Read \`references/idle-big-numbers-and-notation.md\`.
+5. List target time bands: 10 seconds, 1 minute, 5 minutes, 30 minutes, 2 hours, next day.
+6. For each band, define expected unlocks and purchases.
+7. Tune producer costs and output in \`src/data/idleContent.ts\`.
+8. Add simulation-style unit tests for cost, production, upgrades, bulk buy, offline caps, and number formatting.
+9. Check that every visible purchase is reachable and useful.
 
 ## Rules
 
@@ -49,11 +54,15 @@ export function idleGameSkills(): GeneratedFile[] {
 - Exponential costs need compounding production, upgrades, or unlocks.
 - Hidden counters are fine; hidden blockers are not.
 - Bulk buy must use deterministic math and tests.
+- Max-affordable must match the same rounded cost logic as buy 1 and buy 10.
+- Large-value formatting must be defined before currency values go past comfortable human reading ranges.
 - Do not change economy numbers without naming the expected time-band impact.
 `,
     ),
     reference('phaser-idle-economy-balancer', 'idle-formulas.md', idleFormulasReference),
     reference('phaser-idle-economy-balancer', 'idle-balancing-workflow.md', idleBalancingWorkflowReference),
+    reference('phaser-idle-economy-balancer', 'idle-bulk-buy-and-simulation.md', idleBulkBuyAndSimulationReference),
+    reference('phaser-idle-economy-balancer', 'idle-big-numbers-and-notation.md', idleBigNumbersAndNotationReference),
     skill(
       'phaser-idle-ui-feedback',
       'Use when building Phaser idle HUDs, resource panels, producer cards, upgrade grids, achievement shelves, logs, toasts, number popups, temporary bonus visuals, or dense mobile/desktop economy UI.',
@@ -82,21 +91,25 @@ export function idleGameSkills(): GeneratedFile[] {
 
 ## Workflow
 
-1. Confirm which resources can be earned offline.
-2. Define an offline cap and document it in \`docs/IDLE_GAME_DESIGN.md\`.
-3. Run migrations before offline simulation.
-4. Simulate capped elapsed time deterministically.
-5. Show a return summary to the player.
-6. Add prestige only after the base economy loop has meaningful reset value.
+1. Read \`references/idle-prestige-and-offline.md\`.
+2. Confirm which resources can be earned offline.
+3. Define an offline cap and document it in \`docs/IDLE_GAME_DESIGN.md\`.
+4. Run migrations before offline simulation.
+5. Simulate capped elapsed time deterministically.
+6. Show a return summary to the player.
+7. Add prestige only after the base economy loop has meaningful reset value.
 
 ## Rules
 
 - Offline gains must be capped.
 - Prestige must preserve settings and only reset intended economy state.
+- Prefer a square-root, fractional-exponent, or logarithmic prestige curve when linear points feel too flat.
+- Keep offline simulation deterministic, bounded, and migration-safe.
 - Do not wipe save data without a migration or explicit player action.
 - Test save/load/offline edge cases.
 `,
     ),
+    reference('phaser-idle-offline-prestige', 'idle-prestige-and-offline.md', idlePrestigeAndOfflineReference),
   ];
 }
 
@@ -135,7 +148,11 @@ export function idleGameProjectFiles(): GeneratedFile[] {
 
 const igmDerivedModel = `# IGM Handbook Derived Model
 
-Source: https://orteil.dashnet.org/igm/help.html
+Sources:
+
+- https://orteil.dashnet.org/igm/help.html
+- https://orteil.dashnet.org/experiments/idlegamemaker/help
+- https://orteil.dashnet.org/igm/games/bunnyclicker.txt
 
 This reference adapts Idle Game Maker concepts to Phaser + TypeScript. Do not copy the IGM text DSL into this project unless the human explicitly asks for a DSL.
 
@@ -143,18 +160,42 @@ This reference adapts Idle Game Maker concepts to Phaser + TypeScript. Do not co
 
 Idle games are systems of things and effects:
 
-- resources: current amount, total earned, max seen, per-second flow;
-- actions/buttons: active clicks or commands that trigger effects;
-- buildings/producers: buyable passive production with scaling costs;
-- upgrades: one-time purchases with passive modifiers or unlocks;
-- achievements: milestones, optionally with passive effects;
-- items: multiple owned instances, useful for equipment, cards, relics, workers;
-- shinies: temporary random clickable bonuses;
-- effects: typed operations such as gain, lose, multiply, show, hide, log, toast;
-- conditions: requirements and if/else style gates;
-- selectors: target one entity, all of a type, owned/unowned things, tags, or chained filters;
-- expressions: amounts, earned totals, owned counts, max values, comparisons, math, randomness;
-- layout: panels that display filtered groups with names, icons, costs, rates, owned counts, and tooltips.
+- resources: current amount, total earned, max seen, and derived per-second flow.
+- actions/buttons: active clicks or commands that trigger effects and early agency.
+- buildings/producers: buyable passive production with scaling costs and owned counts.
+- upgrades: one-time purchases that modify actions, producers, unlocks, or resource flow.
+- achievements: milestones that recognize progress and may optionally carry passive effects.
+- items: multiple owned instances for equipment, cards, relics, workers, pets, or factories.
+- shinies: temporary clickable bonuses with spawn rules, active duration, and rewards.
+- effects: typed operations such as gain, lose, buy producer, buy upgrade, show, hide, log, or toast.
+- requirements/conditions: gates based on resources, earned totals, owned counts, upgrades, clicks, or expressions.
+- selectors: target one entity, all entities of a type, owned/unowned things, tags, or chained filters.
+- expressions: amounts, earned totals, owned counts, max values, comparisons, arithmetic, and prestige points.
+- layout groups: panels that display filtered groups with names, costs, rates, owned counts, lock reasons, and next effects.
+
+## Content Contracts
+
+Keep authored content declarative:
+
+- Resources define names and starting amounts.
+- Actions define active gains and the resource they affect.
+- Producers define base cost, cost scale, output resource, and base output.
+- Upgrades define cost, requirements, and typed effects.
+- Achievements define requirements and player-facing descriptions.
+- Shinies define spawn cadence, duration, requirements, and effects.
+- Prestige defines reset requirements, permanent currency, and preserved meta state.
+
+The content file should be the source of truth for game balance. Runtime systems may derive current price, affordability, per-second output, visibility, and locked reasons from this content plus save state.
+
+## Save And ID Rules
+
+Use content IDs as save keys:
+
+- Never rename an ID after players can have saves unless a migration maps old IDs to new IDs.
+- Save only durable state: resource amounts and earned totals, action click counts, producer owned counts, owned upgrades, unlocked achievements, shiny timers/counters, prestige points, reset count, and timestamps.
+- Do not save derived values: next cost, buy-10 cost, max affordable, per-second output, affordability, visibility, locked reason, or formatted display text.
+- On load, rebuild derived values from content and save state.
+- If content is removed, the migration should decide whether to preserve, convert, or discard old state.
 
 ## Phaser Translation
 
@@ -162,7 +203,9 @@ Idle games are systems of things and effects:
 - Keep content in \`src/data/idleContent.ts\`.
 - Keep deterministic economy rules in \`src/game/idle/\`.
 - Keep Phaser scenes responsible for rendering and input only.
-- Use IDs as save keys. Never rename IDs after players have saves.
+- Render from a UI model such as \`IdleEconomy.getUiModel()\`.
+- Route input to economy methods such as click action, buy producer, buy upgrade, click shiny, and prestige reset.
+- Persist via \`IdleEconomy.toSaveData()\`; do not let scenes construct idle save payloads manually.
 - Unit-test economy math because manual testing misses scaling bugs.
 
 ## Required Idle Loop
@@ -195,6 +238,7 @@ Starter rule:
 - costScale around 1.07-1.18 is gentle.
 - costScale above 1.25 becomes steep quickly.
 - If costs grow exponentially, production must compound through more producers, upgrades, prestige, or new layers.
+- Keep cost curves predictable enough that buy 1, buy 10, and buy max tell the same economic story.
 
 Bulk cost with per-purchase rounding:
 
@@ -203,6 +247,7 @@ bulkCost(count) = sum(ceil(baseCost * costScale ** (owned + i)) for i in 0..coun
 \`\`\`
 
 Use the sum in gameplay code unless you also test a geometric-series shortcut with the same rounding behavior.
+For large counts, a shortcut is valid only if its rounded result exactly matches the rounded sum.
 
 ## Production
 
@@ -234,6 +279,7 @@ output = baseOutput + flatBonus
 \`\`\`
 
 Do not mix additive and multiplicative stacking without naming the order in tests.
+Document whether additive bonuses apply before or after multiplicative bonuses.
 
 ## Affordability
 
@@ -251,6 +297,7 @@ while spent + nextCost <= currentResource:
 \`\`\`
 
 For very large economies, replace the loop with a tested binary search or geometric formula.
+If max-affordable is user-facing, it must stay aligned with the rounded purchase curve.
 
 ## Offline Progress
 
@@ -264,6 +311,7 @@ capReached = elapsedSeconds > simulatedSeconds
 \`\`\`
 
 Run save migrations before offline simulation.
+If offline simulation includes purchase loops, keep the path deterministic and test the cap edge case.
 
 ## Prestige
 
@@ -275,6 +323,7 @@ prestigeMultiplier = 1 + totalPrestigePoints * multiplierPerPoint
 \`\`\`
 
 Prestige should reset run state and preserve only intentional meta state: settings, meta currency, reset count, and optionally achievements.
+If the prestige curve feels too flat, consider a square-root or fractional-exponent curve instead of a linear divider.
 
 ## Typed Expressions
 
@@ -388,6 +437,133 @@ When changing formulas, add tests that encode intent:
 If a formula exists in a spreadsheet, mirror it in code comments or tests. The game is the source of truth at runtime.
 `;
 
+const idlePrestigeAndOfflineReference = `# Idle Prestige And Offline
+
+Use this reference when adding offline progress, return summaries, migrations, or prestige loops.
+
+## Offline Progress
+
+- Cap offline simulation before any resource gain is applied.
+- Run save migrations first so old saves are normalized before simulation.
+- Simulate elapsed seconds deterministically from saved time to now.
+- Show the player what happened while they were away.
+
+\`\`\`ts
+elapsedSeconds = floor((now - savedAt) / 1000)
+simulatedSeconds = min(elapsedSeconds, offlineCapSeconds)
+capReached = elapsedSeconds > simulatedSeconds
+\`\`\`
+
+## Prestige Curves
+
+Use the simplest curve that still feels rewarding:
+
+\`\`\`ts
+linearPoints = floor(totalEarned / divisor)
+sqrtPoints = floor(k * sqrt(totalEarned / scale))
+fractionalPoints = floor(k * (totalEarned / scale) ** exponent)
+logPoints = floor(k * log10(totalEarned + 1))
+\`\`\`
+
+- Use linear for tiny starter loops.
+- Use sqrt or fractional exponent when lifetime growth outpaces linear rewards.
+- Use log when the economy gets very large.
+- Keep the selected curve visible in tests and docs.
+
+## Migration Rules
+
+- Preserve player settings unless the player explicitly resets them.
+- Reset only run-state that the prestige design intends to clear.
+- Keep prestige points, reset count, and preserved meta state stable across loads.
+- Never let an offline migration change the meaning of a saved resource ID without a mapping.
+
+## Tests
+
+Cover:
+
+- offline cap clamps elapsed time;
+- return summary reports cap status and gained resources;
+- prestige preview matches the visible multiplier story;
+- prestige reset clears only intended run state;
+- save/load round-trips prestige and offline timestamps.
+`;
+
+const idleBulkBuyAndSimulationReference = `# Idle Bulk Buy And Simulation
+
+Use this reference when validating buy 1, buy 10, buy max, or offline progression loops.
+
+## Bulk Buy
+
+Default rule:
+
+\`\`\`ts
+cost(n) = sum(ceil(baseCost * costScale ** (owned + i)) for i in 0..n-1)
+\`\`\`
+
+## Max Affordable
+
+Max affordable should solve the same rounded cost curve used by buy 1 and buy 10.
+
+- Prefer a loop or binary search when rounded costs matter more than algebraic elegance.
+- Use a geometric shortcut only when its rounded result exactly matches the loop.
+- Cache nothing that would go stale after a purchase.
+
+## Simulation Bands
+
+Use these bands when tuning content:
+
+- 10 seconds: first reward lands immediately.
+- 1 minute: first producer or automation milestone appears.
+- 5 minutes: first upgrade changes the plan.
+- 30 minutes: second layer or second decision opens.
+- 2 hours: offline cap matters.
+- next day: prestige or long-term goal is visible.
+
+## Tests
+
+Cover these cases:
+
+- buy 1, buy 10, buy max;
+- insufficient currency;
+- rounded cost changes after owned count changes;
+- production after purchasing producers;
+- offline cap clamps elapsed time;
+- prestige preview matches the visible multiplier story.
+`;
+
+const idleBigNumbersAndNotationReference = `# Idle Big Numbers And Notation
+
+Use this reference when resources, costs, or prestige values get large enough that plain integers stop being readable.
+
+## Starter Rule
+
+- Use JavaScript \`number\` while the economy stays comfortably below precision and display pain.
+- Switch the display format before switching the storage format.
+- Keep saved values stable and deterministic.
+
+## Display Rules
+
+- Use \`K / M / B / T\` for ordinary idle UI when values are human-facing.
+- Use scientific notation when numbers stop fitting the chosen compact prefix set.
+- Round consistently and document the rounding direction in tests.
+- Never change the displayed format without checking screenshots or smoke tests.
+
+## Storage Rules
+
+- Keep derived formatting out of save data.
+- Move to mantissa/exponent or a decimal library only when runtime math actually needs it.
+- If a future big-number type is introduced, isolate it behind economy helpers instead of scene code.
+
+## Trigger Questions
+
+Ask these before the game needs a bigger-number system:
+
+- Does a value need to be exact across long sessions?
+- Do costs or production exceed readable shorthand?
+- Are prestige points or offline gains losing meaning because of float precision?
+- Can the current notation still fit the HUD cleanly?
+`;
+
 const idleDesignDoc = `# Idle Game Design
 
 This project includes the optional Idle / Incremental Game Pack.
@@ -403,6 +579,16 @@ Use it for idle, incremental, clicker, factory, tycoon, RPG-idle, merge-idle, co
 - \`tests/unit/IdleFormulaExamples.test.ts\`: executable examples for core idle formulas.
 - \`skills/phaser-idle-economy-balancer/references/idle-formulas.md\`: formula reference.
 - \`skills/phaser-idle-economy-balancer/references/idle-balancing-workflow.md\`: tuning workflow.
+- \`skills/phaser-idle-economy-balancer/references/idle-bulk-buy-and-simulation.md\`: bulk-buy and simulation checks.
+- \`skills/phaser-idle-economy-balancer/references/idle-big-numbers-and-notation.md\`: large-value formatting and storage guidance.
+- \`skills/phaser-idle-offline-prestige/references/idle-prestige-and-offline.md\`: offline and prestige guidance.
+
+## Skill Hygiene
+
+- Keep \`SKILL.md\` files short and procedural.
+- Put heavier formula tables, examples, and decision rules in \`references/\`.
+- Use \`skill-creator\` when adding or revising a skill so the trigger, workflow, and references stay tight.
+- Keep runtime math in \`src/game/idle/\` and authored balance in \`src/data/idleContent.ts\`.
 
 ## Design Loop
 
@@ -447,8 +633,11 @@ Use this before calling an idle economy playable.
 - Bulk buy math is deterministic.
 - Temporary bonuses have duration, spawn rules, rewards, and reduced-motion friendly UI.
 - Offline progress is capped and summarized.
-- Prestige preview shows pending reward, reset count, and permanent multiplier.
+- Prestige preview shows pending reward, reset count, chosen curve, and permanent multiplier.
+- Large values have a documented display and storage strategy.
 - Save IDs are stable.
+- Skill files stay short; deeper guidance lives in references.
+- New or revised skills follow the local \`skill-creator\` workflow.
 - Unit tests cover action gain, producer buying, passive production, upgrade effects, achievement unlock, and offline cap.
 - Formula examples in \`tests/unit/IdleFormulaExamples.test.ts\` still pass after tuning.
 `;
@@ -1636,7 +1825,19 @@ describe('IdleEconomy', () => {
     const oven = economy.getUiModel().producers.find((entry) => entry.id === 'oven');
     expect(oven?.owned).toBe(3);
     expect(oven?.nextCost).toBe(16);
-    expect(oven?.maxAffordable).toBeGreaterThan(0);
+    expect(oven?.maxAffordable).toBe(4);
+  });
+
+  it('keeps max-buy aligned with rounded bulk cost math', () => {
+    const economy = new IdleEconomy(idleContent);
+
+    economy.applyEffects([{ kind: 'gain', resourceId: 'cookies', amount: 120 }]);
+
+    expect(economy.getMaxAffordableProducerCount('oven')).toBe(7);
+    expect(economy.getProducerBulkCost('oven', 7)).toBe(115);
+    expect(economy.getProducerBulkCost('oven', 8)).toBe(142);
+    expect(economy.buyMaxProducer('oven')).toBe(7);
+    expect(economy.getResource('cookies').current).toBe(5);
   });
 
   it('supports typed effects and selectors for future content rules', () => {
@@ -1766,9 +1967,17 @@ describe('IdleEconomy', () => {
     economy.clickAction('bakeCookie');
     const save = economy.toSaveData(2000);
     const restored = new IdleEconomy(idleContent, save, 3000);
+    const serializedSave = JSON.stringify(save);
 
     expect(restored.getResource('cookies').current).toBe(1);
     expect(restored.toSaveData().actions.bakeCookie.clicks).toBe(1);
+    expect(serializedSave).not.toContain('nextCost');
+    expect(serializedSave).not.toContain('bulk10Cost');
+    expect(serializedSave).not.toContain('maxAffordable');
+    expect(serializedSave).not.toContain('perSecond');
+    expect(serializedSave).not.toContain('affordable');
+    expect(serializedSave).not.toContain('visible');
+    expect(serializedSave).not.toContain('lockedReason');
   });
 });
 `;
@@ -1822,6 +2031,39 @@ describe('Idle formula examples', () => {
 
     expect(economy.getUiModel().prestige?.multiplier).toBeCloseTo(1.1);
     expect(economy.getUiModel().actions.find((entry) => entry.id === 'bakeCookie')?.gain).toBeCloseTo(1.1);
+  });
+
+  it('documents compact idle number notation', () => {
+    const formatIdleNumber = (value: number): string => {
+      const units = [
+        { suffix: 'T', value: 1_000_000_000_000 },
+        { suffix: 'B', value: 1_000_000_000 },
+        { suffix: 'M', value: 1_000_000 },
+        { suffix: 'K', value: 1_000 },
+      ];
+
+      const absolute = Math.abs(value);
+
+      if (absolute < 1_000) {
+        return Math.floor(value).toString();
+      }
+
+      const unit = units.find((entry) => absolute >= entry.value);
+
+      if (!unit || absolute >= 1_000_000_000_000_000) {
+        return value.toExponential(2);
+      }
+
+      const scaled = value / unit.value;
+      const digits = Math.abs(scaled) >= 10 ? 1 : 2;
+      return scaled.toFixed(digits).replace(/\\.0+$/, '') + unit.suffix;
+    };
+
+    expect(formatIdleNumber(999)).toBe('999');
+    expect(formatIdleNumber(1_500)).toBe('1.50K');
+    expect(formatIdleNumber(2_500_000)).toBe('2.50M');
+    expect(formatIdleNumber(18_200_000_000)).toBe('18.2B');
+    expect(formatIdleNumber(1_000_000_000_000_000)).toBe('1.00e+15');
   });
 
   it('documents typed number expressions in effects', () => {
